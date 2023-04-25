@@ -1,3 +1,4 @@
+import Backend.Region;
 import Backend.Team;
 
 import java.io.BufferedReader;
@@ -32,7 +33,7 @@ public class WorldCupSimulator {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
                 // TODO: 4/25/2023 Make sure constructor parameters are in right order.
-                teams.add(new Team(parts[0], parts[1], Region.valueOf(parts[2]), Integer.parseInt(parts[3])));
+                teams.add(new Team(parts[0], parts[1], Region.valueOf(parts[2].toUpperCase()), Integer.parseInt(parts[3])));
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
