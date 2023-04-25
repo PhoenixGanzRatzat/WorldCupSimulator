@@ -44,7 +44,6 @@ Timor-Leste,TLS,206
 Macau,MAC,186
 Bhutan,BHU,183
 
-
 CAF 
 Tunisia,TUN,23
 Senegal,SEN,24
@@ -60,8 +59,6 @@ Mali,MLI,64
 South Africa,RSA,81
 Guinea,GUI,69
 
-
-
 CONCACAF 
 Mexico,MEX,17
 USA,USA,25
@@ -71,8 +68,6 @@ Jamaica,JAM,54
 Honduras,HON,61
 Trinidad and Tobago,TRI,93
 El Salvador,SLV,90
-
-
 
 CONMEBOL 
 Brazil,BRA,2
@@ -92,7 +87,6 @@ Cook Islands,COK,194
 Fiji,FIJ,166
 New Caledonia,NCL,155
 New Zealand,NZL,121
-
 
 UEFA 
 Germany,GER,1
