@@ -45,7 +45,7 @@ Macau,MAC,186
 Bhutan,BHU,183
 
 
-CAF (50)
+CAF 
 Tunisia,TUN,23
 Senegal,SEN,24
 DR Congo,COD,39
@@ -62,7 +62,7 @@ Guinea,GUI,69
 
 
 
-CONCACAF (34)
+CONCACAF 
 Mexico,MEX,17
 USA,USA,25
 Costa Rica,CRC,26
@@ -74,7 +74,7 @@ El Salvador,SLV,90
 
 
 
-CONMEBOL (10)
+CONMEBOL 
 Brazil,BRA,2
 Argentina,ARG,4
 Chile,CHI,10
@@ -86,7 +86,7 @@ Ecuador,ECU,64
 Bolivia,BOL,66
 Venezuela,VEN,52
 
-OFC (11)
+OFC 
 American Samoa,ASA,194
 Cook Islands,COK,194
 Fiji,FIJ,166
@@ -94,7 +94,7 @@ New Caledonia,NCL,155
 New Zealand,NZL,121
 
 
-UEFA (52)
+UEFA 
 Germany,GER,1
 Portugal,POR,3
 Belgium,BEL,5
