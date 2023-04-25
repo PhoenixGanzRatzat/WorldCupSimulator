@@ -31,7 +31,7 @@ public class WorldCupSimulator {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
+                String[] parts = line.split(DATA_DELIMITER);
                 // TODO: 4/25/2023 Make sure constructor parameters are in right order.
                 teams.add(new Team(parts[0], parts[1], Region.valueOf(parts[2].toUpperCase()), Integer.parseInt(parts[3])));
             }
