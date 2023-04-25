@@ -3,7 +3,7 @@ package Backend;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class Team {
+public class Team implements Comparable{
     private String name;
     private String abbv;
     private Region region;
@@ -63,5 +63,18 @@ public class Team {
 
     public BufferedImage getFlag() {
         return flag;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Team t = (Team)o;
+        if (this.getPoints() > t.getPoints()){
+            return 1;
+        } else if (this.getPoints() == t.getPoints()) {
+            return 0;
+        } else if (this.getPoints() < t.getPoints()) {
+            return -1;
+        }
+        return 0;
     }
 }
