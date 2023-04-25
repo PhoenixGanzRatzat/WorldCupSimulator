@@ -14,9 +14,10 @@ public class WorldCupSimulator {
 
     private static final String TEAM_DATA_FILE_NAME = "teams.txt";
     private static final String DATA_DELIMITER = ",";
+    private static List<Team> teams;
 
     private static void startProgram() {
-        loadTeamData();
+        teams = loadTeamData();
     }
 
     /**
@@ -24,7 +25,7 @@ public class WorldCupSimulator {
      *
      * @return A list of Teams.
      */
-    public static Collection<Team> loadTeamData() {
+    public static List<Team> loadTeamData() {
         List<Team> teams = new ArrayList<>();
         InputStream stream = Objects.requireNonNull(WorldCupSimulator.class.getResourceAsStream(TEAM_DATA_FILE_NAME));
 
@@ -56,6 +57,10 @@ public class WorldCupSimulator {
             throw new RuntimeException(e);
         }
 
+        return teams;
+    }
+
+    public static List<Team> getTeams() {
         return teams;
     }
 
