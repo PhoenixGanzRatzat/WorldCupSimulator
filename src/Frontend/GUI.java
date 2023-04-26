@@ -54,7 +54,7 @@ public class GUI extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String panelString;
-        CardLayout cl;
+
         if (e.getSource() == qualifyingButton) {
             panelString = "qual";
         } else if (e.getSource() == groupButton) {
@@ -65,9 +65,14 @@ public class GUI extends JFrame implements ActionListener {
             panelString = "";
         }
 
+        changeCard(cardPanel, panelString);
+    }
+
+    private void changeCard(JPanel cardPanel, String panelString) {
+        CardLayout cl;
+
         cl = (CardLayout) cardPanel.getLayout();
         cl.show(cardPanel, panelString);
-
     }
     /*
 
