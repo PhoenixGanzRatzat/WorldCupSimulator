@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 
 
-public class QualifyingPanel extends JPanel {
+public class QualifyingPanel extends JPanel implements StagePanel {
 
     private Match[] matches;
     private Team[] teams;
@@ -76,5 +76,13 @@ public class QualifyingPanel extends JPanel {
     }
 
 
+    @Override
+    public boolean checkIfCompleted() {
+        return false;
+    }
 
+    @Override
+    public void initPanel() {
+
+    }
 }
