@@ -6,4 +6,9 @@ public class KnockoutStage extends Stage{
     public KnockoutStage(Collection<Team> teams) {
         super(teams);
     }
+
+    @Override
+    public void arrangeMatches() {
+
+    }
 }

@@ -1,0 +1,217 @@
+AFC
+Iran,IRN,34
+South Korea,KOR,59
+Japan,JPN,60
+Australia,AUS,39
+Saudi Arabia,KSA,65
+Qatar,QAT,95
+United Arab Emirates,ARE,81
+China,CHN,75
+Syria,SYR,76
+Uzbekistan,UZB,88
+Iraq,IRQ,89
+India,IND,102
+Oman,OMA,99
+Lebanon,LBN,85
+Kyrgyzstan,KGZ,114
+Jordan,JOR,107
+Vietnam,VIE,130
+Palestine,PLE,110
+Philippines,PHI,123
+Bahrain,BHR,116
+Tajikistan,TJK,124
+North Korea,PRK,126
+Thailand,THA,137
+Turkmenistan,TKM,129
+Hong Kong,HKG,142
+Myanmar,MMR,140
+Maldives,MDV,150
+Afghanistan,AFG,162
+Yemen,YEM,90
+Singapore,SIN,172
+Indonesia,INA,162
+Nepal,NEP,171
+Mongolia,MNG,188
+Guam,GUM,192
+Malaysia,MAS,175
+Laos,LAO,181
+Cambodia,CAM,183
+Sri Lanka,SRI,200
+Bangladesh,BAN,197
+Pakistan,PAK,201
+Brunei,BRU,190
+Timor-Leste,TLS,206
+Macau,MAC,186
+Bhutan,BHU,183
+
+
+CAF 
+Tunisia,TUN,23
+Senegal,SEN,24
+DR Congo,COD,39
+Morocco,MAR,42
+Egypt,EGY,30
+Ghana,GHA,50
+Burkina Faso,BFA,54
+Cameroon,CMR,51
+Nigeria,NGA,52
+Algeria,ALG,57
+Mali,MLI,64
+South Africa,RSA,81
+Guinea,GUI,69
+Cape Verde Islands,CPV,63
+Uganda,UGA,73
+Zambia,ZMB,76
+Benin,BEN,82
+Gabon,GAB,84
+Congo,CGO,85
+Niger,NIG,92
+Libya,LBY,88
+Mozambique,MOZ,108
+Sierra Leone,SLE,97
+Mauritania,MTN,101
+Namibia,NAM,118
+Madagascar,MAD,114
+Mauritius,MRI,155
+Liberia,LBR,134
+Sudan,SDN,130
+Zimbabwe,ZIM,116
+Eswatini,SWZ,139
+Rwanda,RWA,113
+Burundi,BDI,142
+Lesotho,LES,147
+Ethiopia,ETH,143
+Tanzania,TAN,146
+Gambia,GAM,159
+Seychelles,SEY,192
+Botswana,BOT,153
+Chad,TCD,175
+Sao Tome and Principe,STP,178
+Comoros,COM,148
+Djibouti,DJI,186
+Kenya,KEN,106
+Angola,ANG,137
+Togo,TOG,150
+Central African Republic,CTA,151
+Guinea-Bissau,GNB,159
+Equatorial Guinea,GEQ,171
+Malawi,MAW,126
+
+
+CONCACAF
+Mexico,MEX,17
+USA,USA,25
+Costa Rica,CRC,26
+Panama,PAN,55
+Jamaica,JAM,54
+Honduras,HON,61
+Trinidad and Tobago,TRI,93
+El Salvador,SLV,90
+Canada,CAN,94
+Curacao,CUW,86
+Haiti,HAI,56
+Nicaragua,NCA,129
+Guatemala,GUA,146
+St. Kitts and Nevis,SKN,119
+Antigua and Barbuda,ATG,126
+Suriname,SUR,162
+Dominican Republic,DOM,155
+Grenada,GRN,167
+Belize,BLZ,164
+Guyana,GUY,188
+St. Vincent and the Grenadines,VIN,177
+Dominica,DMA,182
+St. Lucia,LCA,184
+Puerto Rico,PUR,175
+Aruba,ARU,180
+US Virgin Islands,VIR,207
+Barbados,BRB,160
+Montserrat,MSR,199
+Turks and Caicos Islands,TCA,202
+Cayman Islands,CAY,202
+Bahamas,BAH,199
+Anguilla,AIA,209
+Bermuda,BER,186
+British Virgin Islands,IVB,198
+
+
+CONMEBOL 
+Brazil,BRA,2
+Argentina,ARG,4
+Chile,CHI,10
+Colombia,COL,13
+Peru,PER,11
+Uruguay,URU,21
+Paraguay,PAR,32
+Ecuador,ECU,64
+Bolivia,BOL,66
+Venezuela,VEN,52
+
+OFC 
+American Samoa,ASA,194
+Cook Islands,COK,194
+Fiji,FIJ,166
+New Caledonia,NCL,155
+New Zealand,NZL,121
+Papua New Guinea,PNG,164
+Samoa,SAM,194
+Solomon Islands,SOL,142
+Tahiti,TAH,152
+Tonga,TGA,203
+Vanuatu,VAN,157
+
+
+UEFA 
+Germany,GER,1
+Portugal,POR,3
+Belgium,BEL,5
+Spain,ESP,6
+Switzerland,SUI,8
+France,FRA,9
+Poland,POL,10
+Italy,ITA,14
+England,ENG,15
+Croatia,CRO,16
+Denmark,DEN,18
+Iceland,ISL,19
+Sweden,SWE,20
+Netherlands,NED,21
+Ukraine,UKR,27
+Turkey,TUR,28
+Slovakia,SVK,29
+Ireland,IRL,32
+Northern Ireland,NIR,33
+Romania,ROU,35
+Czech Republic,CZE,36
+Austria,AUT,37
+Bosnia and Herzegovina,BIH,38
+Greece,GRE,41
+Serbia,SRB,43
+Hungary,HUN,44
+Bulgaria,BUL,45
+Montenegro,MNE,46
+Slovenia,SVN,47
+Albania,ALB,48
+Scotland,SCO,51
+Norway,NOR,53
+Israel,ISR,56
+Finland,FIN,57
+Cyprus,CYP,58
+Estonia,EST,62
+Lithuania,LTU,63
+Azerbaijan,AZE,64
+Macedonia,MKD,67
+Belarus,BLR,70
+Latvia,LVA,73
+Kazakhstan,KAZ,74
+Moldova,MDA,75
+Armenia,ARM,76
+Georgia,GEO,77
+Luxembourg,LUX,84
+Kosovo,KOS,88
+Faroe Islands,FRO,89
+Malta,MLT,110
+Andorra,AND,129
+Gibraltar,GIB,195
+San Marino,SMR,204
+
