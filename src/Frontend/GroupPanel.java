@@ -1,12 +1,13 @@
 package Frontend;
 
 import Backend.Match;
+import Backend.Team;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
-import javax.swing.text.TableView;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 
 /**
  * The group stage panel
@@ -15,16 +16,14 @@ public class GroupPanel extends JPanel implements StagePanel {
     /* SIMULATES */
     // TODO: stand-in for displaying flags
     BufferedImage[] flags = new BufferedImage[211];
-    Match[] matches = new Match[48];
-
-
-
-
-
 
     /* __FIELD VARIABLES__ */
-    private JTextArea resultsField;
     private JTextField roundNumberTextField;
+    private int currentRound;
+    private Match[] matches;
+    private HashMap<Integer, Match[]> groupMatches;
+    private HashMap<Integer, Team[]> groupTeams;
+    private HashMap<Team, Integer> teamGroups;
 
     public static void main(String[] args) {
         GroupPanel panel = new GroupPanel();
@@ -38,8 +37,12 @@ public class GroupPanel extends JPanel implements StagePanel {
     public GroupPanel() {
         this.setLayout(new BorderLayout());
         this.setBackground(new Color(0, 0, 75));
-        //this.setPreferredSize(new Dimension(100, 500));
-        resultsField = new JTextArea();
+        teamGroups = new HashMap<>();
+        groupMatches = new HashMap<>();
+        groupTeams = new HashMap<>();
+        groupMatches.put(1, new Match[6]);
+        groupTeams.put(1, new Team[4]);
+        currentRound = 1;
         roundNumberTextField = new JTextField("1");
         initPanel();
     }
@@ -75,18 +78,13 @@ public class GroupPanel extends JPanel implements StagePanel {
         }
         // results sidepane - displays score and outcome between each match in the group
         JPanel resultsPanel = new JPanel();
+        resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
         resultsPanel.setPreferredSize(new Dimension(200, 200));
-        // TODO: Replace with JTextFields for each match in this format
-        String resultsText =
-                "A win  2 - 1 Loss B\n" +
-                "A Draw 1 - 1 Draw C\n" +
-                "A Loss 1 - 2 Win  D\n" +
-                "B win  2 - 1 Loss C\n" +
-                "B win  2 - 1 Loss D\n" +
-                "C win  1 - 0 Loss D\n";
-        resultsField.setText(resultsText);
+
         resultsPanel.add(new JLabel("__Group Results__"));
-        resultsPanel.add(resultsField);
+        for(int c = 0; c < 4; c++) {
+            resultsPanel.add(createMatchResultRowPanel());
+        }
         // compose display panel
         displayPanel.add(groupDisplayPanel);
         displayPanel.add(resultsPanel);
@@ -101,6 +99,87 @@ public class GroupPanel extends JPanel implements StagePanel {
         this.add(displayPanel, BorderLayout.CENTER);
         this.add(functionPanel, BorderLayout.SOUTH);
     }
+
+    private JPanel createMatchResultRowPanel() {
+        JPanel base = new JPanel(new GridLayout(1,7,2,2));
+        for(int i = 0; i < 7; i++) {
+            base.add(new JLabel("x"));
+        }
+        return base;
+    }
+/*
+    private void fillMatchResultPanel(Match match) {
+        String name1 = match.getTeam1().getName();
+        String name2 = match.getTeam2().getName();
+        int score1 = match.getTeam1Score();
+        int score2 = match.getTeam2Score();
+        if(score1 > score2) {
+            String result1 = "Win";
+            String result2 = "Loss";
+        } else if (score1 < score2) {
+            String result1 = "Loss";
+            String result2 = "Win";
+        } else {
+            String result1 = "Draw";
+            String result2 = "Draw";
+        }
+
+    }
+ */
+    /*
+    private void createGroups() {
+        /* HashMap<Integer, Match[]> groupMatches;
+         * HashMap<Integer, Team[]> groupTeams;
+         */
+
+        /* put teams into groups
+        for(Match match : matches) {
+            // get teams
+            Team team1 = match.getTeam1();
+            Team team2 = match.getTeam2();
+
+            // is team1 in a group?
+            if(teamGroups.containsKey(team1)) {
+                // add team2 to same group
+                int g = teamGroups.get(team1);
+                for(int d = 0; d < 4; d++) {
+                    if(groupTeams.get(g)[d].equals(null)) {
+                        groupTeams.get(g)[d] = team2;
+                    }
+                }
+            } else if(teamGroups.containsKey(team2)) { // is team2 in a group?
+                // add team1 to same group
+                int g = teamGroups.get(team2);
+                for(int d = 0; d < 4; d++) {
+                    if(groupTeams.get(g)[d].equals(null)) {
+                        groupTeams.get(g)[d] = team1;
+                    }
+                }
+            } else {
+                // find empty group
+                // add team1 and team2 to empty group
+                for(Integer gn : groupTeams.keySet()) {
+                    if(groupTeams.get(gn).length == 0) {
+                        teamGroups.put(team1, gn);
+                        teamGroups.put(team2, gn);
+                    }
+                }
+            }
+
+            /* Put matches into groups
+            for(Match match2 : matches) {
+                int groupNum = teamGroups.get(match2.getTeam1());
+                Match[] matches = groupMatches.get(groupNum);
+                for(int e = 0; e < 6; e++) {
+                    if(matches[e].equals(null)) {
+                        matches[e] = match2;
+                    }
+                }
+            }
+
+        }// END FOR EACH MATCH
+    } // END METHOD
+    */
 
     /**
      * Creates the panel that holds the { win, loss, tie, points } data for each group
