@@ -19,16 +19,10 @@ public class GUI extends JFrame implements ActionListener {
     public GUI() {
         cardPanel = new JPanel(new CardLayout());
         buttonPanel = new JPanel();
-        // for testing
-        qualifyingPanel = new JPanel();
-        groupPanel = new JPanel();
-        knockoutPanel = new JPanel();
 
-        qualifyingPanel.add(new JLabel("Qualifying Panel"));
-        groupPanel.add(new JLabel("Group Panel"));
-        knockoutPanel.add(new JLabel("Knockout Panel"));
-
-        // end testing
+        qualifyingPanel = new QualifyingPanel();
+        groupPanel = new GroupPanel();
+        knockoutPanel = new KnockoutPanel();
 
         qualifyingButton = new JButton("Qualifying Panel");
         qualifyingButton.addActionListener(this);
