@@ -22,6 +22,7 @@ public class Team implements Comparable{
         flag = null;
     }
 
+
     public String getName() {
         return name;
     }
