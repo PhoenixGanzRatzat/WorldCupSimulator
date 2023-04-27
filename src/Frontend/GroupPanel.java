@@ -11,11 +11,14 @@ import java.util.HashMap;
 
 /**
  * The group stage panel
+ *
  */
 public class GroupPanel extends JPanel implements StagePanel {
     /* SIMULATES */
     // TODO: stand-in for displaying flags
     BufferedImage[] flags = new BufferedImage[211];
+
+    // TODO: Row panels should always be position 1 2 3 4 and the countries information should change which row based on position
 
     /* __FIELD VARIABLES__ */
     private JTextField roundNumberTextField;
@@ -72,19 +75,26 @@ public class GroupPanel extends JPanel implements StagePanel {
         /* __ Display Panel */
         // Container for all group panes - displays each teams w/d/l record and points
         JPanel groupDisplayPanel = new JPanel(new GridLayout(4,2,2,2));
-        //groupDisplayPanel.setBackground(Color.YELLOW);
         for(int i = 0; i < 8; i++) {
             groupDisplayPanel.add(createGroupPanel(i));
         }
         // results sidepane - displays score and outcome between each match in the group
         JPanel resultsPanel = new JPanel();
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
-        resultsPanel.setPreferredSize(new Dimension(200, 200));
+        resultsPanel.setPreferredSize(new Dimension(250, 200));
 
         resultsPanel.add(new JLabel("__Group Results__"));
         for(int c = 0; c < 4; c++) {
             resultsPanel.add(createMatchResultRowPanel());
         }
+
+        //TODO: REMOVE - Testing
+        Team team1 = new Team("United States", "USA", null, 0);
+        Team team2 = new Team("Canada", "CAN", null, 0);
+        Match match44 = new Match(team1, team2, 2, 1);
+        fillMatchResultPanel((JPanel)resultsPanel.getComponent(1), match44);
+        //TODO: END REMOVE
+
         // compose display panel
         displayPanel.add(groupDisplayPanel);
         displayPanel.add(resultsPanel);
@@ -100,6 +110,26 @@ public class GroupPanel extends JPanel implements StagePanel {
         this.add(functionPanel, BorderLayout.SOUTH);
     }
 
+    /**
+     * Used to ensure that group panels always display row information based on descending position 1 - 4 top to bottom
+     */
+    private void rearrangeRowPanels() {
+
+    }
+
+
+    private void simulateStage() {
+
+    }
+
+    private void simulateRound() {
+
+    }
+
+    private void updateDisplayAfterRound() {
+
+    }
+
     private JPanel createMatchResultRowPanel() {
         JPanel base = new JPanel(new GridLayout(1,7,2,2));
         for(int i = 0; i < 7; i++) {
@@ -107,32 +137,38 @@ public class GroupPanel extends JPanel implements StagePanel {
         }
         return base;
     }
-/*
-    private void fillMatchResultPanel(Match match) {
-        String name1 = match.getTeam1().getName();
-        String name2 = match.getTeam2().getName();
+
+    private void fillMatchResultPanel(JPanel groupPanel, Match match) {
+        Component[] rowPanelLabels = groupPanel.getComponents();
+
+        String name1 = match.getTeam1().getAbbv();
+        String name2 = match.getTeam2().getAbbv();
         int score1 = match.getTeam1Score();
         int score2 = match.getTeam2Score();
+        String result1;
+        String result2;
         if(score1 > score2) {
-            String result1 = "Win";
-            String result2 = "Loss";
+            result1 = "Win";
+            result2 = "Loss";
         } else if (score1 < score2) {
-            String result1 = "Loss";
-            String result2 = "Win";
+            result1 = "Loss";
+            result2 = "Win";
         } else {
-            String result1 = "Draw";
-            String result2 = "Draw";
+            result1 = "Draw";
+            result2 = "Draw";
         }
 
+        ((JLabel)rowPanelLabels[0]).setText(name1);
+        ((JLabel)rowPanelLabels[1]).setText(result1);
+        ((JLabel)rowPanelLabels[2]).setText(String.valueOf(score1));
+        ((JLabel)rowPanelLabels[3]).setText("-");
+        ((JLabel)rowPanelLabels[4]).setText(String.valueOf(score2));
+        ((JLabel)rowPanelLabels[5]).setText(result2);
+        ((JLabel)rowPanelLabels[6]).setText(name2);
     }
- */
-    /*
-    private void createGroups() {
-        /* HashMap<Integer, Match[]> groupMatches;
-         * HashMap<Integer, Team[]> groupTeams;
-         */
 
-        /* put teams into groups
+    private void createGroups() {
+        /* put teams into groups */
         for(Match match : matches) {
             // get teams
             Team team1 = match.getTeam1();
@@ -166,7 +202,7 @@ public class GroupPanel extends JPanel implements StagePanel {
                 }
             }
 
-            /* Put matches into groups
+            /* Put matches into groups */
             for(Match match2 : matches) {
                 int groupNum = teamGroups.get(match2.getTeam1());
                 Match[] matches = groupMatches.get(groupNum);
@@ -179,7 +215,7 @@ public class GroupPanel extends JPanel implements StagePanel {
 
         }// END FOR EACH MATCH
     } // END METHOD
-    */
+
 
     /**
      * Creates the panel that holds the { win, loss, tie, points } data for each group
@@ -238,5 +274,16 @@ public class GroupPanel extends JPanel implements StagePanel {
         }
 
         return base;
+    }
+
+
+    private void fillGroupPanelRow(JPanel groupPanel, int position) {
+        // Base (Components)
+        // [0]  group label
+        // [1]  title pane
+        // [2]  1st place row pane
+        // [3]  2nd place row pane
+        // [4]  3rd place row pane
+        // [5]  4th place row pane
     }
 }
