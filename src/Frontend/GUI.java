@@ -1,9 +1,11 @@
 package Frontend;
 
+import Backend.Team;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class GUI extends JFrame implements ActionListener {
 
@@ -15,6 +17,10 @@ public class GUI extends JFrame implements ActionListener {
     private JButton qualifyingButton;
     private JButton groupButton;
     private JButton knockoutButton;
+    //temp attributes for pseudo match generation
+    private static List<Team> teams;
+    private static final DataLoader_temp dataLoader = new DataLoader_temp();
+    //end of temp attributes
 
     public GUI() {
         cardPanel = new JPanel(new CardLayout());
@@ -35,6 +41,8 @@ public class GUI extends JFrame implements ActionListener {
     public static void main(String[] args) {
 
         GUI mainGUI = new GUI();
+        teams = dataLoader.loadTeamData();
+
 
     }
 
