@@ -41,14 +41,12 @@ public class DataLoader {
 
     private Team createTeamFromLine(String line, Region region) {
         String[] parts = line.split(DATA_DELIMITER);
+        System.out.println(parts[0]+" "+parts[1]+" "+region+" "+Integer.parseInt(parts[2]));
         return new Team(parts[0], parts[1], region, Integer.parseInt(parts[2]));
     }
 
     private List<String> removeEmptyLinesAndSpaces(Stream<String> reader) {
-        return reader
-                .filter(line -> !line.isEmpty())
-                .map(String::trim)
-                .collect(Collectors.toList());
+        return reader.filter(line -> !line.isEmpty()).map(String::trim).collect(Collectors.toList());
     }
 
     private boolean isLineARegionName(String line) {

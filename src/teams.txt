@@ -72,7 +72,7 @@ Sierra Leone,SLE,97
 Mauritania,MTN,101
 Namibia,NAM,118
 Madagascar,MAD,114
-Mauritius, MRI, 155
+Mauritius,MRI,155
 Liberia,LBR,134
 Sudan,SDN,130
 Zimbabwe,ZIM,116
