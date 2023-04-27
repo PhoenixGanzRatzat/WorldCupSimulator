@@ -25,10 +25,23 @@ public class GUI extends JFrame implements ActionListener {
         knockoutPanel = new KnockoutPanel();
 
         qualifyingButton = new JButton("Qualifying Panel");
-        qualifyingButton.addActionListener(this);
         groupButton = new JButton("Group Panel");
-        groupButton.addActionListener(this);
         knockoutButton = new JButton("Knockout Panel");
+
+        initGUI();
+
+    }
+
+    public static void main(String[] args) {
+
+        GUI testGUI = new GUI();
+
+    }
+
+    private void initGUI() {
+
+        qualifyingButton.addActionListener(this);
+        groupButton.addActionListener(this);
         knockoutButton.addActionListener(this);
 
         add(buttonPanel, BorderLayout.NORTH);
@@ -42,10 +55,14 @@ public class GUI extends JFrame implements ActionListener {
         cardPanel.add(groupPanel, "group");
         cardPanel.add(knockoutPanel, "knock");
 
+        setSize(640,480);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
+
 
     }
 
-    @Override
+        @Override
     public void actionPerformed(ActionEvent e) {
         String panelString;
 
