@@ -2,8 +2,9 @@ package Backend;
 
 import java.util.Collection;
 
-public class QualifyingStage extends Stage {
-    public QualifyingStage(Collection<Team> teams) {
+public class GroupStage extends Stage{
+    public GroupStage(Collection<Team> teams) {
+
         super(teams);
     }
 

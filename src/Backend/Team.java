@@ -22,6 +22,7 @@ public class Team implements Comparable{
         flag = null;
     }
 
+
     public String getName() {
         return name;
     }
@@ -29,6 +30,7 @@ public class Team implements Comparable{
     public String getAbbv() {
         return abbv;
     }
+
     public Region getRegion() {
         return region;
     }
