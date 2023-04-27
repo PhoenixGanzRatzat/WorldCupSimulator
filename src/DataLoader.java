@@ -41,7 +41,6 @@ public class DataLoader {
 
     private Team createTeamFromLine(String line, Region region) {
         String[] parts = line.split(DATA_DELIMITER);
-        System.out.println(parts[0]+" "+parts[1]+" "+region+" "+Integer.parseInt(parts[2]));
         return new Team(parts[0], parts[1], region, Integer.parseInt(parts[2]));
     }
 
