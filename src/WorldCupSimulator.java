@@ -1,5 +1,7 @@
 import Backend.Team;
+import javafx.scene.layout.Region;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WorldCupSimulator {

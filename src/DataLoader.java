@@ -41,7 +41,7 @@ public class DataLoader {
 
     private Team createTeamFromLine(String line, Region region) {
         String[] parts = line.split(DATA_DELIMITER);
-        return new Team(parts[0], parts[1], region, Integer.parseInt(parts[2]));
+        return new Team(parts[0], parts[1], "region", Integer.parseInt(parts[2]));
     }
 
     private List<String> removeEmptyLinesAndSpaces(Stream<String> reader) {
