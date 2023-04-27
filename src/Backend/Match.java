@@ -11,6 +11,13 @@ public class Match {
         this.teamTwo = teamTwo;
     }
 
+    public Match(Team teamOne, Team teamTwo, int scoreOne, int scoreTwo){
+        this.teamOne = teamOne;
+        this.teamTwo = teamTwo;
+        teamOneScore = scoreOne;
+        teamTwoScore = scoreTwo;
+    }
+
     public Team getTeamOne() {
         return teamOne;
     }
