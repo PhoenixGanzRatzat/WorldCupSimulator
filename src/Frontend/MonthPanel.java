@@ -1,4 +1,9 @@
 package Frontend;
 
-public class MonthPanel {
+import javax.swing.*;
+
+public class MonthPanel extends JPanel {
+
+
+
 }

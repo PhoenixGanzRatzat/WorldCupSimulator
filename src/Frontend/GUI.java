@@ -1,4 +1,82 @@
 package Frontend;
 
-public class GUI {
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class GUI extends JFrame implements ActionListener {
+
+    private JPanel cardPanel;
+    private JPanel buttonPanel;
+    private JPanel qualifyingPanel;
+    private JPanel groupPanel;
+    private JPanel knockoutPanel;
+    private JButton qualifyingButton;
+    private JButton groupButton;
+    private JButton knockoutButton;
+
+    public GUI() {
+        cardPanel = new JPanel(new CardLayout());
+        buttonPanel = new JPanel();
+
+        qualifyingPanel = new QualifyingPanel();
+        groupPanel = new GroupPanel();
+        knockoutPanel = new KnockoutPanel();
+
+        qualifyingButton = new JButton("Qualifying Panel");
+        qualifyingButton.addActionListener(this);
+        groupButton = new JButton("Group Panel");
+        groupButton.addActionListener(this);
+        knockoutButton = new JButton("Knockout Panel");
+        knockoutButton.addActionListener(this);
+
+        add(buttonPanel, BorderLayout.NORTH);
+        add(cardPanel);
+
+        buttonPanel.add(qualifyingButton);
+        buttonPanel.add(groupButton);
+        buttonPanel.add(knockoutButton);
+
+        cardPanel.add(qualifyingPanel, "qual");
+        cardPanel.add(groupPanel, "group");
+        cardPanel.add(knockoutPanel, "knock");
+
+
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String panelString;
+
+        if (e.getSource() == qualifyingButton) {
+            panelString = "qual";
+        } else if (e.getSource() == groupButton) {
+            panelString = "group";
+        } else if (e.getSource() == knockoutButton) {
+            panelString = "knock";
+        } else {
+            panelString = "";
+        }
+
+        changeCard(cardPanel, panelString);
+    }
+
+    private void changeCard(JPanel cardPanel, String panelString) {
+        CardLayout cl;
+
+        cl = (CardLayout) cardPanel.getLayout();
+        cl.show(cardPanel, panelString);
+    }
+    /*
+
+    + createMainMenuWindow() : JPanel
+
++ createQualifierStageWindow(Match[], Team[]) : JPanel
+ + createGroupStageWindow(Match[]) : JPanel
+ + createKnockoutStageWindow(Match[]) : JPanel
+
+     */
+
+
 }
