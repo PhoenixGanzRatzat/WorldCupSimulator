@@ -22,19 +22,19 @@ public class DataLoader {
      */
     public List<Team> loadTeamData() {
         final List<Team> teams = new ArrayList<>();
-        final InputStream stream = WorldCupSimulator.class.getResourceAsStream(TEAM_DATA_FILE_NAME);
+        final InputStream dataFileStream = WorldCupSimulator.class.getResourceAsStream(TEAM_DATA_FILE_NAME);
 
-        Objects.requireNonNull(stream);
+        Objects.requireNonNull(dataFileStream);
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
-            final Region[] region = {null};
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(dataFileStream))) {
+            final Region[] currentTeamRegion = {null};
             final List<String> fileTextLines = filterOutEmptyLinesThenTrim(reader.lines());
 
             fileTextLines.forEach(lineText -> {
                 if (isLineTextARegionName(lineText)) {
-                    region[0] = Region.valueOf(lineText);
+                    currentTeamRegion[0] = Region.valueOf(lineText);
                 } else {
-                    Team team = createTeamFromLineText(lineText, region[0]);
+                    Team team = createTeamFromLineText(lineText, currentTeamRegion[0]);
                     teams.add(team);
                 }
             });
