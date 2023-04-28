@@ -1,9 +1,11 @@
 package Backend;
 
+
 import java.util.*;
 
+
 public class QualifyingStage extends Stage {
-    public QualifyingStage(Collection<Team> teams) {
+    public QualifyingStage(ArrayList<Team> teams) {
         super(teams);
     }
 

@@ -1,8 +1,7 @@
 package Backend;
 
-import java.util.HashMap;
-
 public class Match {
+
     private Team team1;
     private Team team2;
 
@@ -11,21 +10,14 @@ public class Match {
 
     private HashMap<String, Team>  matchTeams;
 
-    public Match(){
-        this.matchTeams = new HashMap<>();
-    }
-    public Match(Team team1, Team team2){
-        this();
-       addTeam(team1);
-       addTeam(team2);
+
+    public Match(Team teamOne, Team teamTwo){
+        this.team1 = teamOne;
+        this.team2 = teamTwo;
     }
 
-    public void addTeam(Team team) {
-        if (matchTeams.size() < 2) {
-            matchTeams.put(team.getAbbv(), team);
-        } else {
-            System.out.println("Error: Each match can only have two teams.");
-        }
+    public Team getTeamOne() {
+        return team1;
     }
     public void setResult(int team1Score, int team2Score) {
         this.team1Score = team1Score;
@@ -66,12 +58,15 @@ public class Match {
         setResult(team1Score, team2Score);
     }
 
-    public Team getTeam(String abbv) {
-        return matchTeams.get(abbv);
+    public Team getTeamTwo() {
+        return team2;
     }
 
-    public HashMap<String, Team> getTeamsInMatch() {
-        return matchTeams;
+    public int getTeamOneScore() {
+        return team1Score;
     }
 
+    public int getTeamTwoScore() {
+        return team2Score;
+    }
 }

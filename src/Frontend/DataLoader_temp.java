@@ -1,3 +1,5 @@
+package Frontend;
+
 import Backend.Region;
 import Backend.Team;
 
@@ -11,7 +13,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class DataLoader {
+public class DataLoader_temp {
     private static final String TEAM_DATA_FILE_NAME = "teams.txt";
     private static final String DATA_DELIMITER = ",";
 
@@ -22,7 +24,7 @@ public class DataLoader {
      */
     public List<Team> loadTeamData() {
         List<Team> teams = new ArrayList<>();
-        InputStream stream = Objects.requireNonNull(WorldCupSimulator.class.getResourceAsStream(TEAM_DATA_FILE_NAME));
+        InputStream stream = Objects.requireNonNull(GUI.class.getResourceAsStream(TEAM_DATA_FILE_NAME));
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             final Region[] region = {null};
