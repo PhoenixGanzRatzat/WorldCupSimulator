@@ -34,46 +34,61 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
     }
 
-
-
-    public JTabbedPane createPanel() {
-        tabPane =  new JTabbedPane();
-        //placeholder
-        JPanel month = new JPanel();
-        month.add(new JLabel("This is a calendar"));
-
-        tabPane.addTab("Matches by Month", month);
-        JPanel tab;
-
-        for(int i = 0; i < 6; i++) {
-            tab = new JPanel();
-            JPanel subPanel = new JPanel();
-            subPanel.add(new JLabel("These are the " + regions[i] + " results"));
-            tab.add(subPanel);
-            tabPane.addTab(regions[i], tab);
-        }
-
+    public JTabbedPane getPane() {
         return tabPane;
-
     }
 
+
     /*
-    Relevant numbers:
-    index 0 = Month Panel
-    index 1 - 6 = regions array in order
+    ough spring labels - context below.
      */
     public void fillResults() {
         SpringLayout layout = new SpringLayout();
-        for(int i = 1; i < tabPane.getTabCount() - 1; i++) {
-            if(tabPane.getComponentAt(i) instanceof JPanel) {
 
-               JPanel subPanel = (JPanel) tabPane.getComponentAt(i);
-               subPanel.setLayout(layout);
+        //JLabel header1 = new JLabel("RANK:");
+       // JLabel header2 = new JLabel ("TEAM:");
+        //JLabel header3 = new JLabel("TOTAL POINTS:");
+
+        for(int i = 1; i < cards.length + 1; i++) {
+
+          JLabel header1 = new JLabel("RANK:");
+          JLabel header2 = new JLabel ("TEAM:");
+          JLabel header3 = new JLabel("TOTAL POINTS:");
+
+            tabPane.removeTabAt(i);
+
+            JPanel newTab = new JPanel();
+            newTab.setLayout(layout);
+            newTab.setName(regions[i - 1]);
+            newTab.add(header1);
+            newTab.add(header2);
+            newTab.add(header3);
+
+            //each component needs its own SpringLayout.Constraints
+            SpringLayout.Constraints con1 = layout.getConstraints(header1);
+            //setX without anything else just sets from 0,0 as normal
+            con1.setX(Spring.constant(10));
+
+            SpringLayout.Constraints con2 = layout.getConstraints(header2);
+            //SpringSum adds the constant buffer to the East/West/North/South edge of the specified component,
+            //in this case header1, using the con1 object to access that
+            con2.setX(Spring.sum(Spring.constant(10), con1.getConstraint(SpringLayout.EAST)));
+
+            SpringLayout.Constraints con3 = layout.getConstraints(header3);
+            con3.setX(Spring.sum(Spring.constant(200), con2.getConstraint(SpringLayout.EAST)));
 
 
-           }
+
+            tabPane.insertTab(newTab.getName(), null, newTab, null, i);
+            //tabPane.revalidate();
+
+
+
+
+
+
         }
-    }
+   }
 
 
     @Override
@@ -83,6 +98,25 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
     @Override
     public void initPanel() {
+        tabPane =  new JTabbedPane();
+        cards = new JPanel[6];
+
+        //placeholder
+        JPanel month = new JPanel();
+        month.add(new JLabel("This is a calendar"));
+
+        tabPane.addTab("Matches by Month", month);
+
+        for(int i = 0; i < cards.length; i++) {
+            JPanel subPanel = new JPanel();
+            subPanel.add(new JLabel("Results coming soon for " + regions[i]));
+            cards[i] = subPanel;
+        }
+
+        for(int i = 0; i < 6; i++) {
+
+            tabPane.addTab(regions[i], cards[i]);
+        }
 
     }
 }
