@@ -15,7 +15,7 @@ public class QualifyingStage extends Stage {
 
         // Group teams by their region
         Map<Region, List<Team>> teamsByRegion = new HashMap<>();
-        for (Team team : getTeams()) {
+        for (Team team : teams) {
             teamsByRegion.putIfAbsent(team.getRegion(), new ArrayList<>());
             teamsByRegion.get(team.getRegion()).add(team);
         }
@@ -35,14 +35,12 @@ public class QualifyingStage extends Stage {
                 matches.add(match);
             }
         }
-
-        setMatches(matches);
     }
 
     @Override
     public void calculateMatchResults() {
         // Iterate through all the matches in the qualifying stage
-        for (Match match : getMatches()) {
+        for (Match match : matches) {
             // Simulate the match result by calling the simulateMatchResult() method on the match object
             match.simulateMatchResult();
         }

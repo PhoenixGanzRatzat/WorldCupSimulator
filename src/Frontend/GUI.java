@@ -50,7 +50,7 @@ public class GUI extends JFrame implements ActionListener {
         teams = dataLoader.loadTeamData();
         for(Team team : teams){
             team.setQualifierPoints((int) (Math.random()*8));
-            switch(team.getRegion()){
+            switch(team.getRegion().toString()){
                 case "AFC" :
                     afcTeams.add(team);
                 case "CAF" :

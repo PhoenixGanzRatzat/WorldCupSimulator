@@ -1,5 +1,7 @@
 package Backend;
 
+import java.util.HashMap;
+
 public class Match {
 
     private Team team1;
@@ -7,8 +9,6 @@ public class Match {
 
     private int team1Score;
     private int team2Score;
-
-    private HashMap<String, Team>  matchTeams;
 
 
     public Match(Team teamOne, Team teamTwo){
@@ -24,18 +24,11 @@ public class Match {
         this.team2Score = team2Score;
     }
 
-    public int getTeam1Score() {
-        return team1Score;
-    }
-
     public int getTeam2Score() {
         return team2Score;
     }
 
     public void simulateMatchResult() {
-        // Get both teams from the current match
-        Team team1 = getTeam(getTeamsInMatch().keySet().toArray(new String[0])[0]);
-        Team team2 = getTeam(getTeamsInMatch().keySet().toArray(new String[0])[1]);
 
         // Generate random scores for each team (0-4)
         int team1Score = (int) (Math.random() * 5);
@@ -57,7 +50,9 @@ public class Match {
         // Update the match object with the result (scores for both teams)
         setResult(team1Score, team2Score);
     }
-
+    public int getTeam1Score() {
+        return team1Score;
+    }
     public Team getTeamTwo() {
         return team2;
     }
@@ -65,6 +60,7 @@ public class Match {
     public int getTeamOneScore() {
         return team1Score;
     }
+
 
     public int getTeamTwoScore() {
         return team2Score;

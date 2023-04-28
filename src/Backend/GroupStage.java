@@ -1,5 +1,4 @@
 package Backend;
-
 import java.util.*;
 
 public class GroupStage extends Stage{
@@ -9,13 +8,29 @@ public class GroupStage extends Stage{
 
     @Override
     public void arrangeMatches() {
-        for(Team t:teams){
-            System.out.print(t.getRank() + " ");
-        }
-        System.out.println("");
+        //int random_int = (int)Math.floor(Math.random() * (max - min + 1) + min);
         Collections.sort(teams);
-        for(Team t:teams){
-            System.out.print(t.getRank() + " ");
+        Collections.reverse(teams);
+        ArrayList<ArrayList<Team>> groups = new ArrayList<>();
+        int groupsize = teams.size()/8;
+        for (int i = 0; i < 8; i++) {
+            ArrayList<Team> group = new ArrayList<>();
+            group.add(teams.get(i));
+            for(int j = 0; j < groupsize-1; j++){
+                int newTeam = (int)Math.floor(Math.random() * (teams.size() - 8) + 8);
+                group.add(teams.get(newTeam));
+                teams.remove(newTeam);
+            }
+            groups.add(group);
+        }
+        for (ArrayList<Team> g:groups){
+            for(Team home:g){
+                for(Team away:g){
+                    if(home != away){
+                        matches.add(new Match(home, away));
+                    }
+                }
+            }
         }
     }
 }
