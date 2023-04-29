@@ -16,10 +16,19 @@ public class MonthPanel extends JPanel {
 
     private List<DayPanel> dayPanels; //TODO: can probably use JPanel::getComponent(int)
 
+    /**
+     * Default Constructor
+     */
     public MonthPanel() {
         this(2018, 1, Collections.emptyList());
     }
 
+    /**
+     *
+     * @param year to initialize the MonthPanel to
+     * @param monthNum to initialize the MonthPanel to
+     * @param matches to add to the DayPanels
+     */
     public MonthPanel(int year, int monthNum, List<Match> matches) {
         this.setPreferredSize(new Dimension(1000, 800));
         this.setLayout(new GridLayout(5, 7, 10, 10));
@@ -29,6 +38,11 @@ public class MonthPanel extends JPanel {
         setMatchesOnDayPanels(matches);
     }
 
+    /**
+     * This method clears and resets the DayPanels to the month selected
+     * @param year
+     * @param monthNum
+     */
     private void setToMonth(int year, int monthNum) {
         this.monthStart = java.time.LocalDate.of(year, monthNum, 1);
 
@@ -57,6 +71,10 @@ public class MonthPanel extends JPanel {
         }
     }
 
+    /**
+     * This method adds matches to DayPanels
+     * @param matches to add
+     */
     private void setMatchesOnDayPanels(List<Match> matches) {
         for (Match match : matches) {
             DayPanel dayPanel = dayPanels.get(match.getMatchDate().getDayOfMonth());
@@ -72,12 +90,19 @@ public class MonthPanel extends JPanel {
         super.paintComponent(g);
     }
 
+    /**
+     * Inner class representing one day in a MonthPanel
+     */
     private class DayPanel extends JPanel {
         private List<Match> matches;
         private final java.time.LocalDate date;
 
         private GridBagConstraints labelConstraints;
 
+        /**
+         * Creates a new DayPanel, and adds a date JLabel to it
+         * @param date to initialize the DayPanel to
+         */
         public DayPanel(java.time.LocalDate date) {
             //MAX OF 7 MATCHES PER DAY
             this.setLayout(new GridLayout(8, 1)); //TODO: use gridbaglayout
@@ -85,7 +110,7 @@ public class MonthPanel extends JPanel {
             matches = new ArrayList<>();
             this.date = LocalDate.from(date);
 
-            this.add(new JLabel(String.valueOf(date.getDayOfMonth())));
+            this.add(new JLabel(String.valueOf(date.getDayOfMonth()))); //add a date label
 
             labelConstraints = new GridBagConstraints();
             labelConstraints.fill = GridBagConstraints.HORIZONTAL;
@@ -98,6 +123,10 @@ public class MonthPanel extends JPanel {
             labelConstraints.weighty = 0.5;
         }
 
+        /**
+         * assert that all matches in the DayPanel are actually on thate date
+         * @return true if the class invariant is not violated
+         */
         private boolean classInv() {
             boolean flag = true;
             for (Match match : matches) {
@@ -106,6 +135,11 @@ public class MonthPanel extends JPanel {
             return flag;
         }
 
+        /**
+         * Add a match to the DayPanel.
+         * This method adds mouselisteners to each Match label to handle the tooltips
+         * @param match to add
+         */
         public void addMatch(Match match) {
             System.out.printf("adding match %s\n", match);
             this.matches.add(match);
@@ -137,8 +171,6 @@ public class MonthPanel extends JPanel {
             super.paintComponent(g);
             g.setColor(Color.lightGray);
             g.fillRect(0, 0, this.getWidth(), this.getHeight());
-            g.setColor(Color.black);
-//            g.drawString(String.valueOf(date.getDayOfMonth()),0, 15);
         }
 
     }
