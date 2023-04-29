@@ -93,10 +93,10 @@ public class MonthPanel extends JPanel {
             System.out.printf("adding match %s\n", match);
             this.matches.add(match);
 
-            //TODO for every match, make a JLabel with "Team1Abbv | v. | Team2Abbv"
+            //TODO flags on match labels
             //add a mouseover to display JPopupMenu
             JLabel label = new JLabel();
-            label.setText(String.format("%s | v. | %s", match.getTeam1(), match.getTeam2()));
+            label.setText(String.format("%s | v. | %s", match.getTeamOne().getAbbv(), match.getTeamTwo().getAbbv()));
             label.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
