@@ -1,9 +1,6 @@
 package Backend;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class KnockoutStage extends Stage {
 
@@ -26,6 +23,7 @@ public class KnockoutStage extends Stage {
 
     private Set<Match> createMatchesFromTeams(Collection<Team> teams) {
         // TODO: 4/29/2023 Impl.
+        Spliterator<Team> teamSpliterator = teams.spliterator().trySplit();
         return null;
     }
 
@@ -34,12 +32,19 @@ public class KnockoutStage extends Stage {
         return null;
     }
 
-    private Collection<Team> simulateQuarterfinals(Collection<Team> roundOf16Winners) {
+    private Collection<Team> simulateQuarterfinals(Collection<Team> roundOfSixteenWinners) {
         // TODO: 4/28/2023 Impl.
         return null;
     }
     private Collection<Team> simulateSemifinals(Collection<Team> quarterfinalsWinners) {
         // TODO: 4/29/2023 Impl.
         return null;
+    }
+
+    public static void main(String[] args) {
+        Team teamOne = new Team("TeamOne", "T1", Region.AFC, 0);
+        Team teamTwo = new Team("TeamTwo", "T2", Region.AFC, 0);
+        List<Team> teams = Arrays.asList(teamOne, teamTwo);
+        KnockoutStage knockoutStage = new KnockoutStage(teams);
     }
 }
