@@ -14,9 +14,7 @@ public class MonthPanel extends JPanel {
 
     private java.time.LocalDate monthStart;
 
-    private List<DayPanel> dayPanels;
-
-    private List<Match> matches;
+    private List<DayPanel> dayPanels; //TODO: can probably use JPanel::getComponent(int)
 
     public MonthPanel() {
         this(2018, 1, Collections.emptyList());
@@ -27,15 +25,27 @@ public class MonthPanel extends JPanel {
         this.setLayout(new GridLayout(5, 7, 10, 10));
         this.dayPanels = new ArrayList<>();
 
+        setToMonth(year, monthNum);
+        setMatchesOnDayPanels(matches);
+    }
+
+    private void setToMonth(int year, int monthNum) {
         this.monthStart = java.time.LocalDate.of(year, monthNum, 1);
-        int dayOffset = monthStart.getDayOfWeek().getValue() % 7; //getDayOfWeek returns a java.time.DayOfWeek enum where 1 = Monday and 7 = Sunday
+
+        //if the first day of the month is not a sunday, we need empty space to pad out the grid cells
+        //getDayOfWeek returns a java.time.DayOfWeek enum where 1 = Monday and 7 = Sunday
+        //We want sunday to be the leftmost column, so do getDayOfWeek % 7 to find how many empty cells we need to pad
+        int dayOffset = monthStart.getDayOfWeek().getValue() % 7;
         int daysInMonth = monthStart.lengthOfMonth();
 
+        this.removeAll(); // make sure MonthPanel has no child components
         for (int i = 0; i < daysInMonth; i++) {
+            //when the first day of the month is not a sunday, there will be empty space in the calendar
             if (i < dayOffset) {
+                //use a label for empty space
                 this.add(new JLabel());
-
             } else {
+                //Grid cells are 0 indexed, but month days aren't. Subtract the offset to get the actual date.
                 LocalDate date = monthStart.withDayOfMonth(i + 1 - dayOffset);
                 DayPanel dayPanel = new DayPanel(date);
                 dayPanels.add(dayPanel);
@@ -45,6 +55,9 @@ public class MonthPanel extends JPanel {
         for (int i = daysInMonth; i < 35; i++) {
             this.add(new JLabel());
         }
+    }
+
+    private void setMatchesOnDayPanels(List<Match> matches) {
         for (Match match : matches) {
             DayPanel dayPanel = dayPanels.get(match.getDate().getDayOfMonth());
             if (dayPanel != null) {
