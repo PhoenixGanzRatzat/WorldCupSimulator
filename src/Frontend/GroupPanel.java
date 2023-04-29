@@ -9,14 +9,11 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -43,7 +40,9 @@ import java.util.HashMap;
 public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     /* __FIELD VARIABLES__ */
     /* Label at top of GroupPanel that displays the current round for selected group */
-    private JLabel roundNumberTextField;
+    private JLabel infoPanelRoundNumberLabel;
+    /* Label at top of GroupPanel that display the selected group */
+    private JLabel infoPanelGroupLabel;
     /* The current round for each group. GroupNum = index + 1 */
     private int[] currentRound;
     /* All matches played in the group stage */
@@ -159,9 +158,10 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         teamGroups = new HashMap<>();
         groupMatches = new HashMap<>();
         groupTeams = new HashMap<>();
+        infoPanelGroupLabel = new JLabel("A");
+        infoPanelRoundNumberLabel = new JLabel("0");
         groupMatches.put(1, new ArrayList<>());
         currentRound = new int[8]; // tracks current round for each group
-        roundNumberTextField = new JLabel(String.valueOf(currentRound[0]));
         groupDisplayPanel = new JPanel();
         selectedGroup = "A";
         resultsPanel = new JPanel();
@@ -214,9 +214,14 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         JPanel functionPanel = new JPanel();
 
         /* Information Panel */
-        JLabel infoLabel = new JLabel("Group Stage!  Round #");
-        infoPanel.add(infoLabel);
-        infoPanel.add(roundNumberTextField);
+        JLabel titleLabel = new JLabel("Group Stage!");
+        infoPanel.add(titleLabel);
+        JLabel groupLabel = new JLabel("Group: ");
+        infoPanel.add(groupLabel);
+        infoPanel.add(infoPanelGroupLabel);
+        JLabel roundLabel = new JLabel("Round: ");
+        infoPanel.add(roundLabel);
+        infoPanel.add(infoPanelRoundNumberLabel);
 
         /* __ Display Panel */
         // Container for all group panes - displays each teams w/d/l record and points
@@ -228,9 +233,12 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         initGroupPanelRows();
 
         // results side-pane - displays score and outcome between each match in the group
-        //resultsPanel.setLayout();
+        resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
         resultsPanel.setPreferredSize(new Dimension(200, 215));
-        resultsPanel.add(new JLabel("__Group Results__"));
+        JPanel resultsTitlePane = new JPanel();
+        JLabel resultsTitleLabel = new JLabel("Group A Results");
+        resultsTitlePane.add(resultsTitleLabel);
+        resultsPanel.add(resultsTitlePane);
         for (int c = 0; c < 6; c++) {
             resultsPanel.add(createMatchResultRowPanel());
         }
@@ -331,6 +339,8 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
             reorderGroupRowPanelsByPointValue((JPanel) groupDisplayPanel.getComponent(groupNumber-1));
             // this group is now onto the next round
             this.currentRound[groupNumber-1]++;
+            // update info panel with current round
+            infoPanelRoundNumberLabel.setText(String.valueOf(this.currentRound[groupNumber-1]));
         } else {
             // No round remaining => STAGE COMPLETE
             this.stageComplete = true;
@@ -655,8 +665,14 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
      * @param selectedGroup - use matches from this group
      */
     private void changeSelectedGroup(String selectedGroup) {
+        // update info panel with current round
         this.selectedGroup = selectedGroup;
+        String text = "Group " + this.selectedGroup + " results";
+        ((JLabel) ((JPanel) resultsPanel.getComponent(0)).getComponent(0)).setText(text);
+
         int groupNum = this.selectedGroup.charAt(0)-64;
+        infoPanelRoundNumberLabel.setText(String.valueOf(currentRound[groupNum-1]));
+        infoPanelGroupLabel.setText(this.selectedGroup);
         // update results panel up to current round
         backPopulateResultsPanel(groupNum, this.currentRound[groupNum-1]);
 
