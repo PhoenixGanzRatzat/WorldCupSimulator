@@ -209,7 +209,7 @@ public class KnockoutPanel extends JPanel implements StagePanel {
     }
     private class BracketCell extends JPanel {
         private GridBagConstraints cell;
-        private final Dimension cellSize = new Dimension(180, 40);
+        private final Dimension cellSize = new Dimension(120, 30);
         private JLabel flagLabel, teamLabel;
         private final String defaultPath = "Assets/blank.png";
         private BufferedImage flag;
