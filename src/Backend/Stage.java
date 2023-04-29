@@ -1,6 +1,5 @@
 package Backend;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 public abstract class Stage {
@@ -20,5 +19,9 @@ public abstract class Stage {
     }
     public ArrayList<Match> getMatches(){
         return matches;
+    }
+
+    public Collection<Team> getTeams() {
+        return teams;
     }
 }

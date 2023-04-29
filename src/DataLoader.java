@@ -21,15 +21,22 @@ public class DataLoader {
      * @return A list of Teams.
      */
     public List<Team> loadTeamData() {
-        List<Team> teams = new ArrayList<>();
-        InputStream stream = Objects.requireNonNull(WorldCupSimulator.class.getResourceAsStream(TEAM_DATA_FILE_NAME));
+        final List<Team> teams = new ArrayList<>();
+        final InputStream dataFileStream = WorldCupSimulator.class.getResourceAsStream(TEAM_DATA_FILE_NAME);
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
-            final Region[] region = {null};
-            List<String> trimmedLines = removeEmptyLinesAndSpaces(reader.lines());
-            trimmedLines.forEach(line -> {
-                if (isLineARegionName(line)) region[0] = Region.valueOf(line);
-                else teams.add(createTeamFromLine(line, region[0]));
+        Objects.requireNonNull(dataFileStream);
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(dataFileStream))) {
+            final Region[] currentTeamRegion = {null};
+            final List<String> fileTextLines = filterOutEmptyLinesThenTrim(reader.lines());
+
+            fileTextLines.forEach(lineText -> {
+                if (isLineTextARegionName(lineText)) {
+                    currentTeamRegion[0] = Region.valueOf(lineText);
+                } else {
+                    Team team = createTeamFromLineText(lineText, currentTeamRegion[0]);
+                    teams.add(team);
+                }
             });
         } catch (IOException e) {
             System.out.println("Error loading team data.");
@@ -39,16 +46,19 @@ public class DataLoader {
         return teams;
     }
 
-    private Team createTeamFromLine(String line, Region region) {
+    private Team createTeamFromLineText(String line, Region region) {
         String[] parts = line.split(DATA_DELIMITER);
         return new Team(parts[0], parts[1], region, Integer.parseInt(parts[2]));
     }
 
-    private List<String> removeEmptyLinesAndSpaces(Stream<String> reader) {
-        return reader.filter(line -> !line.isEmpty()).map(String::trim).collect(Collectors.toList());
+    private List<String> filterOutEmptyLinesThenTrim(Stream<String> reader) {
+        return reader
+                .filter(line -> !line.isEmpty())
+                .map(String::trim)
+                .collect(Collectors.toList());
     }
 
-    private boolean isLineARegionName(String line) {
+    private boolean isLineTextARegionName(String line) {
         return !line.contains(DATA_DELIMITER);
     }
 }
