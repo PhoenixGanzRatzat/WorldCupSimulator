@@ -18,8 +18,10 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -195,35 +197,68 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
      * Used to ensure that group panels always display row information based on descending position 1 - 4 top to bottom
      */
     private void rearrangeRowPanels(JPanel groupPanel) {
+        Component[] rowPanels = groupPanel.getComponents();
+        int numRowPanels = rowPanels.length;
 
+        // extract an array of only the panels that need sorting
+        JPanel[] panelsToSort = new JPanel[numRowPanels - 2];
+        for (int i = 2; i < numRowPanels; i++) {
+            panelsToSort[i-2] = (JPanel) rowPanels[i];
+        }
+
+        // sort those panels by "point" values in descending order
+        Arrays.sort(panelsToSort, (p1, p2) -> {
+            int points1 = Integer.parseInt(((JLabel) p1.getComponent(5)).getText());
+            int points2 = Integer.parseInt(((JLabel) p2.getComponent(5)).getText());
+            return Integer.compare(points2, points1);
+        });
+
+        // remove each panel and add them back in the sorted order
+        for (int i = 2; i < numRowPanels; i++) {
+            ((JLabel) panelsToSort[i-2].getComponent(0)).setText(String.valueOf(i-1));
+            groupPanel.remove(panelsToSort[i-2]);
+            groupPanel.add(panelsToSort[i-2], i);
+        }
+
+        // update the { position } for each panel
+        for(int i = 2; i < numRowPanels; i++) {
+
+        }
+
+        // refreshes the display with changes
+        groupPanel.revalidate();
+        groupPanel.repaint();
     }
+
+
 
     /**
      * When button is pressed to simulate entire stage this method processes the updates to UI and
      * calling for matches to be simulated.
      */
     private void simulateStage() {
+        for(int i = 0; i < 6; i++) {
+            simulateRound();
+        }
         this.stageComplete = true;
     }
 
-    /**
-     * When button is pressed to simulate 1 round of matches for each group this method calls for those
-     * matches to be simulated and updates the UI.
-     */
-    private void simulateRound() {
-        // 3 points for win, 1 point for tie
-    }
 
     /**
      * When button is pressed to simulate 1 round of matches for a single group, this method calls for those
      * matches to be simulated and updates the UI.
      */
     private void simulateGroupRound(int groupNumber) {
-        int nextRound = this.currentRound + 1;
-        // get next match
-        Match match = groupSortedMatchesByRound.get(groupNumber)[nextRound];
-        // TODO: refactor fillgrouppanelrow() to UPDATE GROUP ROW PANELS BY SENDING IT A MATCH
-        updateGroupPanelInfo(groupNumber, match);
+        if(this.currentRound < 6) {
+            Match match = groupSortedMatchesByRound.get(groupNumber)[this.currentRound];
+            updateGroupPanelInfo(groupNumber, match);
+            fillMatchResultPanel(match, this.currentRound);
+            rearrangeRowPanels((JPanel) groupDisplayPanel.getComponent(groupNumber-1));
+            this.currentRound++;
+        } else {
+            // STAGE COMPLETE
+            this.stageComplete = true;
+        }
     }
 
     private void initGroupPanelRows() {
@@ -232,23 +267,26 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         // for each group
         for(int a = 0; a < 8; a++) {
             JPanel groupPanel = (JPanel) groupPanels[a];
-            Component[] rowPanels = groupPanel.getComponents();
+            Component[] groupRowPanels = groupPanel.getComponents();
             // TODO: FULL IMPLEMENTATION: SAVE THIS
             // ArrayList<Team> groupTeams = this.groupTeams.get(a);
             // TODO: testing
             ArrayList<Team> groupTeams = this.groupTeams.get(1);
 
-            // rowPanels.getComponent(0) = { selection button }
-            // rowPanels.getComponent(1) = { Title pane }
-            // 2-6 ROW PANELS
+            // groupRowPanels.getComponent(0) = { selection button }
+            // groupRowPanels.getComponent(1) = { Title pane }
+            // groupRowPanels.getComponent(2 - 5) = { Row panel }
             for(int b = 2; b < 6; b++) {
-                // labels[1] set countries to names
-                ((JLabel) ((JPanel) rowPanels[b]).getComponent(1)).setText(groupTeams.get(b-2).getName());
+                // __Component[] casting__
+                // A = Component(1) of row panel is a JLabel for "Country Name"
+                // B = groupRowPanels[2] = JPanel to hold JLabels for the first row of Country stats
+                // {  A      {   B                      }}
+                   ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(1)).setText(groupTeams.get(b-2).getName());
                 // labels[2-5] set all values to 0
-                ((JLabel) ((JPanel) rowPanels[b]).getComponent(2)).setText(String.valueOf(0));
-                ((JLabel) ((JPanel) rowPanels[b]).getComponent(3)).setText(String.valueOf(0));
-                ((JLabel) ((JPanel) rowPanels[b]).getComponent(4)).setText(String.valueOf(0));
-                ((JLabel) ((JPanel) rowPanels[b]).getComponent(5)).setText(String.valueOf(0));
+                ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(2)).setText(String.valueOf(0));
+                ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(3)).setText(String.valueOf(0));
+                ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(4)).setText(String.valueOf(0));
+                ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(5)).setText(String.valueOf(0));
             }
         }
     }
@@ -277,18 +315,18 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
          */
 
         if(t1Score > t2Score) {
-            updateRowPanelValue(country1, 1, 1); // [1] = wins
+            updateRowPanelValue(country1, 2, 1); // [2] = wins
             updateRowPanelValue(country1, 5, 3); // [5] = points
             updateRowPanelValue(country2, 4, 1); // [4] = losses
         } else if(t1Score < t2Score) {
-            updateRowPanelValue(country2, 1, 1); // [1] = wins
+            updateRowPanelValue(country2, 2, 1); // [2] = wins
             updateRowPanelValue(country2, 5, 3); // [5] = points
             updateRowPanelValue(country1, 4, 1); // [4] = losses
         } else { // draw
             updateRowPanelValue(country1, 3, 1); // [1] = Draws
             updateRowPanelValue(country1, 5, 1); // [5] = points
             updateRowPanelValue(country2, 3, 1); // [3] = Draws
-            updateRowPanelValue(country1, 5, 1); // [5] = points
+            updateRowPanelValue(country2, 5, 1); // [5] = points
         }
 
 
@@ -303,7 +341,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     private void updateRowPanelValue(JPanel rowPanel, int index, int increment) {
         String indexStr = ((JLabel) rowPanel.getComponent(index)).getText();
         int value = (Integer.parseInt(indexStr)) + increment;
-        ((JLabel) rowPanel.getComponent(1)).setText(String.valueOf(value));
+        ((JLabel) rowPanel.getComponent(index)).setText(String.valueOf(value));
     }
 
     private JPanel getCountryGroupRowPanel(JPanel groupPanel, String country) {
@@ -316,10 +354,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         }
 
         return null;
-    }
-
-    private void updateDisplayAfterRound() {
-
     }
 
     /**
@@ -341,7 +375,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
             int i = 0;
 
             // sort the matches chronologically by date
-            Collections.sort(matches, Comparator.comparing(Match::getMatchDate));
+            // matches.sort(Comparator.comparing(Match::getMatchDate));
 
             // add the sorted matches to the array
             for (Match match : matches) {
@@ -356,18 +390,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         return sortedMatches;
     }
 
-
-    /**
-     * When a group is selected this method is called to update the sideBar match results
-     * with the matches from the selected group.
-     */
-    private void updateMatchResultsPanel(int groupNumber) {
-        int index = 1; // TODO: REMOVE
-        for(Match match : groupMatches.get(groupNumber)) {
-            fillMatchResultPanel(match, index);
-            index++;
-        }
-    }
 
     /**
      * This method creates a blank group results row panel that will be used to display
@@ -395,7 +417,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         */
         Component[] allRowPanels = this.resultsPanel.getComponents();
         // [0]"Group Results", [1]round 1 match results row panel, [2-5]..., [6]round 6 match results row panel.
-        JPanel roundRowPanel = (JPanel) allRowPanels[round];
+        JPanel roundRowPanel = (JPanel) allRowPanels[round + 1];
         Component[] labels = roundRowPanel.getComponents();
 
         // Initialize
@@ -466,6 +488,13 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
             }
 
         }// END FOR EACH MATCH
+
+        // sort the matches chronologically by date
+        for(Integer i : groupMatches.keySet()) {
+            groupMatches.get(i).sort(Comparator.comparing(Match::getMatchDate));
+        }
+
+
     } // END METHOD
 
     /**
@@ -541,7 +570,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
      */
     private void changeSelectedGroup(String selectedGroup) {
         this.selectedGroup = selectedGroup;
-        updateMatchResultsPanel(((int) this.selectedGroup.charAt(0)) - 64); // A = 65
 
         // update function button
         Component[] rootChildren = this.getComponents();
@@ -574,7 +602,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
             case "Simulate group round":
                 simulateGroupRound(((int) this.selectedGroup.charAt(0)) - 64);
                 break;
-            case "Next round all groups":
+            case "Next round for all groups":
                 simulateRound();
                 break;
             case "Complete Stage":
@@ -582,5 +610,15 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
                 break;
 
         }
+    }
+
+    private void simulateRound() {
+        // TODO: save this for actual implementation with all matches
+        // int group = ((int) this.selectedGroup.charAt(0)) - 64;
+        // for(int i = 0; i < 8; i++) {
+        //    simulateGroupRound(group + i);
+        // }
+        // TODO: testing version
+        simulateGroupRound(1);
     }
 }
