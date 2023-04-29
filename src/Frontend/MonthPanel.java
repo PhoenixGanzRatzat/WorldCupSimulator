@@ -61,6 +61,7 @@ public class MonthPanel extends JPanel {
         for (Match match : matches) {
             DayPanel dayPanel = dayPanels.get(match.getMatchDate().getDayOfMonth());
             if (dayPanel != null) {
+                System.out.printf("adding match to day %d\n", match.getMatchDate().getDayOfMonth());
                 dayPanel.addMatch(match);
             }
         }
@@ -73,15 +74,18 @@ public class MonthPanel extends JPanel {
 
     private class DayPanel extends JPanel {
         private List<Match> matches;
-        private java.time.LocalDate date;
+        private final java.time.LocalDate date;
 
         private GridBagConstraints labelConstraints;
 
         public DayPanel(java.time.LocalDate date) {
-            this.setLayout(new GridBagLayout());
+            //MAX OF 7 MATCHES PER DAY
+            this.setLayout(new GridLayout(8, 1)); //TODO: use gridbaglayout
             this.setSize(new Dimension(100, 100));
             matches = new ArrayList<>();
             this.date = LocalDate.from(date);
+
+            this.add(new JLabel(String.valueOf(date.getDayOfMonth())));
 
             labelConstraints = new GridBagConstraints();
             labelConstraints.fill = GridBagConstraints.HORIZONTAL;
@@ -123,21 +127,18 @@ public class MonthPanel extends JPanel {
                     System.out.printf("exited %s\n", label.getText());
                 }
             });
-            this.add(label, labelConstraints);
+            this.add(label);
             assert classInv();
 
         }
 
         @Override
         protected void paintComponent(Graphics g) {
-            System.out.printf("x: %d, y: %d\n", this.getX(), this.getY());
-            System.out.printf("width: %d, height: %d\n", getWidth(), getHeight());
             super.paintComponent(g);
             g.setColor(Color.lightGray);
             g.fillRect(0, 0, this.getWidth(), this.getHeight());
             g.setColor(Color.black);
-//            g.drawString(String.format("%d/%d/%d\n%d matches", this.date.getMonthValue(), this.date.getDayOfMonth(), this.date.getYear(), matches.size()), 0, 0);
-
+//            g.drawString(String.valueOf(date.getDayOfMonth()),0, 15);
         }
 
     }
