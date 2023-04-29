@@ -1,9 +1,12 @@
 package Frontend;
 
+import Backend.Team;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GUI extends JFrame implements ActionListener {
 
@@ -25,10 +28,23 @@ public class GUI extends JFrame implements ActionListener {
         knockoutPanel = new KnockoutPanel();
 
         qualifyingButton = new JButton("Qualifying Panel");
-        qualifyingButton.addActionListener(this);
         groupButton = new JButton("Group Panel");
-        groupButton.addActionListener(this);
         knockoutButton = new JButton("Knockout Panel");
+
+        initGUI();
+    }
+
+    public static void main(String[] args) {
+
+        GUI mainGUI = new GUI();
+        
+
+    }
+
+    private void initGUI() {
+
+        qualifyingButton.addActionListener(this);
+        groupButton.addActionListener(this);
         knockoutButton.addActionListener(this);
 
         add(buttonPanel, BorderLayout.NORTH);
@@ -42,10 +58,14 @@ public class GUI extends JFrame implements ActionListener {
         cardPanel.add(groupPanel, "group");
         cardPanel.add(knockoutPanel, "knock");
 
+        setSize(640,480);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
+
 
     }
 
-    @Override
+        @Override
     public void actionPerformed(ActionEvent e) {
         String panelString;
 

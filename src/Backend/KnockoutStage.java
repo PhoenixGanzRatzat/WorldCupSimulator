@@ -1,9 +1,9 @@
 package Backend;
 
-import java.util.Collection;
+import java.util.ArrayList;
 
 public class KnockoutStage extends Stage{
-    public KnockoutStage(Collection<Team> teams) {
+    public KnockoutStage(ArrayList<Team> teams) {
         super(teams);
     }
 
