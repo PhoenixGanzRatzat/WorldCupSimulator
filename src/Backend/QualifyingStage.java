@@ -3,7 +3,6 @@ package Backend;
 
 import java.util.*;
 
-
 public class QualifyingStage extends Stage {
     private ArrayList<Team> teams;
     private ArrayList<Match> matches;

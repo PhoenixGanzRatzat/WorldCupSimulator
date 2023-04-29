@@ -1,24 +1,33 @@
 package Backend;
 
+import java.util.Date;
 import java.util.HashMap;
+import java.time.LocalDate;
 
 public class Match {
 
-    private Team team1;
-    private Team team2;
-
+    private Team winner;
+    private Team loser;
     private int team1Score;
     private int team2Score;
+    private LocalDate matchDate;
 
 
     public Match(Team teamOne, Team teamTwo){
-        this.team1 = teamOne;
-        this.team2 = teamTwo;
+        this.winner = teamOne;
+        this.loser = teamTwo;
+    }
+
+    public Match (Team teamOne, Team teamTwo, LocalDate date){
+        this.winner = teamOne;
+        this.loser = teamTwo;
+        this.matchDate = date;
     }
 
     public Team getTeamOne() {
-        return team1;
+        return winner;
     }
+
     public void setResult(int team1Score, int team2Score) {
         this.team1Score = team1Score;
         this.team2Score = team2Score;
@@ -30,6 +39,7 @@ public class Match {
 
     public void simulateMatchResult() {
 
+
         // Generate random scores for each team (0-4)
         int team1Score = (int) (Math.random() * 5);
         int team2Score = (int) (Math.random() * 5);
@@ -37,15 +47,26 @@ public class Match {
         // Update team points based on match result
         if (team1Score > team2Score) {
             // If team1 wins, add 3 points to their qualifier points
-            team1.setQualifierPoints(team1.getQualifierPoints() + 3);
+            winner.setQualifierPoints(winner.getQualifierPoints() + 3);
         } else if (team1Score < team2Score) {
             // If team2 wins, add 3 points to their qualifier points
-            team2.setQualifierPoints(team2.getQualifierPoints() + 3);
+            loser.setQualifierPoints(loser.getQualifierPoints() + 3);
+
+            // Swap the winner and loser teams in case
+            Team tempTeam = winner;
+            winner = loser;
+            loser = tempTeam;
         } else {
             // If the match ends in a draw, add 1 point to both teams' qualifier points
-            team1.setQualifierPoints(team1.getQualifierPoints() + 1);
-            team2.setQualifierPoints(team2.getQualifierPoints() + 1);
+            winner.setQualifierPoints(winner.getQualifierPoints() + 1);
+            loser.setQualifierPoints(loser.getQualifierPoints() + 1);
         }
+
+
+
+        // ADD: add a method that takes in a passed in boolean to check for ties.
+        // If there is a tie, follow procedure: extra time, pens, and then sudden death
+
 
         // Update the match object with the result (scores for both teams)
         setResult(team1Score, team2Score);
@@ -54,15 +75,33 @@ public class Match {
         return team1Score;
     }
     public Team getTeamTwo() {
-        return team2;
+        return loser;
     }
 
     public int getTeamOneScore() {
         return team1Score;
     }
 
-
     public int getTeamTwoScore() {
         return team2Score;
+    }
+
+    // TODO: Add appropriate accessors/mutators for Dates (getDate/setDate)
+    public LocalDate getMatchDate(Match match){
+        return match.matchDate;
+    }
+    public void setMatchDate(LocalDate desiredDate){
+        this.matchDate = desiredDate;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Match{" +
+                "Winner =" + winner +
+                ", Loser =" + loser +
+                ", Winner Score =" + winner.getQualifierPoints() +
+                ", teamTwoScore=" + loser.getQualifierPoints()  +
+                '}';
     }
 }
