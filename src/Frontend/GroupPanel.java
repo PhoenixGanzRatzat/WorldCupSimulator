@@ -65,9 +65,10 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     private JPanel groupDisplayPanel;
     /* retrieve a countries flag for a given country-abbreviation */
     private HashMap<String, Image> flags;
+    private boolean[] groupsThatAreComplete;
 
     /* TODO:
-        - Update info panel with current round
+
      */
 
     /**
@@ -164,6 +165,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         currentRound = new int[8]; // tracks current round for each group
         groupDisplayPanel = new JPanel();
         selectedGroup = "A";
+        groupsThatAreComplete = new boolean[]{false, false, false, false, false, false, false, false};
         resultsPanel = new JPanel();
         flags = new HashMap<>();
         testMatches();
@@ -194,7 +196,13 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
      */
     @Override
     public boolean checkIfCompleted() {
-        return stageComplete;
+        boolean finalResult = true;
+        for(boolean groupComplete : this.groupsThatAreComplete) {
+            if(!groupComplete) {
+                finalResult = false;
+            }
+        }
+        return finalResult;
     }
 
     /**
@@ -342,8 +350,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
             // update info panel with current round
             infoPanelRoundNumberLabel.setText(String.valueOf(this.currentRound[groupNumber-1]));
         } else {
-            // No round remaining => STAGE COMPLETE
-            this.stageComplete = true;
+            this.groupsThatAreComplete[groupNumber - 1] = true;
         }
     }
 
