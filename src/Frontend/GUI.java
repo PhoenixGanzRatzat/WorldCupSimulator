@@ -18,16 +18,6 @@ public class GUI extends JFrame implements ActionListener {
     private JButton qualifyingButton;
     private JButton groupButton;
     private JButton knockoutButton;
-    //temp attributes for pseudo match generation
-    private static List<Team> teams;
-    private static final DataLoader_temp dataLoader = new DataLoader_temp();
-    private static final ArrayList<Team> afcTeams = new ArrayList<>();
-    private static final ArrayList<Team> cafTeams = new ArrayList<>();
-    private static final ArrayList<Team> concacafTeams = new ArrayList<>();
-    private static final ArrayList<Team> conmebolTeams = new ArrayList<>();
-    private static final ArrayList<Team> ofcTeams = new ArrayList<>();
-    private static final ArrayList<Team> uefaTeams = new ArrayList<>();
-    //end of temp attributes
 
     public GUI() {
         cardPanel = new JPanel(new CardLayout());
@@ -47,24 +37,6 @@ public class GUI extends JFrame implements ActionListener {
     public static void main(String[] args) {
 
         GUI mainGUI = new GUI();
-        teams = dataLoader.loadTeamData();
-        for(Team team : teams){
-            team.setQualifierPoints((int) (Math.random()*8));
-            switch(team.getRegion().toString()){
-                case "AFC" :
-                    afcTeams.add(team);
-                case "CAF" :
-                    cafTeams.add(team);
-                case "CONCACAF" :
-                    concacafTeams.add(team);
-                case "CONMEBOL" :
-                    conmebolTeams.add(team);
-                case "OFC" :
-                    ofcTeams.add(team);
-                case "UEFA" :
-                    uefaTeams.add(team);
-            }
-        }
         
 
     }
