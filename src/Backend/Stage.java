@@ -12,4 +12,8 @@ public abstract class Stage {
     public void calculateMatchResults(){
 
     }
+
+    public Collection<Team> getTeams() {
+        return teams;
+    }
 }

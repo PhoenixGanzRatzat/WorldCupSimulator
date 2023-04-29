@@ -1,6 +1,5 @@
 package Backend;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Team implements Comparable{
@@ -21,7 +20,6 @@ public class Team implements Comparable{
         isFavorite = false;
         flag = null;
     }
-
 
     public String getName() {
         return name;
