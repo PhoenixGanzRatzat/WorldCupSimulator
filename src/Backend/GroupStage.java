@@ -2,6 +2,9 @@ package Backend;
 import java.util.*;
 
 public class GroupStage extends Stage{
+    ArrayList<ArrayList<Team>> groups;
+    private ArrayList<Team> teams;
+    private ArrayList<Match> matches;
     public GroupStage(ArrayList<Team> teams) {
         super(teams);
     }
@@ -11,7 +14,7 @@ public class GroupStage extends Stage{
         //int random_int = (int)Math.floor(Math.random() * (max - min + 1) + min);
         Collections.sort(teams);
         Collections.reverse(teams);
-        ArrayList<ArrayList<Team>> groups = new ArrayList<>();
+        groups = new ArrayList<>();
         int groupsize = teams.size()/8;
         for (int i = 0; i < 8; i++) {
             ArrayList<Team> group = new ArrayList<>();
@@ -32,5 +35,8 @@ public class GroupStage extends Stage{
                 }
             }
         }
+    }
+    public ArrayList<ArrayList<Team>> getGroups(){
+        return groups;
     }
 }

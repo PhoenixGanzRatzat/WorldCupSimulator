@@ -5,6 +5,8 @@ import java.util.*;
 
 
 public class QualifyingStage extends Stage {
+    private ArrayList<Team> teams;
+    private ArrayList<Match> matches;
     public QualifyingStage(ArrayList<Team> teams) {
         super(teams);
     }
@@ -45,5 +47,4 @@ public class QualifyingStage extends Stage {
             match.simulateMatchResult();
         }
     }
-
 }
