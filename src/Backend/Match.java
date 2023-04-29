@@ -87,8 +87,8 @@ public class Match {
     }
 
     // TODO: Add appropriate accessors/mutators for Dates (getDate/setDate)
-    public LocalDate getMatchDate(Match match){
-        return match.matchDate;
+    public LocalDate getMatchDate(){
+        return matchDate;
     }
     public void setMatchDate(LocalDate desiredDate){
         this.matchDate = desiredDate;

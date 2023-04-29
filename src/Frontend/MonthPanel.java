@@ -59,7 +59,7 @@ public class MonthPanel extends JPanel {
 
     private void setMatchesOnDayPanels(List<Match> matches) {
         for (Match match : matches) {
-            DayPanel dayPanel = dayPanels.get(match.getDate().getDayOfMonth());
+            DayPanel dayPanel = dayPanels.get(match.getMatchDate().getDayOfMonth());
             if (dayPanel != null) {
                 dayPanel.addMatch(match);
             }
@@ -97,7 +97,7 @@ public class MonthPanel extends JPanel {
         private boolean classInv() {
             boolean flag = true;
             for (Match match : matches) {
-                flag &= date.isEqual(match.getDate());
+                flag &= date.isEqual(match.getMatchDate());
             }
             return flag;
         }
