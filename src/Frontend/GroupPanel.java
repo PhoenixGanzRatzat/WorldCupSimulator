@@ -57,8 +57,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     private HashMap<Team, Integer> teamGroups;
     /* The current selected group, used to display data and influence function calls */
     private String selectedGroup;
-    /* indicates that the stage is fully simulated and complete */
-    private boolean stageComplete;
     /* Displays the matches played up to the current round with Teams, Scores, and results */
     private JPanel resultsPanel;
     /* Container for all the group panels */
@@ -90,15 +88,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
      * TEMPORARY: REMOVE FOR FINAL IMPLEMENTATION
      */
     private void testMatches() {
-        // teams: alpha, bravo, charlie, delta
-        /* matches
-            alpha v bravo
-            alpha v charlie
-            alpha v delta
-            bravo v charlie
-            bravo v delta
-            charlie v delta
-         */
         Team team1 = new Team("United States", "USA", null, 0);
         Team team2 = new Team("Canada", "CAN", null, 0);
         Team team3 = new Team("Germany", "GER", null, 0);
@@ -143,6 +132,17 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
                 team8, team9, team10, team11, team12, team13, team14, team15, team16,
                 team17, team18, team19, team20, team21, team22, team23, team24, team25,
                 team26, team27, team28, team29, team30, team31, team32 };
+
+
+        // group teams: alpha, bravo, charlie, delta
+        /* matches in every group for round robin tournament
+            alpha v bravo
+            alpha v charlie
+            alpha v delta
+            bravo v charlie
+            bravo v delta
+            charlie v delta
+         */
 
         Match match6 = new Match(team3, team4, 0,1, LocalDate.of(2020, 5, 1));
         Match match5 = new Match(team2, team4, 1,0, LocalDate.of(2020, 4, 1));
@@ -207,7 +207,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         match34, match35, match36, match37, match38, match39, match40, match41, match42,
         match43, match44, match45, match46, match47, match48};
         createGroups();
-        // groupSortedMatchesByRound = organizeMatchesIntoRoundsByGroupNumber();
     }
 
     /* CONSTRUCTORS */
@@ -241,7 +240,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     private void initFlags() throws IOException {
         for(Team team : this.teams) {
             String abbv = team.getAbbv();
-            System.out.println(team.getName() + " " + abbv);
             BufferedImage flag = ImageIO.read(new File("Assets\\Images\\smallFlags\\" + abbv + ".png"));
             flags.put(abbv, flag);
         }
@@ -301,12 +299,18 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         // results side-pane - displays score and outcome between each match in the group
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
         resultsPanel.setPreferredSize(new Dimension(200, 215));
+        resultsPanel.setBorder(new LineBorder(Color.black));
         JPanel resultsTitlePane = new JPanel();
         JLabel resultsTitleLabel = new JLabel("Group A Results");
+        resultsTitlePane.setBackground(Color.lightGray);
+        resultsTitlePane.setBorder(new LineBorder(Color.BLACK));
         resultsTitlePane.add(resultsTitleLabel);
         resultsPanel.add(resultsTitlePane);
         for (int c = 0; c < 6; c++) {
             resultsPanel.add(createMatchResultRowPanel());
+            if(c % 2 == 1) {
+                ((JPanel) resultsPanel.getComponent(c+1)).setBorder(new LineBorder(Color.BLACK));
+            }
         }
         // compose display panel
         displayPanel.add(groupDisplayPanel, constraints);
@@ -356,8 +360,12 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         // remove each panel and add them back in the sorted order
         for (int i = 2; i < numRowPanels; i++) {
             ((JLabel) panelsToSort[i-2].getComponent(0)).setText(String.valueOf(i-1));
+            panelsToSort[i-2].setBorder(null);
             groupPanel.remove(panelsToSort[i-2]);
             groupPanel.add(panelsToSort[i-2], i);
+            if(i % 2 == 0) {
+                ((JPanel) groupPanel.getComponent(i)).setBorder(new LineBorder(Color.BLACK));
+            }
         }
 
         // refreshes the display with changes
@@ -373,7 +381,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         for(int i = 0; i < 6; i++) {
             simulateRound();
         }
-        this.stageComplete = true;
     }
 
     /**
@@ -420,8 +427,12 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
 
     private void setCompletedGroupsToIndicateComplete(int groupNumber) {
         JPanel groupPanel = (JPanel) groupDisplayPanel.getComponent(groupNumber);
-        JPanel rowPanel = (JPanel) groupPanel.getComponent(2);
-        rowPanel.setBorder(new LineBorder(Color.green, 2));
+        JPanel rowPanel1 = (JPanel) groupPanel.getComponent(2);
+        JPanel rowPanel2 = (JPanel) groupPanel.getComponent(3);
+        rowPanel1.setBorder(new LineBorder(Color.green, 1));
+        rowPanel2.setBorder(new LineBorder(Color.green, 1));
+        groupPanel.getComponent(4).setBackground(Color.lightGray);
+        groupPanel.getComponent(5).setBackground(Color.lightGray);
 
     }
 
@@ -506,7 +517,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
      * helper method for updateGroupPanelInfo()
      * @param rowPanel - panel containing labels to update
      * @param index - of label to update
-     * @param increment - value to increment jlabel index value by
+     * @param increment - value to increment JLabel index value by
      */
     private void updateRowPanelValue(JPanel rowPanel, int index, int increment) {
         String indexStr = ((JLabel) rowPanel.getComponent(index)).getText();
@@ -711,6 +722,9 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         for (int i = 0; i < 4; i++) {
             // initialize
             rowPanes[i] = new JPanel();
+            if(i % 2 == 0) {
+                rowPanes[i].setBorder(new LineBorder(Color.BLACK));
+            }
             rowPanes[i].setLayout(new GridLayout(1,7,2,2));
             rowPanes[i].setFont(new Font("Arial", Font.BOLD, 10));
 
