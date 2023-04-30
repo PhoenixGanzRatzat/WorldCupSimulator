@@ -22,6 +22,10 @@ public abstract class Stage {
         return matches;
     }
 
+    public void addMatch(Match match) {
+        matches.add(match);
+    }
+
     public void setMatches(Collection<Match> matches) {
         this.matches = matches;
     }
