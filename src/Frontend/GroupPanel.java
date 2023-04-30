@@ -68,7 +68,10 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     private boolean[] groupsThatAreComplete;
 
     /* TODO:
-
+        >>> who moves on? top points in each group? what if multiple teams have the same final points?
+        who do i highlight and why
+       Todo:
+        >>> Find out which countries in text files don't have flags in SmallFlags (myanmar/MMR)
      */
 
     /**
@@ -115,7 +118,31 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         Team team14 = new Team("Japan", "JPN", null, 0);
         Team team15 = new Team("Denmark", "DEN", null, 0);
         Team team16 = new Team("Tunisia", "TUN", null, 0);
-        this.teams = new Team[] {team1, team2, team3, team4, team5, team6, team7, team8, team9, team10, team11, team12, team13, team14, team15, team16};
+
+        Team team17 = new Team("South Korea", "KOR", null, 0);
+        Team team18 = new Team("China", "CHN",null, 0);
+        Team team19 = new Team("Iraq", "IRQ", null, 0);
+        Team team20 = new Team("India", "IND", null, 0);
+
+        Team team21 = new Team("Oman", "OMA", null, 0);
+        Team team22 = new Team("Lebanon", "LBN",null, 0);
+        Team team23 = new Team("Mexico", "MEX", null, 0);
+        Team team24 = new Team("Dominica", "DMA", null, 0);
+
+        Team team25 = new Team("Pakistan", "PAK", null, 0);
+        Team team26 = new Team("Macau", "MAC",null, 0);
+        Team team27 = new Team("Libya", "LBY", null, 0);
+        Team team28 = new Team("Namibia", "NAM", null, 0);
+
+        Team team29 = new Team("El Salvador", "SLV", null, 0);
+        Team team30 = new Team("Togo", "TOG",null, 0);
+        Team team31 = new Team("Bahamas", "BAH", null, 0);
+        Team team32 = new Team("Bermuda", "BER", null, 0);
+
+        this.teams = new Team[] {team1, team2, team3, team4, team5, team6, team7,
+                team8, team9, team10, team11, team12, team13, team14, team15, team16,
+                team17, team18, team19, team20, team21, team22, team23, team24, team25,
+                team26, team27, team28, team29, team30, team31, team32 };
 
         Match match6 = new Match(team3, team4, 0,1, LocalDate.of(2020, 5, 1));
         Match match5 = new Match(team2, team4, 1,0, LocalDate.of(2020, 4, 1));
@@ -145,9 +172,40 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         Match match23 = new Match(team14, team15, 1,0, LocalDate.of(2020, 3, 1));
         Match match24 = new Match(team13, team14, 2,2, LocalDate.of(2020, 1, 1));
 
+        Match match25 = new Match(team19, team20, 1,1, LocalDate.of(2020, 5, 1));
+        Match match26 = new Match(team18, team20, 1,2, LocalDate.of(2020, 4, 1));
+        Match match27 = new Match(team17, team19, 2,3, LocalDate.of(2020, 2, 1));
+        Match match28 = new Match(team17, team20, 0,1, LocalDate.of(2020, 6, 1));
+        Match match29 = new Match(team18, team19, 1,1, LocalDate.of(2020, 3, 1));
+        Match match30 = new Match(team17, team18, 1,2, LocalDate.of(2020, 1, 1));
+
+        Match match31 = new Match(team23, team24, 1,1, LocalDate.of(2020, 5, 1));
+        Match match32 = new Match(team22, team24, 2,0, LocalDate.of(2020, 4, 1));
+        Match match33 = new Match(team21, team23, 0,1, LocalDate.of(2020, 2, 1));
+        Match match34 = new Match(team21, team24, 0,0, LocalDate.of(2020, 6, 1));
+        Match match35 = new Match(team22, team23, 2,1, LocalDate.of(2020, 3, 1));
+        Match match36 = new Match(team21, team22, 1,0, LocalDate.of(2020, 1, 1));
+
+        Match match37 = new Match(team27, team28, 0,1, LocalDate.of(2020, 5, 1));
+        Match match38 = new Match(team26, team28, 0,1, LocalDate.of(2020, 4, 1));
+        Match match39 = new Match(team25, team27, 0,2, LocalDate.of(2020, 2, 1));
+        Match match40 = new Match(team25, team28, 2,3, LocalDate.of(2020, 6, 1));
+        Match match41 = new Match(team26, team27, 1,2, LocalDate.of(2020, 3, 1));
+        Match match42 = new Match(team25, team26, 1,1, LocalDate.of(2020, 1, 1));
+
+        Match match43 = new Match(team31, team32, 1,0, LocalDate.of(2020, 5, 1));
+        Match match44 = new Match(team30, team32, 2,1, LocalDate.of(2020, 4, 1));
+        Match match45 = new Match(team29, team31, 2,0, LocalDate.of(2020, 2, 1));
+        Match match46 = new Match(team29, team32, 1,1, LocalDate.of(2020, 6, 1));
+        Match match47 = new Match(team30, team31, 2,1, LocalDate.of(2020, 3, 1));
+        Match match48 = new Match(team29, team30, 1,0, LocalDate.of(2020, 1, 1));
+
         this.matches = new Match[]{match1, match2, match3, match4, match5, match6,
         match7, match8, match9, match10, match11, match12, match13, match14, match15,
-        match16, match17, match18, match19, match20, match21, match22, match23, match24};
+        match16, match17, match18, match19, match20, match21, match22, match23, match24,
+        match25, match26, match27, match28, match29, match30, match31, match32, match33,
+        match34, match35, match36, match37, match38, match39, match40, match41, match42,
+        match43, match44, match45, match46, match47, match48};
         createGroups();
         // groupSortedMatchesByRound = organizeMatchesIntoRoundsByGroupNumber();
     }
@@ -155,7 +213,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     /* CONSTRUCTORS */
     public GroupPanel() {
         this.setLayout(new BorderLayout());
-        this.
         teamGroups = new HashMap<>();
         groupMatches = new HashMap<>();
         groupTeams = new HashMap<>();
@@ -184,6 +241,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     private void initFlags() throws IOException {
         for(Team team : this.teams) {
             String abbv = team.getAbbv();
+            System.out.println(team.getName() + " " + abbv);
             BufferedImage flag = ImageIO.read(new File("Assets\\Images\\smallFlags\\" + abbv + ".png"));
             flags.put(abbv, flag);
         }
@@ -349,9 +407,22 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
             this.currentRound[groupNumber-1]++;
             // update info panel with current round
             infoPanelRoundNumberLabel.setText(String.valueOf(this.currentRound[groupNumber-1]));
-        } else {
-            this.groupsThatAreComplete[groupNumber - 1] = true;
         }
+
+        // Highlight 1st place of group panel
+        // TODO: handling point ties??
+        if(this.currentRound[groupNumber-1] == 6) {
+            this.groupsThatAreComplete[groupNumber - 1] = true;
+            setCompletedGroupsToIndicateComplete(groupNumber - 1);
+        }
+
+    }
+
+    private void setCompletedGroupsToIndicateComplete(int groupNumber) {
+        JPanel groupPanel = (JPanel) groupDisplayPanel.getComponent(groupNumber);
+        JPanel rowPanel = (JPanel) groupPanel.getComponent(2);
+        rowPanel.setBorder(new LineBorder(Color.green, 2));
+
     }
 
     /**
@@ -555,7 +626,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
                 }
             } else {
                 // if < 8 groups then add new group
-                // TODO: NEEDS TESTING with FULL MATCH LIST
                 if(groupTeams.size() < 8) {
                     int size = groupTeams.size();
                     groupTeams.put((size + 1), new ArrayList<>());
