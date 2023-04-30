@@ -23,6 +23,13 @@ public class Match {
         this.loser = teamTwo;
         this.matchDate = date;
     }
+    public Match (Team teamOne, Team teamTwo, int score1, int score2, LocalDate date){
+        this.winner = teamOne;
+        this.loser = teamTwo;
+        team1Score = score1;
+        team2Score = score2;
+        this.matchDate = date;
+    }
 
     public Team getTeamOne() {
         return winner;
@@ -103,5 +110,21 @@ public class Match {
                 ", Winner Score =" + winner.getQualifierPoints() +
                 ", teamTwoScore=" + loser.getQualifierPoints()  +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Match match = (Match) obj;
+        return  winner.equals(match.winner) &&
+                loser.equals(match.loser) &&
+                team1Score == match.team1Score &&
+                team2Score == match.team2Score &&
+                matchDate.equals(match.matchDate);
     }
 }
