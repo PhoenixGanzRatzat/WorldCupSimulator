@@ -8,6 +8,8 @@ public class KnockoutStage extends Stage {
     private static final int MATCH_COUNT_FOR_SEMIFINALS = 2;
     private static final int MATCH_COUNT_FOR_FINALS = 1;
     private List<Match> matchesForRoundOfSixteen;
+    private List<Match> matchesForQuarterfinals;
+    private List<Match> matchesForSemifinals;
     private Team firstPlaceTeam;
     private Team secondPlaceTeam;
     private Team thirdPlaceTeam;
@@ -57,7 +59,8 @@ public class KnockoutStage extends Stage {
                 break;
         }
 
-        if (matches.size() == 2) {
+        if (matches.size() == MATCH_COUNT_FOR_SEMIFINALS) {
+            matchesForSemifinals.addAll(matches);
             Match firstMatch = matches.get(0);
             Match secondMatch = matches.get(1);
             firstMatch.simulateMatchResult(MatchType.SEMIFINALS);
@@ -71,6 +74,11 @@ public class KnockoutStage extends Stage {
             thirdPlaceTeam = thirdPlaceMatch.getWinningTeam();
             return;
         }
+
+        if (matches.size() == MATCH_COUNT_FOR_QUARTERFINALS) {
+            matchesForQuarterfinals.addAll(matches);
+        }
+
         List<Team> winningTeams = new ArrayList<>();
         for (Match match : matches) {
             match.simulateMatchResult(round);
@@ -80,6 +88,18 @@ public class KnockoutStage extends Stage {
         if (matchesForNextRound.isEmpty())
             return;
         simulateRounds(matchesForNextRound);
+    }
+
+    public List<Match> getMatchesForRoundOfSixteen() {
+        return matchesForRoundOfSixteen;
+    }
+
+    public List<Match> getMatchesForQuarterfinals() {
+        return matchesForQuarterfinals;
+    }
+
+    public List<Match> getMatchesForSemifinals() {
+        return matchesForSemifinals;
     }
 
     public Team getFirstPlaceTeam() {
