@@ -242,7 +242,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     private void initFlags() throws IOException {
         for(Team team : this.teams) {
             String abbv = team.getAbbv();
-            BufferedImage flag = ImageIO.read(new File("Assets\\Images\\smallFlags\\" + abbv + ".png"));
+            BufferedImage flag = ImageIO.read(new File("Assets" + File.separator + "Images" + File.separator + "smallFlags" + File.separator +  abbv + ".png"));
             flags.put(abbv, flag);
         }
     }
