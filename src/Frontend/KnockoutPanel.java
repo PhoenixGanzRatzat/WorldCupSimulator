@@ -15,8 +15,6 @@ import java.util.Objects;
  * one round at a time, should the user choose to skip forward.
  **/
 public class KnockoutPanel extends JPanel implements StagePanel {
-
-
     /**
      * TEMPORARY
      */

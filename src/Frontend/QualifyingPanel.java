@@ -112,9 +112,10 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
     /**
      * Returns true if the qualifying round has been completed, and false otherwise.
-     * @Override
+     *
      * @return boolean
      */
+    @Override
     public boolean checkIfCompleted() {
         return false;
     }
@@ -122,8 +123,9 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     /**
      * Initiates the JTabbedPane before the simulation has started, with a blank calandar
      * tab and temporary region tabs. Will likely never need parameters.
-     * @Override
+     *
      */
+    @Override
     public void initPanel() {
         tabPane =  new JTabbedPane();
         cards = new JPanel[6];
