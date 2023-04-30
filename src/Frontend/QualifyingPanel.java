@@ -18,11 +18,20 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     private String[] regions = new String[6];
     private JTabbedPane tabPane;
 
+    /**
+    An in progress constructor that is subject to change.
+    @param teamIn an array of all teams participating.
+     */
     public QualifyingPanel (Team[] teamIn) {
         //matches = matchIn;
         teams = teamIn;
 
     }
+
+    /**
+    The default constructor for QualifyingPanel.
+    Initializes the regions array with strings.
+     */
     public QualifyingPanel () {
 
         regions[0] = "AFC";
@@ -34,13 +43,20 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
     }
 
+    /**
+     * Returns the JTabbedPane that this object uses to display its contents.
+     * @return JTabbedPane
+     */
     public JTabbedPane getPane() {
         return tabPane;
     }
 
 
-    /*
-    ough spring labels - context below.
+    /**
+    Places the results of the qualifying round into tabs, with the results
+    sorted by region. Each tab is set up with a SpringLayout and displays the results
+    in columns.
+    In the future will take a parameter, likely an array of matches.
      */
     public void fillResults() {
         SpringLayout layout = new SpringLayout();
@@ -90,13 +106,20 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         }
    }
 
-
-    @Override
+    /**
+     * Returns true if the qualifying round has been completed, and false otherwise.
+     * @Override
+     * @return boolean
+     */
     public boolean checkIfCompleted() {
         return false;
     }
 
-    @Override
+    /**
+     * Initiates the JTabbedPane before the simulation has started, with a blank calandar
+     * tab and temporary region tabs. Will likely never need parameters.
+     * @Override
+     */
     public void initPanel() {
         tabPane =  new JTabbedPane();
         cards = new JPanel[6];
