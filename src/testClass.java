@@ -17,9 +17,9 @@ public class testClass {
         teams = new ArrayList<Team>();
         //teams = dataLoader.loadTeamData();
         //For testing
-        teams.add(new Team("Abed","ABC", Backend.Region.CONCACAF, 1));
-        teams.add(new Team("Abed","ABC", Backend.Region.CONCACAF, 5));
-        teams.add(new Team("Abed","ABC", Backend.Region.CONCACAF, 2));
+        teams.add(new Team("Abed","ABC", "here", 1));
+        teams.add(new Team("Abed","ABC", "here", 5));
+        teams.add(new Team("Abed","ABC", "here", 2));
         GroupStage gTest = new GroupStage(teams);
         gTest.arrangeMatches();
     }
