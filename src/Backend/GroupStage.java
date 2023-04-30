@@ -2,7 +2,6 @@ package Backend;
 
 import java.util.*;
 
-//
 public class GroupStage extends Stage{
     public GroupStage(ArrayList<Team> teams) {
         super(teams);
@@ -10,12 +9,12 @@ public class GroupStage extends Stage{
 
     @Override
     public void arrangeMatches() {
-        for(Team t:getTeams()){
+        for(Team t:teams){
             System.out.print(t.getRank() + " ");
         }
         System.out.println("");
         Collections.sort(teams);
-        for(Team t:getTeams()){
+        for(Team t:teams){
             System.out.print(t.getRank() + " ");
         }
     }
