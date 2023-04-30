@@ -2,13 +2,18 @@ package Frontend;
 
 import Backend.Match;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.*;
 
 public class MonthPanel extends JPanel {
 
@@ -24,10 +29,9 @@ public class MonthPanel extends JPanel {
     }
 
     /**
-     *
-     * @param year to initialize the MonthPanel to
+     * @param year     to initialize the MonthPanel to
      * @param monthNum to initialize the MonthPanel to
-     * @param matches to add to the DayPanels
+     * @param matches  to add to the DayPanels
      */
     public MonthPanel(int year, int monthNum, List<Match> matches) {
         this.setPreferredSize(new Dimension(1000, 800));
@@ -40,6 +44,7 @@ public class MonthPanel extends JPanel {
 
     /**
      * This method clears and resets the DayPanels to the month selected
+     *
      * @param year
      * @param monthNum
      */
@@ -73,6 +78,7 @@ public class MonthPanel extends JPanel {
 
     /**
      * This method adds matches to DayPanels
+     *
      * @param matches to add
      */
     private void setMatchesOnDayPanels(List<Match> matches) {
@@ -94,37 +100,60 @@ public class MonthPanel extends JPanel {
      * Inner class representing one day in a MonthPanel
      */
     private class DayPanel extends JPanel {
-        private List<Match> matches;
         private final java.time.LocalDate date;
-
+        private List<Match> matches;
         private GridBagConstraints labelConstraints;
 
         /**
          * Creates a new DayPanel, and adds a date JLabel to it
+         *
          * @param date to initialize the DayPanel to
          */
         public DayPanel(java.time.LocalDate date) {
             //MAX OF 7 MATCHES PER DAY
-            this.setLayout(new GridLayout(8, 1)); //TODO: use gridbaglayout
+            this.setLayout(new GridBagLayout()); //TODO: use gridbaglayout
             this.setSize(new Dimension(100, 100));
             matches = new ArrayList<>();
             this.date = LocalDate.from(date);
 
-            this.add(new JLabel(String.valueOf(date.getDayOfMonth()))); //add a date label
-
             labelConstraints = new GridBagConstraints();
+            labelConstraints.anchor = GridBagConstraints.NORTHWEST;
             labelConstraints.fill = GridBagConstraints.HORIZONTAL;
             labelConstraints.gridx = 0; //position
             labelConstraints.gridy = 0; //position
-            labelConstraints.insets = new Insets(5, 5, 5, 5);
+            labelConstraints.insets = new Insets(4, 4, 4, 4);
             labelConstraints.gridwidth = 1;
             labelConstraints.gridheight = 1;
             labelConstraints.weightx = 0.8;
-            labelConstraints.weighty = 0.5;
+            labelConstraints.weighty = 1.0;
+
+            addLabel(new JLabel(String.valueOf(date.getDayOfMonth())));
+
+            labelConstraints.weighty = 0; //make match labels go to bottom of screen
+            labelConstraints.anchor = GridBagConstraints.SOUTH;
+        }
+
+        private void addLabel(JLabel label) {
+            this.add(label, labelConstraints);
+            labelConstraints.gridy = labelConstraints.gridy + 1;
+        }
+
+        private void addLabel(JLabel leftImage, JLabel matchLabel, JLabel rightImage) {
+            labelConstraints.anchor = GridBagConstraints.SOUTHWEST;
+            labelConstraints.gridx = 0;
+            this.add(leftImage, labelConstraints);
+            labelConstraints.anchor = GridBagConstraints.SOUTH;
+            labelConstraints.gridx = 1;
+            this.add(matchLabel, labelConstraints);
+            labelConstraints.anchor = GridBagConstraints.SOUTHEAST;
+            labelConstraints.gridx = 2;
+            this.add(rightImage, labelConstraints);
+            labelConstraints.gridy = labelConstraints.gridy + 1;
         }
 
         /**
          * assert that all matches in the DayPanel are actually on thate date
+         *
          * @return true if the class invariant is not violated
          */
         private boolean classInv() {
@@ -135,33 +164,69 @@ public class MonthPanel extends JPanel {
             return flag;
         }
 
+        private JLabel loadFlagLabel(String teamAbbv) {
+            JLabel flagIcon = new JLabel();
+            File imgFile = new File("Assets" + File.separator + "Images" + File.separator + "smallFlags" + File.separator + teamAbbv + ".png");
+            BufferedImage bufferedImage = null;
+            try {
+                bufferedImage = ImageIO.read(imgFile);
+                flagIcon.setIcon(getScaledIconFromImage(bufferedImage));
+            } catch (IOException e) {
+                System.err.printf("can't find flag for %s\n", teamAbbv);
+            }
+
+            return flagIcon;
+        }
+
+        private ImageIcon getScaledIconFromImage(Image img) {
+            double scaleFactor = 0.25;
+            int iconX = (int) (img.getWidth(this) * scaleFactor);
+            int iconY = (int) (img.getHeight(this) * scaleFactor);
+
+            Image scaledPreviewImage = img.getScaledInstance(iconX, iconY, Image.SCALE_SMOOTH);
+            BufferedImage image = new BufferedImage(iconX, iconY, BufferedImage.TYPE_INT_ARGB);
+
+            image.getGraphics().drawImage(scaledPreviewImage, 0, 0, null);
+
+            return new ImageIcon(image);
+        }
+
         /**
          * Add a match to the DayPanel.
          * This method adds mouselisteners to each Match label to handle the tooltips
+         *
          * @param match to add
          */
         public void addMatch(Match match) {
             System.out.printf("adding match %s\n", match);
             this.matches.add(match);
 
-            //TODO flags on match labels
+            JLabel leftFlag = loadFlagLabel(match.getTeamOne().getAbbv());
+            leftFlag.setToolTipText(match.getTeamOne().toString());
+            JLabel rightFlag = loadFlagLabel(match.getTeamTwo().getAbbv());
+            rightFlag.setToolTipText(match.getTeamTwo().toString());
+
+
             //add a mouseover to display JPopupMenu
-            JLabel label = new JLabel();
-            label.setText(String.format("%s | v. | %s", match.getTeamOne().getAbbv(), match.getTeamTwo().getAbbv()));
-            label.addMouseListener(new MouseAdapter() {
+            JLabel matchLabel = new JLabel();
+            matchLabel.setText(String.format("%s v. %s", match.getTeamOne().getAbbv(), match.getTeamTwo().getAbbv()));
+            matchLabel.setToolTipText(match.toString());
+            matchLabel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
                     super.mouseEntered(e);
-                    System.out.printf("entered %s\n", label.getText());
+                    System.out.printf("entered %s\n", matchLabel.getText());
                 }
 
                 @Override
                 public void mouseExited(MouseEvent e) {
                     super.mouseExited(e);
-                    System.out.printf("exited %s\n", label.getText());
+                    System.out.printf("exited %s\n", matchLabel.getText());
                 }
             });
-            this.add(label);
+
+
+            addLabel(leftFlag, matchLabel, rightFlag);
             assert classInv();
 
         }
