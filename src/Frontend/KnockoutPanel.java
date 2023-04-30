@@ -7,7 +7,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -209,25 +208,30 @@ public class KnockoutPanel extends JPanel implements StagePanel {
     }
     private class BracketCell extends JPanel {
         private GridBagConstraints cell;
-        private final Dimension cellSize = new Dimension(120, 30);
+        private  Dimension cellSize;
         private JLabel flagLabel, teamLabel;
-        private final String defaultPath = "Assets/blank.png";
+        private final String defaultPath = "Assets" + File.separator + "blank.png";
+        private int flagWidth;
+        private int flagHeight;
         private BufferedImage flag;
         private BracketCell() {
             super(new GridBagLayout());
+            flagWidth = 46;
+            flagHeight = 30;
+            cellSize = new Dimension(80+flagWidth, flagHeight);
             this.setMinimumSize(cellSize);
             this.setMaximumSize(cellSize);
+            flag = new BufferedImage(flagWidth, flagHeight, BufferedImage.TYPE_INT_ARGB);
             try {
                 flag = ImageIO.read(new File(defaultPath));
             } catch(IOException e){
                 System.out.printf("File not found at \"%s\"\n", defaultPath);
             }
             this.cell = new GridBagConstraints();
-            flagLabel = new JLabel(new ImageIcon(), JLabel.LEFT);
+            flagLabel = new JLabel(scaledFlag(cellSize.height), JLabel.LEFT);
             this.add(flagLabel, cell);
             teamLabel = new JLabel("");
             this.add(teamLabel, cell);
-            flagLabel.setIcon(scaledFlag(cellSize.height));
             this.validate();
         }
         public ImageIcon getFlagIcon() {
