@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Displays KnockoutStage results either one match at a time or
@@ -211,6 +212,8 @@ public class KnockoutPanel extends JPanel implements StagePanel {
         private  Dimension cellSize;
         private JLabel flagLabel, teamLabel;
         private final String defaultPath = "Assets" + File.separator + "blank.png";
+        private int imageWidth;
+        private int imageHeight;
         private int flagWidth;
         private int flagHeight;
         private BufferedImage flag;
@@ -221,24 +224,30 @@ public class KnockoutPanel extends JPanel implements StagePanel {
             cellSize = new Dimension(80+flagWidth, flagHeight);
             this.setMinimumSize(cellSize);
             this.setMaximumSize(cellSize);
-            flag = new BufferedImage(flagWidth, flagHeight, BufferedImage.TYPE_INT_ARGB);
+            imageWidth = 70;
+            imageHeight = 46;
+            flag = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
             try {
-                flag = ImageIO.read(new File(defaultPath));
+                flag = ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(defaultPath)));
             } catch(IOException e){
                 System.out.printf("File not found at \"%s\"\n", defaultPath);
             }
             this.cell = new GridBagConstraints();
-            flagLabel = new JLabel(scaledFlag(cellSize.height), JLabel.LEFT);
+            flagLabel = new JLabel(scaledFlag(flagHeight), JLabel.LEFT);
             this.add(flagLabel, cell);
-            teamLabel = new JLabel("");
+            teamLabel = new JLabel("Team Text");
+            cell.insets = new Insets(1,5,1,5);
             this.add(teamLabel, cell);
             this.validate();
         }
         public ImageIcon getFlagIcon() {
             return (ImageIcon)(flagLabel.getIcon());
         }
-        public void setFlagIcon(JLabel flagLabel) {
-            this.flagLabel = flagLabel;
+        public void setFlagIcon(BufferedImage newFlag) {
+            this.flag = newFlag;
+            this.flagLabel.setIcon(scaledFlag(flagHeight));
+            this.revalidate();
+
         }
         public String getTeamText() {
             return teamLabel.getText();
