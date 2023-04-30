@@ -17,6 +17,8 @@ public class KnockoutStage extends Stage {
     public KnockoutStage(List<Team> teams) {
         super(teams);
         matchesForRoundOfSixteen = createMatchesFromTeams(teams);
+        matchesForQuarterfinals = new ArrayList<>();
+        matchesForSemifinals = new ArrayList<>();
     }
 
     @Override
