@@ -1,7 +1,5 @@
 package Backend;
 
-import java.util.Date;
-import java.util.HashMap;
 import java.time.LocalDate;
 
 public class Match {
@@ -37,9 +35,7 @@ public class Match {
         return team2Score;
     }
 
-    public void simulateMatchResult() {
-
-
+    public void simulateMatchResult(MatchType matchType) {
         // Generate random scores for each team (0-4)
         int team1Score = (int) (Math.random() * 5);
         int team2Score = (int) (Math.random() * 5);
@@ -71,9 +67,19 @@ public class Match {
         // Update the match object with the result (scores for both teams)
         setResult(team1Score, team2Score);
     }
+
+
+    public Team getLosingTeam() {
+        return loser;
+    }
+
+    public Team getWinningTeam() {
+        return winner;
+    }
     public int getTeam1Score() {
         return team1Score;
     }
+
     public Team getTeamTwo() {
         return loser;
     }
@@ -85,11 +91,11 @@ public class Match {
     public int getTeamTwoScore() {
         return team2Score;
     }
-
     // TODO: Add appropriate accessors/mutators for Dates (getDate/setDate)
     public LocalDate getMatchDate(){
         return matchDate;
     }
+
     public void setMatchDate(LocalDate desiredDate){
         this.matchDate = desiredDate;
     }

@@ -78,4 +78,17 @@ public class Team implements Comparable<Team>{
         }
         return 0;
     }
+
+    @Override
+    public String toString() {
+        return "Team{" +
+                "name='" + name + '\'' +
+                ", abbv='" + abbv + '\'' +
+                ", region=" + region +
+                ", rank=" + rank +
+                ", points=" + points +
+                ", qualifierPoints=" + qualifierPoints +
+                ", isFavorite=" + isFavorite +
+                '}';
+    }
 }

@@ -6,7 +6,8 @@ public enum Region {
     CONCACAF("CONCACAF"),
     CONMEBOL("CONMEBOL"),
     OFC("OFC"),
-    UEFA("UEFA");
+    UEFA("UEFA"),
+    UNNAMED_REGION("UNNAMED REGIONS");
 
     private String name;
 

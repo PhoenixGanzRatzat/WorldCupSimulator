@@ -43,7 +43,7 @@ public class QualifyingStage extends Stage {
         // Iterate through all the matches in the qualifying stage
         for (Match match : matches) {
             // Simulate the match result by calling the simulateMatchResult() method on the match object
-            match.simulateMatchResult();
+            match.simulateMatchResult(MatchType.QUALIFIERS);
         }
     }
 }
