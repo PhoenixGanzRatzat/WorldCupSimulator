@@ -1,6 +1,7 @@
+import Backend.DataLoader;
 import Backend.GroupStage;
+import Backend.Region;
 import Backend.Team;
-import javafx.scene.layout.Region;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +18,9 @@ public class testClass {
         teams = new ArrayList<Team>();
         //teams = dataLoader.loadTeamData();
         //For testing
-        teams.add(new Team("Abed","ABC", "here", 1));
-        teams.add(new Team("Abed","ABC", "here", 5));
-        teams.add(new Team("Abed","ABC", "here", 2));
+        teams.add(new Team("Abed","ABC", Region.AFC, 1));
+        teams.add(new Team("Abed","ABC", Region.AFC, 5));
+        teams.add(new Team("Abed","ABC", Region.AFC, 2));
         GroupStage gTest = new GroupStage(teams);
         gTest.arrangeMatches();
     }

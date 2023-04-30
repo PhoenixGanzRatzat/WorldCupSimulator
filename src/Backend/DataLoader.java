@@ -1,7 +1,11 @@
+package Backend;
+
 import Backend.Region;
 import Backend.Team;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,9 +26,15 @@ public class DataLoader {
      */
     public List<Team> loadTeamData() {
         List<Team> teams = new ArrayList<>();
-        InputStream stream = Objects.requireNonNull(WorldCupSimulator.class.getResourceAsStream(TEAM_DATA_FILE_NAME));
+        // InputStream stream = Objects.requireNonNull(WorldCupSimulator.class.getResourceAsStream(TEAM_DATA_FILE_NAME));
+        InputStreamReader stream;
+        try {
+            stream = new InputStreamReader(new FileInputStream(TEAM_DATA_FILE_NAME));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
+        try (BufferedReader reader = new BufferedReader(stream)) {
             final Region[] region = {null};
             List<String> trimmedLines = removeEmptyLinesAndSpaces(reader.lines());
             trimmedLines.forEach(line -> {

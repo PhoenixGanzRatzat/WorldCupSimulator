@@ -70,8 +70,8 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     /* TODO:
         >>> who moves on? top points in each group? what if multiple teams have the same final points?
         who do i highlight and why
+            > Top 2
        Todo:
-        >>> Find out which countries in text files don't have flags in SmallFlags (myanmar/MMR)
      */
 
     /**
