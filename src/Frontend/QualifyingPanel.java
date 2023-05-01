@@ -5,6 +5,7 @@ import Backend.Team;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 
 public class QualifyingPanel extends JPanel implements StagePanel {
@@ -12,7 +13,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     private Match[] matches;
     private Team[] teams;
     private MonthPanel[] months;
-    private JPanel stage; //
+    private JPanel stage;
     private JPanel[] cards;
     //ough IDK
     private String[] regions = new String[6];
@@ -25,6 +26,17 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     public QualifyingPanel (Team[] teamIn) {
         //matches = matchIn;
         teams = teamIn;
+
+        months = new MonthPanel[1];
+        months[0] = new MonthPanel();
+
+        regions[0] = "AFC";
+        regions[1] = "CAF";
+        regions[2] = "CONCACAF";
+        regions[3] = "CONMEBOL";
+        regions[4] = "OFC";
+        regions[5] = "UEFA";
+
 
     }
 
@@ -65,10 +77,6 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     public void fillResults() {
         SpringLayout layout = new SpringLayout();
 
-        //JLabel header1 = new JLabel("RANK:");
-       // JLabel header2 = new JLabel ("TEAM:");
-        //JLabel header3 = new JLabel("TOTAL POINTS:");
-
         for(int i = 1; i < cards.length + 1; i++) {
 
           JLabel header1 = new JLabel("RANK:");
@@ -97,14 +105,63 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             SpringLayout.Constraints con3 = layout.getConstraints(header3);
             con3.setX(Spring.sum(Spring.constant(200), con2.getConstraint(SpringLayout.EAST)));
 
+            ArrayList<Team> sortedArr = new ArrayList<Team>();
+
+            for(Team team : teams) {
+                if(team.getRegion().toString() == newTab.getName()) {
+                    //team.setQualifierPoints((int) (Math.random() * 10));
+                    if(sortedArr.size() == 0) {
+                        sortedArr.add(team);
+                    }
+
+                    else {
+
+                        for(int j = 0; j < sortedArr.size(); j++) {
+
+                            if(team.getQualifierPoints() >= sortedArr.get(j).getQualifierPoints()) {
+                                sortedArr.add(j, team);
+                                j = sortedArr.size();
+
+                            }
+                        }
+
+                        if(!sortedArr.contains(team)) {
+                            sortedArr.add(sortedArr.size(), team);
+                        }
+                    }
+                }
+            }
+
+            for(Team team : sortedArr) {
+                JLabel teamName = new JLabel(team.getName());
+                JLabel teamPoints = new JLabel("" + team.getQualifierPoints());
+                JLabel teamRank = new JLabel("" + (sortedArr.indexOf(team) + 1));
+
+                newTab.add(teamName);
+                newTab.add(teamPoints);
+                newTab.add(teamRank);
+
+                SpringLayout.Constraints cRank = layout.getConstraints(teamRank);
+                cRank.setX(Spring.constant(10));
+                cRank.setY(Spring.sum(Spring.constant(14 * (sortedArr.indexOf(team) + 1)),
+                        con1.getConstraint(SpringLayout.SOUTH)));
+
+                SpringLayout.Constraints cName = layout.getConstraints(teamName);
+                cName.setX(con2.getConstraint(SpringLayout.WEST));
+                cName.setY(Spring.sum(Spring.constant(14 * (sortedArr.indexOf(team) + 1)),
+                        con2.getConstraint(SpringLayout.SOUTH)));
+
+                SpringLayout.Constraints cPoints = layout.getConstraints(teamPoints);
+                cPoints.setX(con3.getConstraint(SpringLayout.WEST));
+                cPoints.setY(Spring.sum(Spring.constant(14 * (sortedArr.indexOf(team) + 1)),
+                        con3.getConstraint(SpringLayout.SOUTH)));
+
+            }
+
 
 
             tabPane.insertTab(newTab.getName(), null, newTab, null, i);
             //tabPane.revalidate();
-
-
-
-
 
 
         }
@@ -117,7 +174,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      */
     @Override
     public boolean checkIfCompleted() {
-        return false;
+        return true;
     }
 
     /**
@@ -146,6 +203,8 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
             tabPane.addTab(regions[i], cards[i]);
         }
+
+        fillResults();
 
     }
 }
