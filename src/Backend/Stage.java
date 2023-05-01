@@ -1,36 +1,24 @@
 package Backend;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public abstract class Stage {
-
-   protected ArrayList<Team> teams;
-    protected ArrayList<Match> matches;
-   
-
-    public Stage(ArrayList<Team> teams) {
+    private ArrayList<Team> teams;
+    private ArrayList<Match> matches;
+    public Stage(ArrayList<Team> teams){
         this.teams = teams;
     }
-
-    public Collection<Team> getTeams() {
+    public abstract void arrangeMatches();
+    public void calculateMatchResults(){
+        for(Match m:matches){
+            m.simulateMatchResult();
+        }
+    }
+    public ArrayList<Team> getTeams(){
         return teams;
     }
-
-    public void setTeams(ArrayList<Team> teams) {
-        this.teams = teams;
-    }
-
-    public ArrayList<Match> getMatches() {
+    public ArrayList<Match> getMatches(){
         return matches;
-    }
-
-    public void setMatches(ArrayList<Match> matches) {
-        this.matches = matches;
-    }
-
-    public abstract void arrangeMatches();
-
-    public void calculateMatchResults() {
-
     }
 }

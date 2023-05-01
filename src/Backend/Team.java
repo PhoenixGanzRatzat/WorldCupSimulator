@@ -1,18 +1,17 @@
 package Backend;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Team implements Comparable<Team>{
     private String name;
     private String abbv;
-    private String region;
+    private Region region;
     private BufferedImage flag;
     private int rank;
     private int points;
     private int qualifierPoints;
     private boolean isFavorite;
-    public Team(String name, String abreviation, String region, int rank){
+    public Team(String name, String abreviation, Region region, int rank){
         this.name = name;
         this.abbv = abreviation;
         this.region = region;
@@ -31,7 +30,7 @@ public class Team implements Comparable<Team>{
         return abbv;
     }
 
-    public String getRegion() {
+    public Region getRegion() {
         return region;
     }
 
@@ -70,13 +69,18 @@ public class Team implements Comparable<Team>{
     @Override
     public int compareTo(Team o) {
         Team t = (Team)o;
-        if (this.getPoints() > t.getPoints()){
+        if (this.getRank() > t.getRank()){
             return 1;
-        } else if (this.getPoints() == t.getPoints()) {
+        } else if (this.getRank() == t.getRank()) {
             return 0;
-        } else if (this.getPoints() < t.getPoints()) {
+        } else if (this.getRank() < t.getRank()) {
             return -1;
         }
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

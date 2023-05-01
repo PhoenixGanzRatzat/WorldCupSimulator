@@ -87,6 +87,7 @@ public class QualifyingStage extends Stage {
             getMatches().addAll(matches);
         }
 
+
     }
 
 
@@ -493,11 +494,9 @@ public class QualifyingStage extends Stage {
 
             Team winner = playOffMatches.get(0).getWinner();
             qualifiedTeams.add(winner);
-        }
-
+    }
         return new RoundResult(qualifiedTeams, secondRoundMatches);
     }
-
 }
 
 
