@@ -149,26 +149,26 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
             charlie v delta
          */
 
-        Match match6 = new Match(team3, team4, 0,1, LocalDate.of(2020, 5, 1));
-        Match match5 = new Match(team2, team4, 1,0, LocalDate.of(2020, 4, 1));
-        Match match2 = new Match(team1, team3, 1,1, LocalDate.of(2020, 2, 1));
-        Match match3 = new Match(team1, team4, 2,1, LocalDate.of(2020, 6, 1));
-        Match match4 = new Match(team2, team3, 1,2, LocalDate.of(2020, 3, 1));
-        Match match1 = new Match(team1, team2, 2,1, LocalDate.of(2020, 1, 1));
+        Match match6  = new Match(team3 , team4 , 0,1, LocalDate.of(2020, 5, 1));
+        Match match5  = new Match(team2 , team4 , 1,0, LocalDate.of(2020, 4, 1));
+        Match match2  = new Match(team1 , team3 , 1,1, LocalDate.of(2020, 2, 1));
+        Match match3  = new Match(team1 , team4 , 2,1, LocalDate.of(2020, 6, 1));
+        Match match4  = new Match(team2 , team3 , 1,2, LocalDate.of(2020, 3, 1));
+        Match match1  = new Match(team1 , team2 , 2,1, LocalDate.of(2020, 1, 1));
 
-        Match match7 = new Match(team7, team8, 1,1, LocalDate.of(2020, 5, 1));
-        Match match8 = new Match(team6, team8, 2,0, LocalDate.of(2020, 4, 1));
-        Match match9 = new Match(team5, team7, 1,2, LocalDate.of(2020, 2, 1));
-        Match match10 = new Match(team5, team8, 2,2, LocalDate.of(2020, 6, 1));
-        Match match11 = new Match(team6, team7, 1,0, LocalDate.of(2020, 3, 1));
-        Match match12 = new Match(team5, team6, 1,1, LocalDate.of(2020, 1, 1));
+        Match match7  = new Match(team7 , team8 , 1,1, LocalDate.of(2020, 5, 1));
+        Match match8  = new Match(team6 , team8 , 2,0, LocalDate.of(2020, 4, 1));
+        Match match9  = new Match(team5 , team7 , 1,2, LocalDate.of(2020, 2, 1));
+        Match match10 = new Match(team5 , team8 , 2,2, LocalDate.of(2020, 6, 1));
+        Match match11 = new Match(team6 , team7 , 1,0, LocalDate.of(2020, 3, 1));
+        Match match12 = new Match(team5 , team6 , 1,1, LocalDate.of(2020, 1, 1));
 
         Match match13 = new Match(team11, team12, 2,1, LocalDate.of(2020, 5, 1));
         Match match14 = new Match(team10, team12, 2,0, LocalDate.of(2020, 4, 1));
-        Match match15 = new Match(team9, team11, 0,1, LocalDate.of(2020, 2, 1));
-        Match match16 = new Match(team9, team12, 1,1, LocalDate.of(2020, 6, 1));
+        Match match15 = new Match(team9 , team11, 0,1, LocalDate.of(2020, 2, 1));
+        Match match16 = new Match(team9 , team12, 1,1, LocalDate.of(2020, 6, 1));
         Match match17 = new Match(team10, team11, 3,2, LocalDate.of(2020, 3, 1));
-        Match match18 = new Match(team9, team10, 1,1, LocalDate.of(2020, 1, 1));
+        Match match18 = new Match(team9 , team10, 1,1, LocalDate.of(2020, 1, 1));
 
         Match match19 = new Match(team15, team16, 0,2, LocalDate.of(2020, 5, 1));
         Match match20 = new Match(team14, team16, 1,1, LocalDate.of(2020, 4, 1));
@@ -365,7 +365,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         Team team2 = match.getTeamTwo();
         int t1Score = match.getTeamOneScore();
         int t2Score = match.getTeamTwoScore();
-
         JPanel country1 = getCountriesGroupRowPanel(groupPanel, team1.getName());
         JPanel country2 = getCountriesGroupRowPanel(groupPanel, team2.getName());
 
@@ -398,11 +397,33 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
             updateGroupRowPanelValues(country2, 4, 1); // [4] = Draws
             updateGroupRowPanelValues(country2, 6, 1); // [6] = points
         }
-
-
+    }
+    /**
+     * Retrieves the groupRowPanel of the specified country so that it's group stats can
+     * be updated by updateGroupPanelInfo() method.
+     * @param groupPanel - Panel containing countries stats
+     * @param country - country to find in group
+     * @return - countries row panel
+     */
+    private JPanel getCountriesGroupRowPanel(JPanel groupPanel, String country) {
+        for(Component row : groupPanel.getComponents()) {
+            if(row instanceof JPanel) {
+                if(((JPanel) row).getComponents().length > 1) { // first row contains select group button, this skips that row
+                    // compare country name of each row panel until match is found
+                    if (((JLabel) ((JPanel) row).getComponent(1)).getText().equals(country)) {
+                        return ((JPanel) row);
+                    }
+                }
+            }
+        }
+        // TODO: possible error, unhandled
+        return null;
     }
     /**
      * helper method for updateGroupPanelInfo()
+     * Extracts the text from the JLabel in GroupRowPanel at index
+     * converts text to integer then adds the increment value
+     * then sets the text of the same JLabel with the new value.
      * @param rowPanel - panel containing labels to update
      * @param index - of label to update
      * @param increment - value to increment JLabel index value by
@@ -447,27 +468,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         // refreshes the display with changes
         groupPanel.revalidate();
         groupPanel.repaint();
-    }
-    /**
-     * Retrieves the groupRowPanel of the specified country so that it's group stats can
-     * be updated by updateGroupPanelInfo() method.
-     * @param groupPanel - Panel containing countries stats
-     * @param country - country to find in group
-     * @return - countries row panel
-     */
-    private JPanel getCountriesGroupRowPanel(JPanel groupPanel, String country) {
-        for(Component row : groupPanel.getComponents()) {
-            if(row instanceof JPanel) {
-                if(((JPanel) row).getComponents().length > 1) { // first row contains select group button, this skips that row
-                    // compare country name of each row panel until match is found
-                    if (((JLabel) ((JPanel) row).getComponent(1)).getText().equals(country)) {
-                        return ((JPanel) row);
-                    }
-                }
-            }
-        }
-        // TODO: possible error, unhandled
-        return null;
     }
 
     /* RESULTS PANEL FUNCTIONS */
