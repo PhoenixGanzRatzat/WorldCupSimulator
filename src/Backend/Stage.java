@@ -1,13 +1,13 @@
 package Backend;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 public abstract class Stage {
     private ArrayList<Team> teams;
     private ArrayList<Match> matches;
     public Stage(ArrayList<Team> teams){
         this.teams = teams;
+        matches = new ArrayList<Match>();
     }
     public abstract void arrangeMatches();
     public void calculateMatchResults(){
@@ -21,4 +21,5 @@ public abstract class Stage {
     public ArrayList<Match> getMatches(){
         return matches;
     }
+
 }

@@ -155,4 +155,5 @@ public class Match {
                 team2Score == match.team2Score &&
                 matchDate.equals(match.matchDate);
     }
+
 }

@@ -7,6 +7,8 @@ public class GroupStage extends Stage{
     private ArrayList<Match> matches;
     public GroupStage(ArrayList<Team> teams) {
         super(teams);
+        this.teams = getTeams();
+        this.matches = getMatches();
     }
 
     @Override
@@ -28,10 +30,8 @@ public class GroupStage extends Stage{
         }
         for (ArrayList<Team> g:groups){
             for(Team home:g){
-                for(Team away:g){
-                    if(home != away){
-                        matches.add(new Match(home, away));
-                    }
+                for(int i = g.indexOf(home) + 1; i < g.size(); i++){
+                    matches.add(new Match(home, g.get(i)));
                 }
             }
         }
