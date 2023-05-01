@@ -41,8 +41,21 @@ public class QualifyingStage extends Stage {
                     getClass().getDeclaredMethod("fifthRoundCONCACAF", List.class)
             ));
 
+            confederationMethods.put(Region.CONMEBOL.getName(), Arrays.asList(
+                    getClass().getDeclaredMethod("conmebolQualificationRound")
 
-            // Add other confederations' methods here
+            ));
+
+            confederationMethods.put(Region.OFC.getName(), Arrays.asList(
+                    getClass().getDeclaredMethod("firstRoundOFC"),
+                    getClass().getDeclaredMethod("secondRoundOFC", List.class),
+                    getClass().getDeclaredMethod("thirdRoundOFC", List.class)
+
+            ));
+            confederationMethods.put(Region.UEFA.getName(), Arrays.asList(
+                    getClass().getDeclaredMethod("firstRoundUEFA"),
+                    getClass().getDeclaredMethod("secondRoundUEFA", List.class)
+            ));
 
         } catch (NoSuchMethodException e) {
             throw new RuntimeException("Error initializing confederationMethods", e);
@@ -92,16 +105,28 @@ public class QualifyingStage extends Stage {
         return groups;
     }
 
-    private List<Match> arrangeRoundRobinMatches(List<Team> teams) {
+    private List<Match> arrangeHomeAndAwayMatches(List<Team> teams, boolean homeAndAway) {
         List<Match> matches = new ArrayList<>();
         for (int i = 0; i < teams.size(); i++) {
             for (int j = i + 1; j < teams.size(); j++) {
                 matches.add(new Match(teams.get(i), teams.get(j)));
-                matches.add(new Match(teams.get(j), teams.get(i)));
+                if (homeAndAway) {
+                    matches.add(new Match(teams.get(j), teams.get(i)));
+                }
             }
         }
         return matches;
     }
+
+    public List<Match> interConfederationPlayOffsOFC(List<Team> groupWinners) {
+        List<Match> playOffMatches = new ArrayList<>();
+
+        playOffMatches.add(new Match(groupWinners.get(0), groupWinners.get(1)));
+        playOffMatches.add(new Match(groupWinners.get(1), groupWinners.get(0)));
+
+        return playOffMatches;
+    }
+
 
 
     public List<Match> firstRoundAFC() {
@@ -114,7 +139,7 @@ public class QualifyingStage extends Stage {
         List<Team> firstRoundTeams = afcTeams.subList(afcTeams.size() - 13, afcTeams.size() - 1);
         Collections.shuffle(firstRoundTeams);
 
-        return arrangeRoundRobinMatches(firstRoundTeams);
+        return arrangeHomeAndAwayMatches(firstRoundTeams, true);
     }
 
 
@@ -136,7 +161,7 @@ public class QualifyingStage extends Stage {
         List<Team> groupRunnersUp = new ArrayList<>();
 
         for (List<Team> group : groups) {
-            secondRoundMatches.addAll(arrangeRoundRobinMatches(group));
+            secondRoundMatches.addAll(arrangeHomeAndAwayMatches(group, true));
 
             // Sort the teams in the group by their qualifier points in descending order
             group.sort((t1, t2) -> Integer.compare(t2.getQualifierPoints(), t1.getQualifierPoints()));
@@ -168,7 +193,7 @@ public class QualifyingStage extends Stage {
         List<Team> thirdPlacedTeams = new ArrayList<>();
 
         for (List<Team> group : thirdRoundGroups) {
-            thirdRoundMatches.addAll(arrangeRoundRobinMatches(group));
+            thirdRoundMatches.addAll(arrangeHomeAndAwayMatches(group, true));
         }
 
         for (List<Team> group : thirdRoundGroups) {
@@ -239,7 +264,7 @@ public class QualifyingStage extends Stage {
         List<Team> firstRoundTeams = cafTeams.subList(cafTeams.size() - 26, cafTeams.size() - 1);
         Collections.shuffle(firstRoundTeams);
 
-        return arrangeRoundRobinMatches(firstRoundTeams);
+        return arrangeHomeAndAwayMatches(firstRoundTeams, true);
     }
 
     public RoundResult secondRoundCAF(List<Team> firstRoundWinners) {
@@ -268,21 +293,22 @@ public class QualifyingStage extends Stage {
     public RoundResult thirdRoundCAF(List<Team> secondRoundWinners) {
         List<List<Team>> groups = createGroups(secondRoundWinners, 5, 4);
         List<Match> thirdRoundMatches = new ArrayList<>();
-        List<Team> qualifiedTeams = new ArrayList<>();
+        List<Team> thirdRoundTeams = new ArrayList<>(secondRoundWinners);
 
         for (List<Team> group : groups) {
-            thirdRoundMatches.addAll(arrangeRoundRobinMatches(group));
+            thirdRoundMatches.addAll(arrangeHomeAndAwayMatches(group, false));
         }
+
 
         for (List<Team> group : groups) {
             // Sort the teams in the group by their qualifier points in descending order
             group.sort((t1, t2) -> Integer.compare(t2.getQualifierPoints(), t1.getQualifierPoints()));
 
             // Add the top team from each group to the qualified teams
-            qualifiedTeams.add(group.get(0));
+            thirdRoundTeams.add(group.get(0));
         }
 
-        return new RoundResult(qualifiedTeams, thirdRoundMatches);
+        return new RoundResult(thirdRoundTeams, thirdRoundMatches);
     }
 
     public RoundResult firstRoundCONCACAF() {
@@ -292,7 +318,7 @@ public class QualifyingStage extends Stage {
         Collections.sort(concacafTeams);
 
         List<Team> firstRoundTeams = concacafTeams.subList(21, 35);
-        List<Match> firstRoundMatches = arrangeRoundRobinMatches(firstRoundTeams);
+        List<Match> firstRoundMatches = arrangeHomeAndAwayMatches(firstRoundTeams, true);
         List<Team> firstRoundWinners = firstRoundMatches.stream()
                 .map(Match::getWinner)
                 .collect(Collectors.toList());
@@ -307,7 +333,7 @@ public class QualifyingStage extends Stage {
         List<Team> secondRoundTeams = new ArrayList<>(concacafTeams.subList(8, 21));
         secondRoundTeams.addAll(firstRoundWinners);
 
-        List<Match> secondRoundMatches = arrangeRoundRobinMatches(secondRoundTeams);
+        List<Match> secondRoundMatches = arrangeHomeAndAwayMatches(secondRoundTeams, true);
         List<Team> secondRoundWinners = secondRoundMatches.stream()
                 .map(Match::getWinner)
                 .collect(Collectors.toList());
@@ -322,7 +348,7 @@ public class QualifyingStage extends Stage {
         List<Team> thirdRoundTeams = new ArrayList<>(concacafTeams.subList(6, 8));
         thirdRoundTeams.addAll(secondRoundWinners);
 
-        List<Match> thirdRoundMatches = arrangeRoundRobinMatches(thirdRoundTeams);
+        List<Match> thirdRoundMatches = arrangeHomeAndAwayMatches(thirdRoundTeams, true);
         List<Team> thirdRoundWinners = thirdRoundMatches.stream()
                 .map(Match::getWinner)
                 .collect(Collectors.toList());
@@ -344,7 +370,7 @@ public class QualifyingStage extends Stage {
         List<Team> qualifiedTeams = new ArrayList<>();
 
         for (List<Team> group : groups) {
-            fourthRoundMatches.addAll(arrangeRoundRobinMatches(group));
+            fourthRoundMatches.addAll(arrangeHomeAndAwayMatches(group, false));
         }
 
         for (List<Team> group : groups) {
@@ -357,7 +383,7 @@ public class QualifyingStage extends Stage {
     }
 
     public RoundResult fifthRoundCONCACAF(List<Team> fourthRoundWinners) {
-        List<Match> fifthRoundMatches = arrangeRoundRobinMatches(fourthRoundWinners);
+        List<Match> fifthRoundMatches = arrangeHomeAndAwayMatches(fourthRoundWinners, true);
         List<Team> qualifiedTeams = new ArrayList<>(fourthRoundWinners);
 
         // Sort the teams by their qualifier points in descending order
@@ -373,12 +399,105 @@ public class QualifyingStage extends Stage {
         return new RoundResult(worldCupQualifiers, fifthRoundMatches);
     }
 
+    public List<Match> conmebolQualificationRound() {
+        List<Team> conmebolTeams = getTeams().stream()
+                .filter(team -> team.getRegion().equals(Region.CONMEBOL.getName()))
+                .collect(Collectors.toList());
 
-    //To add other confederation qualification methods here, use the same approach
-    // For example:
-    // public void firstRoundCAF() { ... }
-    // public void firstRoundCONCACAF() { ... }
-    // ...
+        return arrangeHomeAndAwayMatches(conmebolTeams, true);
+    }
+
+    public List<Match> firstRoundOFC() {
+        List<Team> ofcFirstRoundTeams = getTeams().stream()
+                .filter(team -> team.getRegion().equals(Region.OFC.getName()))
+                .filter(team -> team.getRank() <= 4)
+                .collect(Collectors.toList());
+
+        return arrangeHomeAndAwayMatches(ofcFirstRoundTeams, true);
+    }
+
+    public RoundResult secondRoundOFC(Team firstRoundWinner) {
+        List<Team> ofcSecondRoundTeams = getTeams().stream()
+                .filter(team -> team.getRegion().equals(Region.OFC.getName()))
+                .filter(team -> team.getRank() > 4)
+                .collect(Collectors.toList());
+
+        ofcSecondRoundTeams.add(firstRoundWinner);
+        List<List<Team>> groups = createGroups(ofcSecondRoundTeams, 2, 4);
+        List<Match> secondRoundMatches = new ArrayList<>();
+        List<Team> qualifiedTeams = new ArrayList<>();
+
+        for (List<Team> group : groups) {
+            secondRoundMatches.addAll(arrangeHomeAndAwayMatches(group, true));
+
+            // Sort the teams in the group by their qualifier points in descending order
+            group.sort((t1, t2) -> Integer.compare(t2.getQualifierPoints(), t1.getQualifierPoints()));
+
+            // Add the top three teams from each group to the qualified teams
+            qualifiedTeams.add(group.get(0));
+            qualifiedTeams.add(group.get(1));
+            qualifiedTeams.add(group.get(2));
+        }
+
+        return new RoundResult(qualifiedTeams, secondRoundMatches);
+    }
+
+    public RoundResult thirdRoundOFC(List<Team> secondRoundWinners) {
+        List<List<Team>> groups = createGroups(secondRoundWinners, 2, 3);
+        List<Match> thirdRoundMatches = new ArrayList<>();
+        List<Team> groupWinners = new ArrayList<>();
+
+        for (List<Team> group : groups) {
+            thirdRoundMatches.addAll(arrangeHomeAndAwayMatches(group, true));
+
+            // Sort the teams in the group by their qualifier points in descending order
+            group.sort((t1, t2) -> Integer.compare(t2.getQualifierPoints(), t1.getQualifierPoints()));
+
+            // Add the top team from each group to the groupWinners list
+            groupWinners.add(group.get(0));
+        }
+
+        return new RoundResult(groupWinners, thirdRoundMatches);
+    }
+
+    public RoundResult firstRoundUEFA() {
+        List<Team> uefaTeams = getTeams().stream()
+                .filter(team -> team.getRegion().equals(Region.UEFA.getName()))
+                .collect(Collectors.toList());
+
+        List<List<Team>> groups = createGroups(uefaTeams, 9, 6);
+        List<Match> firstRoundMatches = new ArrayList<>();
+        List<Team> groupWinners = new ArrayList<>();
+
+        for (List<Team> group : groups) {
+            firstRoundMatches.addAll(arrangeHomeAndAwayMatches(group, true));
+
+            // Sort the teams in the group by their qualifier points in descending order
+            group.sort((t1, t2) -> Integer.compare(t2.getQualifierPoints(), t1.getQualifierPoints()));
+
+            // Add the group winner to the groupWinners list
+            groupWinners.add(group.get(0));
+        }
+
+        return new RoundResult(groupWinners, firstRoundMatches);
+    }
+
+    public RoundResult secondRoundUEFA(List<Team> firstRoundRunnersUp) {
+        List<List<Team>> playOffPairs = createGroups(firstRoundRunnersUp, 4, 2);
+        List<Match> secondRoundMatches = new ArrayList<>();
+        List<Team> qualifiedTeams = new ArrayList<>();
+
+        for (List<Team> pair : playOffPairs) {
+            List<Match> playOffMatches = arrangeHomeAndAwayMatches(pair, true);
+            secondRoundMatches.addAll(playOffMatches);
+
+            Team winner = playOffMatches.get(0).getWinner();
+            qualifiedTeams.add(winner);
+        }
+
+        return new RoundResult(qualifiedTeams, secondRoundMatches);
+    }
+
 }
 
 
