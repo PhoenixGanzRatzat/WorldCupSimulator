@@ -78,4 +78,9 @@ public class Team implements Comparable<Team>{
         }
         return 0;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }
