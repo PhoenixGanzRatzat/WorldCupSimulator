@@ -16,9 +16,7 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -37,13 +35,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * The group stage panel
+ * Creates a display window for the results of all 8 groups in the group stage. As well as the functionality
+ * to navigate through the group stage in various ways: match by match in 1 group, all groups, or complete
+ * all matches with 1 click.
+ * @author Chris Peters
  */
 public class GroupPanel extends JPanel implements StagePanel, ActionListener {
-    /* __FIELD VARIABLES__ */
-    /* Label at top of GroupPanel that displays the current round for selected group */
+    /* __ FIELD VARIABLES __ */
+    /* Label at top of GroupPanel window that displays the current round for selected group */
     private JLabel infoPanelRoundNumberLabel;
-    /* Label at top of GroupPanel that display the selected group */
+    /* Label at top of GroupPanel window that display the selected group */
     private JLabel infoPanelGroupLabel;
     /* The current round for each group. GroupNum = index + 1 */
     private int[] currentRound;
@@ -57,20 +58,22 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     private HashMap<Integer, ArrayList<Team>> groupTeams;
     /* retrieve the group number for a given team */
     private HashMap<Team, Integer> teamGroups;
+    /* retrieve a countries flag for a given country-abbreviation */
+    private HashMap<String, Image> flags;
     /* The current selected group, used to display data and influence function calls */
     private String selectedGroup;
     /* Displays the matches played up to the current round with Teams, Scores, and results */
     private JPanel resultsPanel;
     /* Container for all the group panels */
     private JPanel groupDisplayPanel;
-    /* retrieve a countries flag for a given country-abbreviation */
-    private HashMap<String, Image> flags;
+    /* Tracker for groups that have completed displaying all of their matches*/
     private boolean[] groupsThatAreComplete;
 
     /* TODO:
         >>> who moves on? top points in each group? what if multiple teams have the same final points?
         who do i highlight and why
             > Top 2
+            > Should I have a "winners" map for each group
        Todo:
      */
 
@@ -211,7 +214,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         createGroups();
     }
 
-    /* CONSTRUCTORS */
+    /* __ CONSTRUCTORS __ */
     public GroupPanel() {
         this.setLayout(new BorderLayout());
         teamGroups = new HashMap<>();
@@ -220,7 +223,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         infoPanelGroupLabel = new JLabel("A");
         infoPanelRoundNumberLabel = new JLabel("0");
         groupMatches.put(1, new ArrayList<>());
-        currentRound = new int[8]; // tracks current round for each group
+        currentRound = new int[8];
         groupDisplayPanel = new JPanel();
         selectedGroup = "A";
         groupsThatAreComplete = new boolean[]{false, false, false, false, false, false, false, false};
@@ -235,436 +238,8 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         initPanel();
     }
 
-    /**
-     * Import flags of teams involved in the group stage
-     * @throws IOException - Image import failed
-     */
-    private void initFlags() throws IOException {
-        for(Team team : this.teams) {
-            String abbv = team.getAbbv();
-            BufferedImage flag = ImageIO.read(new File("Assets" + File.separator + "Images" + File.separator + "smallFlags" + File.separator +  abbv + ".png"));
-            flags.put(abbv, flag);
-        }
-    }
-
-    /**
-     * Returns if the group stage matches have been fully simulated and the group stage
-     * is complete.
-     * @return state of completion
-     */
-    @Override
-    public boolean checkIfCompleted() {
-        boolean finalResult = true;
-        for(boolean groupComplete : this.groupsThatAreComplete) {
-            if(!groupComplete) {
-                finalResult = false;
-            }
-        }
-        return finalResult;
-    }
-
-    /**
-     * Create an empty group stage panel that will be filled in as the user interacts with function buttons
-     */
-    @Override
-    public void initPanel() {
-        /* Top bar across window for displaying current round */
-        JPanel infoPanel = new JPanel();
-        /* Center container for group results and group teams */
-        JPanel displayPanel = new JPanel();
-        displayPanel.setLayout(new GridBagLayout());
-        displayPanel.setBorder(new LineBorder(Color.BLACK));
-        GridBagConstraints constraints = new GridBagConstraints();
-        displayPanel.setBackground(new Color(0, 0, 75));
-        /* Bottom bar across window for housing functions */
-        JPanel functionPanel = new JPanel();
-
-        /* Information Panel */
-        JLabel titleLabel = new JLabel("Group Stage!");
-        infoPanel.add(titleLabel);
-        JLabel groupLabel = new JLabel("Group: ");
-        infoPanel.add(groupLabel);
-        infoPanel.add(infoPanelGroupLabel);
-        JLabel roundLabel = new JLabel("Round: ");
-        infoPanel.add(roundLabel);
-        infoPanel.add(infoPanelRoundNumberLabel);
-
-        /* __ Display Panel */
-        // Container for all group panes - displays each teams w/d/l record and points
-        groupDisplayPanel.setLayout(new GridLayout(4, 2, 2, 2));
-        groupDisplayPanel.setOpaque(false);
-        for (int i = 0; i < 8; i++) {
-            groupDisplayPanel.add(createGroupPanel(i));
-        }
-        initGroupPanelRows();
-
-        // results side-pane - displays score and outcome between each match in the group
-        resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
-        resultsPanel.setPreferredSize(new Dimension(200, 215));
-        resultsPanel.setBorder(new LineBorder(Color.black));
-        JPanel resultsTitlePane = new JPanel();
-        JLabel resultsTitleLabel = new JLabel("Group A Results");
-        resultsTitlePane.setBackground(Color.lightGray);
-        resultsTitlePane.setBorder(new LineBorder(Color.BLACK));
-        resultsTitlePane.add(resultsTitleLabel);
-        resultsPanel.add(resultsTitlePane);
-        for (int c = 0; c < 6; c++) {
-            resultsPanel.add(createMatchResultRowPanel());
-            if(c % 2 == 1) {
-                ((JPanel) resultsPanel.getComponent(c+1)).setBorder(new LineBorder(Color.BLACK));
-            }
-        }
-        // compose display panel
-        displayPanel.add(groupDisplayPanel, constraints);
-        constraints.gridx = 1;
-        constraints.insets = new Insets(0, 5, 0, 5 );
-        displayPanel.add(resultsPanel, constraints);
-
-        /* Function Panel */
-        JButton nextRoundSelectedGroupBTN = new JButton("Next round in group " + selectedGroup);
-        nextRoundSelectedGroupBTN.addActionListener(this);
-        JButton nextRoundAllGroupsBTN = new JButton("Next round for all groups");
-        nextRoundAllGroupsBTN.addActionListener(this);
-        JButton completeStageBTN = new JButton("Complete Stage");
-        completeStageBTN.addActionListener(this);
-        // compose function panel
-        functionPanel.add(nextRoundSelectedGroupBTN);
-        functionPanel.add(nextRoundAllGroupsBTN);
-        functionPanel.add(completeStageBTN);
-
-        // compose root panel
-        this.add(infoPanel, BorderLayout.NORTH);
-        this.add(displayPanel, BorderLayout.CENTER);
-        this.add(functionPanel, BorderLayout.SOUTH);
-    }
-
-    /**
-     * Used to ensure that group panels always display row information based on
-     * descending position 1 - 4 top to bottom
-     */
-    private void reorderGroupRowPanelsByPointValue(JPanel groupPanel) {
-        Component[] rowPanels = groupPanel.getComponents();
-        int numRowPanels = rowPanels.length;
-
-        // extract an array of only the panels that need sorting
-        JPanel[] panelsToSort = new JPanel[numRowPanels - 2];
-        for (int i = 2; i < numRowPanels; i++) {
-            panelsToSort[i-2] = (JPanel) rowPanels[i];
-        }
-
-        // sort those panels by "point" values in descending order
-        Arrays.sort(panelsToSort, (p1, p2) -> {
-            int points1 = Integer.parseInt(((JLabel) p1.getComponent(6)).getText());
-            int points2 = Integer.parseInt(((JLabel) p2.getComponent(6)).getText());
-            return Integer.compare(points2, points1);
-        });
-
-        // remove each panel and add them back in the sorted order
-        for (int i = 2; i < numRowPanels; i++) {
-            ((JLabel) panelsToSort[i-2].getComponent(0)).setText(String.valueOf(i-1));
-            panelsToSort[i-2].setBorder(null);
-            groupPanel.remove(panelsToSort[i-2]);
-            groupPanel.add(panelsToSort[i-2], i);
-            if(i % 2 == 0) {
-                ((JPanel) groupPanel.getComponent(i)).setBorder(new LineBorder(Color.BLACK));
-            }
-        }
-
-        // refreshes the display with changes
-        groupPanel.revalidate();
-        groupPanel.repaint();
-    }
-
-    /**
-     * Handles method calls to simulate entire stage. All rounds for all groups will be completed
-     * and the UI updated.
-     */
-    private void simulateStage() {
-        for(int i = 0; i < 6; i++) {
-            simulateRound();
-        }
-    }
-
-    /**
-     * Handles method calls to simulate one round for all groups. Updates UI.
-     */
-    private void simulateRound() {
-         for(int i = 0; i < this.groupTeams.size(); i++) {
-            simulateGroupRound(i+1);
-         }
-    }
-
-    /**
-     * Handles 1 round for a single group, this method calls for those
-     * matches to be simulated and updates the UI.
-     */
-    private void simulateGroupRound(int groupNumber) {
-        // If group has rounds remaining
-        if(this.currentRound[groupNumber-1] < 6) {
-            // get next match in the series
-            Match match = groupMatches.get(groupNumber).get(this.currentRound[groupNumber - 1]);
-            // update UI with new match data
-            updateGroupPanelInfo(groupNumber, match);
-            // Only update match results side-pane with matches from selected group
-            if(groupNumber == (this.selectedGroup.charAt(0)-64)) {
-                // +1 at end creates index of groupRowPanel for that round for method call.
-                fillMatchResultPanel(match, this.currentRound[groupNumber - 1] + 1);
-            }
-            // Rearrange group panel rows based on new point values obtained from 'match'
-            reorderGroupRowPanelsByPointValue((JPanel) groupDisplayPanel.getComponent(groupNumber-1));
-            // this group is now onto the next round
-            this.currentRound[groupNumber-1]++;
-            // update info panel with current round
-            infoPanelRoundNumberLabel.setText(String.valueOf(this.currentRound[groupNumber-1]));
-        }
-
-        // Highlight 1st place of group panel
-        // TODO: handling point ties??
-        if(this.currentRound[groupNumber-1] == 6) {
-            this.groupsThatAreComplete[groupNumber - 1] = true;
-            setCompletedGroupsToIndicateComplete(groupNumber - 1);
-        }
-
-    }
-
-    private void setCompletedGroupsToIndicateComplete(int groupNumber) {
-        JPanel groupPanel = (JPanel) groupDisplayPanel.getComponent(groupNumber);
-        JPanel rowPanel1 = (JPanel) groupPanel.getComponent(2);
-        JPanel rowPanel2 = (JPanel) groupPanel.getComponent(3);
-        rowPanel1.setBorder(new LineBorder(Color.green, 1));
-        rowPanel2.setBorder(new LineBorder(Color.green, 1));
-        groupPanel.getComponent(4).setBackground(Color.lightGray);
-        groupPanel.getComponent(5).setBackground(Color.lightGray);
-
-    }
-
-    /**
-     * Create 1 empty row-panel for group-panel
-     */
-    private void initGroupPanelRows() {
-        Component[] groupPanels = groupDisplayPanel.getComponents();
-
-        // for each group
-        for(int a = 0; a < this.groupTeams.size(); a++) {
-            JPanel groupPanel = (JPanel) groupPanels[a];
-            Component[] groupRowPanels = groupPanel.getComponents();
-
-            for(int b = 2; b < 6; b++) {
-                String countryName = this.groupTeams.get(a+1).get(b-2).getName();
-                // component 1 = "Country Name" label
-                ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(1)).setText(countryName);
-                // component 2 = "Flags"
-                ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(2)).setIcon(
-                         getScaledIcon( this.groupTeams.get(a+1).get(b-2).getAbbv() ) );
-                // Component 3-6 = { "Wins" "Draws" "Losses" "Points" }
-                ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(3)).setText("0");
-                ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(4)).setText("0");
-                ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(5)).setText("0");
-                ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(6)).setText("0");
-            }
-        }
-    }
-
-    /**
-     * Retrieves and updates the groupPanel for groupNumber with the results of
-     * match.
-     * @param groupNumber - The group to update
-     * @param match - the match to update group with
-     */
-    private void updateGroupPanelInfo(int groupNumber, Match match) {
-        JPanel groupPanel = (JPanel) groupDisplayPanel.getComponent(groupNumber - 1);
-
-        Team team1 = match.getTeamOne();
-        Team team2 = match.getTeamTwo();
-        int t1Score = match.getTeamOneScore();
-        int t2Score = match.getTeamTwoScore();
-
-        JPanel country1 = getCountryGroupRowPanel(groupPanel, team1.getName());
-        JPanel country2 = getCountryGroupRowPanel(groupPanel, team2.getName());
-
-        /*  index values = JLabel position in RowPanel component hierarchy
-            [0] "Position"
-            [1] "Country Name"
-            [2] "Flag"
-            [3] "Wins"
-            [4] "Draws"
-            [5] "Losses"
-            [6] "Points"
-
-            increment values - [5] "Points" value
-            Wins = 3 points
-            Draws = 1 point
-            losses = 0 points
-         */
-
-        if(t1Score > t2Score) {
-            updateRowPanelValue(country1, 3, 1); // [3] = wins
-            updateRowPanelValue(country1, 6, 3); // [6] = points
-            updateRowPanelValue(country2, 5, 1); // [5] = losses
-        } else if(t1Score < t2Score) {
-            updateRowPanelValue(country2, 3, 1); // [3] = wins
-            updateRowPanelValue(country2, 6, 3); // [6] = points
-            updateRowPanelValue(country1, 5, 1); // [5] = losses
-        } else { // draw
-            updateRowPanelValue(country1, 4, 1); // [4] = Draws
-            updateRowPanelValue(country1, 6, 1); // [6] = points
-            updateRowPanelValue(country2, 4, 1); // [4] = Draws
-            updateRowPanelValue(country2, 6, 1); // [6] = points
-        }
-
-
-    }
-
-    /**
-     * helper method for updateGroupPanelInfo()
-     * @param rowPanel - panel containing labels to update
-     * @param index - of label to update
-     * @param increment - value to increment JLabel index value by
-     */
-    private void updateRowPanelValue(JPanel rowPanel, int index, int increment) {
-        String indexStr = ((JLabel) rowPanel.getComponent(index)).getText();
-        int value = (Integer.parseInt(indexStr)) + increment;
-        ((JLabel) rowPanel.getComponent(index)).setText(String.valueOf(value));
-    }
-
-    /**
-     * Retrieves the groupRowPanel of the specified country so that it's group stats can
-     * be updated by updateGroupPanelInfo() method.
-     * @param groupPanel - Panel containing countries stats
-     * @param country - country to find in group
-     * @return - countries row panel
-     */
-    private JPanel getCountryGroupRowPanel(JPanel groupPanel, String country) {
-        for(Component row : groupPanel.getComponents()) {
-            if(row instanceof JPanel) {
-                if(((JPanel) row).getComponents().length > 1) { // first row contains select group button, this skips that row
-                    // compare country name of each row panel until match is found
-                    if (((JLabel) ((JPanel) row).getComponent(1)).getText().equals(country)) {
-                        return ((JPanel) row);
-                    }
-                }
-            }
-        }
-        // TODO: possible error, unhandled
-        return null;
-    }
-
-    /**
-     * This method creates a blank group results row panel that will be used to display
-     * match results between teams in a group.
-     *
-     * @return 1 empty row for the match results pane
-     */
-    private JPanel createMatchResultRowPanel() {
-        JPanel base = new JPanel(new FlowLayout());
-        for (int i = 0; i < 7; i++) {
-            if(i == 3) {
-                base.add(new JLabel("-"));
-            } else {
-                base.add(new JLabel("x"));
-            }
-        }
-        return base;
-    }
-
-    /**
-     * This method takes 1 match and translates it into a row of the group results panel.
-     * The row contains information about the teams, scores, and results(WIN/LOSS/DRAW)
-     *
-     * @param match - The match to translate into a row panel
-     */
-    private void fillMatchResultPanel(Match match, int round) {
-        /*  results row-panel layout
-            Country1Abbv - Result1 - Score1 "-" Score2 - Result2 - Country2Abbv
-        */
-        Component[] allRowPanels = this.resultsPanel.getComponents();
-        // [0]"Group Results", [1]round 1 match results row panel, [2-5]..., [6]round 6 match results row panel.
-        JPanel roundRowPanel = (JPanel) allRowPanels[round];
-        Component[] labels = roundRowPanel.getComponents();
-
-        // Initialize
-        String name1 = match.getTeamOne().getAbbv();
-        String name2 = match.getTeamTwo().getAbbv();
-        int score1 = match.getTeamOneScore();
-        int score2 = match.getTeamTwoScore();
-        String result1;
-        String result2;
-        if (score1 > score2) {
-            result1 = "Win";
-            result2 = "Loss";
-        } else if (score1 < score2) {
-            result1 = "Loss";
-            result2 = "Win";
-        } else {
-            result1 = "Draw";
-            result2 = "Draw";
-        }
-
-        // Compose
-        ((JLabel) labels[0]).setText(name1);
-        ((JLabel) labels[1]).setText(result1);
-        ((JLabel) labels[2]).setText(String.valueOf(score1));
-        ((JLabel) labels[3]).setText("-");
-        ((JLabel) labels[4]).setText(String.valueOf(score2));
-        ((JLabel) labels[5]).setText(result2);
-        ((JLabel) labels[6]).setText(name2);
-    }
-
-    /**
-     * Using List of matches, separate each team and the matches they played out into groups of 4 teams
-     * and 6 matches. total of 8 groups.
-     */
-    private void createGroups() {
-        /* put teams into groups */
-        for (Match match : matches) {
-            // get teams
-            Team team1 = match.getTeamOne();
-            Team team2 = match.getTeamTwo();
-            int groupNumber;
-
-            /* Build match, group, and team, associations */
-            if (teamGroups.containsKey(team1)) {         // __ is team1 in a group? __
-                groupNumber = teamGroups.get(team1);        // get team1 group number
-                groupMatches.get(groupNumber).add(match);   // save match to groupNumber's matches
-                if(!groupTeams.get(groupNumber).contains(team2)) {  // if group doesn't contain team 2
-                    groupTeams.get(groupNumber).add(team2);         // add team2 to team1's group
-                    teamGroups.put(team2, groupNumber);             // associate team2 to group
-                }
-            } else if (teamGroups.containsKey(team2)) {  // __ is team2 in a group? __
-                groupNumber = teamGroups.get(team2);        // get team2 group number
-                groupMatches.get(groupNumber).add(match);   // save match to groupNumber's matches
-                if(!groupTeams.get(groupNumber).contains(team1)) {  // if group doesn't contain team 2
-                    groupTeams.get(groupNumber).add(team1);         // add team1 to team2's group
-                    teamGroups.put(team1, groupNumber);             // associate team1 to group
-                }
-            } else {
-                // if < 8 groups then add new group
-                if(groupTeams.size() < 8) {
-                    int size = groupTeams.size();
-                    groupTeams.put((size + 1), new ArrayList<>());
-                    groupMatches.put((size + 1), new ArrayList<>());
-
-                }
-
-                for (Integer gn : groupTeams.keySet()) {     // Search each group for empty group
-                    if (groupTeams.get(gn).size() == 0) {    // if group is empty
-                        groupTeams.get(gn).add(team1);      // add team1 to group
-                        teamGroups.put(team1, gn); // associate team1 to group
-                        groupTeams.get(gn).add(team2);      // add team2 to group
-                        teamGroups.put(team2, gn); // associate team2 to a group
-                        groupMatches.get(gn).add(match);    // add match to group
-                    }
-                }
-            }
-
-        }
-
-        // sort the matches chronologically by date
-        for(Integer i : groupMatches.keySet()) {
-            groupMatches.get(i).sort(Comparator.comparing(Match::getMatchDate));
-        }
-    }
-
+    /* __ FUNCTIONS __ */
+    /* GROUP PANEL FUNCTIONS */
     /**
      * Create a panel to hold group data including
      * a select this group button
@@ -751,7 +326,258 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         }
         return base;
     }
+    /**
+     * Create 1 empty row-panel for group-panel
+     */
+    private void createGroupPanelRows() {
+        Component[] groupPanels = groupDisplayPanel.getComponents();
 
+        // for each group
+        for(int a = 0; a < this.groupTeams.size(); a++) {
+            JPanel groupPanel = (JPanel) groupPanels[a];
+            Component[] groupRowPanels = groupPanel.getComponents();
+
+            for(int b = 2; b < 6; b++) {
+                String countryName = this.groupTeams.get(a+1).get(b-2).getName();
+                // component 1 = "Country Name" label
+                ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(1)).setText(countryName);
+                // component 2 = "Flags"
+                ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(2)).setIcon(
+                        getScaledIcon( this.groupTeams.get(a+1).get(b-2).getAbbv() ) );
+                // Component 3-6 = { "Wins" "Draws" "Losses" "Points" }
+                ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(3)).setText("0");
+                ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(4)).setText("0");
+                ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(5)).setText("0");
+                ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(6)).setText("0");
+            }
+        }
+    }
+    /**
+     * Retrieves and updates the groupPanel for groupNumber with the results of
+     * match.
+     * @param groupNumber - The group to update
+     * @param match - the match to update group with
+     */
+    private void updateGroupPanelInfo(int groupNumber, Match match) {
+        JPanel groupPanel = (JPanel) groupDisplayPanel.getComponent(groupNumber - 1);
+
+        Team team1 = match.getTeamOne();
+        Team team2 = match.getTeamTwo();
+        int t1Score = match.getTeamOneScore();
+        int t2Score = match.getTeamTwoScore();
+
+        JPanel country1 = getCountriesGroupRowPanel(groupPanel, team1.getName());
+        JPanel country2 = getCountriesGroupRowPanel(groupPanel, team2.getName());
+
+        /*  index values = JLabel position in RowPanel component hierarchy
+            [0] "Position"
+            [1] "Country Name"
+            [2] "Flag"
+            [3] "Wins"
+            [4] "Draws"
+            [5] "Losses"
+            [6] "Points"
+
+            increment values - [5] "Points" value
+            Wins = 3 points
+            Draws = 1 point
+            losses = 0 points
+         */
+
+        if(t1Score > t2Score) {
+            updateGroupRowPanelValues(country1, 3, 1); // [3] = wins
+            updateGroupRowPanelValues(country1, 6, 3); // [6] = points
+            updateGroupRowPanelValues(country2, 5, 1); // [5] = losses
+        } else if(t1Score < t2Score) {
+            updateGroupRowPanelValues(country2, 3, 1); // [3] = wins
+            updateGroupRowPanelValues(country2, 6, 3); // [6] = points
+            updateGroupRowPanelValues(country1, 5, 1); // [5] = losses
+        } else { // draw
+            updateGroupRowPanelValues(country1, 4, 1); // [4] = Draws
+            updateGroupRowPanelValues(country1, 6, 1); // [6] = points
+            updateGroupRowPanelValues(country2, 4, 1); // [4] = Draws
+            updateGroupRowPanelValues(country2, 6, 1); // [6] = points
+        }
+
+
+    }
+    /**
+     * helper method for updateGroupPanelInfo()
+     * @param rowPanel - panel containing labels to update
+     * @param index - of label to update
+     * @param increment - value to increment JLabel index value by
+     */
+    private void updateGroupRowPanelValues(JPanel rowPanel, int index, int increment) {
+        String indexStr = ((JLabel) rowPanel.getComponent(index)).getText();
+        int value = (Integer.parseInt(indexStr)) + increment;
+        ((JLabel) rowPanel.getComponent(index)).setText(String.valueOf(value));
+    }
+    /**
+     * Used to ensure that group panels always display row information based on
+     * descending position 1 - 4 top to bottom
+     */
+    private void reorderGroupRowPanelsByPointValue(JPanel groupPanel) {
+        Component[] rowPanels = groupPanel.getComponents();
+        int numRowPanels = rowPanels.length;
+
+        // extract an array of only the panels that need sorting
+        JPanel[] panelsToSort = new JPanel[numRowPanels - 2];
+        for (int i = 2; i < numRowPanels; i++) {
+            panelsToSort[i-2] = (JPanel) rowPanels[i];
+        }
+
+        // sort those panels by "point" values in descending order
+        Arrays.sort(panelsToSort, (p1, p2) -> {
+            int points1 = Integer.parseInt(((JLabel) p1.getComponent(6)).getText());
+            int points2 = Integer.parseInt(((JLabel) p2.getComponent(6)).getText());
+            return Integer.compare(points2, points1);
+        });
+
+        // remove each panel and add them back in the sorted order
+        for (int i = 2; i < numRowPanels; i++) {
+            ((JLabel) panelsToSort[i-2].getComponent(0)).setText(String.valueOf(i-1));
+            panelsToSort[i-2].setBorder(null);
+            groupPanel.remove(panelsToSort[i-2]);
+            groupPanel.add(panelsToSort[i-2], i);
+            if(i % 2 == 0) {
+                ((JPanel) groupPanel.getComponent(i)).setBorder(new LineBorder(Color.BLACK));
+            }
+        }
+
+        // refreshes the display with changes
+        groupPanel.revalidate();
+        groupPanel.repaint();
+    }
+    /**
+     * Retrieves the groupRowPanel of the specified country so that it's group stats can
+     * be updated by updateGroupPanelInfo() method.
+     * @param groupPanel - Panel containing countries stats
+     * @param country - country to find in group
+     * @return - countries row panel
+     */
+    private JPanel getCountriesGroupRowPanel(JPanel groupPanel, String country) {
+        for(Component row : groupPanel.getComponents()) {
+            if(row instanceof JPanel) {
+                if(((JPanel) row).getComponents().length > 1) { // first row contains select group button, this skips that row
+                    // compare country name of each row panel until match is found
+                    if (((JLabel) ((JPanel) row).getComponent(1)).getText().equals(country)) {
+                        return ((JPanel) row);
+                    }
+                }
+            }
+        }
+        // TODO: possible error, unhandled
+        return null;
+    }
+
+    /* RESULTS PANEL FUNCTIONS */
+    /**
+     * This method creates a blank group results row panel that will be used to display
+     * match results between teams in a group.
+     *
+     * @return 1 empty row for the match results pane
+     */
+    private JPanel createMatchResultRowPanel() {
+        JPanel base = new JPanel(new FlowLayout());
+        for (int i = 0; i < 7; i++) {
+            if(i == 3) {
+                base.add(new JLabel("-"));
+            } else {
+                base.add(new JLabel("x"));
+            }
+        }
+        return base;
+    }
+    /**
+     * This method takes 1 match and translates it into a row of the group results panel.
+     * The row contains information about the teams, scores, and results(WIN/LOSS/DRAW)
+     *
+     * @param match - The match to translate into a row panel
+     */
+    private void updateMatchResultPanel(Match match, int round) {
+        /*  results row-panel layout
+            Country1Abbv - Result1 - Score1 "-" Score2 - Result2 - Country2Abbv
+        */
+        Component[] allRowPanels = this.resultsPanel.getComponents();
+        // [0]"Group Results", [1]round 1 match results row panel, [2-5]..., [6]round 6 match results row panel.
+        JPanel roundRowPanel = (JPanel) allRowPanels[round];
+        Component[] labels = roundRowPanel.getComponents();
+
+        // Initialize
+        String name1 = match.getTeamOne().getAbbv();
+        String name2 = match.getTeamTwo().getAbbv();
+        int score1 = match.getTeamOneScore();
+        int score2 = match.getTeamTwoScore();
+        String result1;
+        String result2;
+        if (score1 > score2) {
+            result1 = "Win";
+            result2 = "Loss";
+        } else if (score1 < score2) {
+            result1 = "Loss";
+            result2 = "Win";
+        } else {
+            result1 = "Draw";
+            result2 = "Draw";
+        }
+
+        // Compose
+        ((JLabel) labels[0]).setText(name1);
+        ((JLabel) labels[1]).setText(result1);
+        ((JLabel) labels[2]).setText(String.valueOf(score1));
+        ((JLabel) labels[3]).setText("-");
+        ((JLabel) labels[4]).setText(String.valueOf(score2));
+        ((JLabel) labels[5]).setText(result2);
+        ((JLabel) labels[6]).setText(name2);
+    }
+    /**
+     * When switching 'selected group' this method fills in matches from rounds that have
+     * already been simulated. Displaying the correct match results for completed matches
+     * for the selected group.
+     * @param groupNum - selected group to update results side-pane with its matches
+     * @param round - the last round simulated by selected group
+     */
+    private void backPopulateResultsPanel(int groupNum, int round) {
+        clearResultsPanel();
+        for(int i = 0; i < round; i++) {
+            Match match = groupMatches.get(groupNum).get(i);
+            updateMatchResultPanel(match, i+1);
+        }
+    }
+    /**
+     * clear all currently displayed matches in the results side-pane and
+     * set each row to a default set of values
+     */
+    private void clearResultsPanel() {
+        Component[] allRowPanels = this.resultsPanel.getComponents();
+        // [0]"Group Results", [1]round 1 match results row panel, [2-5]..., [6]round 6 match results row panel.
+        for(int row = 1; row < allRowPanels.length; row++) {
+            JPanel roundRowPanel = (JPanel) allRowPanels[row];
+            Component[] labels = roundRowPanel.getComponents();
+
+            // Compose
+            ((JLabel) labels[0]).setText("x");
+            ((JLabel) labels[1]).setText("x");
+            ((JLabel) labels[2]).setText("x");
+            ((JLabel) labels[3]).setText("-");
+            ((JLabel) labels[4]).setText("x");
+            ((JLabel) labels[5]).setText("x");
+            ((JLabel) labels[6]).setText("x");
+        }
+    }
+
+    /* CLASS FUNCTIONS */
+    /**
+     * Import flags of teams involved in the group stage
+     * @throws IOException - Image import failed
+     */
+    private void initFlags() throws IOException {
+        for(Team team : this.teams) {
+            String abbv = team.getAbbv();
+            BufferedImage flag = ImageIO.read(new File("Assets" + File.separator + "Images" + File.separator + "smallFlags" + File.separator +  abbv + ".png"));
+            flags.put(abbv, flag);
+        }
+    }
     /**
      * Called by select group button on top of each group panel. This method takes the matches
      * from the selected group and displays them on the side-pane results panel.
@@ -778,44 +604,124 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         // update function button text to include selected group letter
         nextGroupRoundBTN.setText("Next round in group " + this.selectedGroup);
     }
-
     /**
-     * When switching 'selected group' this method fills in matches from rounds that have
-     * already been simulated. Displaying the correct results data for completed matches
-     * for the selected group.
-     * @param groupNum - selected group to update results side-pane with its matches
-     * @param round - the last round simulated by selected group
+     * Handles method calls to simulate entire stage. All rounds for all groups will be completed
+     * and the UI updated.
      */
-    private void backPopulateResultsPanel(int groupNum, int round) {
-        clearResultsPanel();
-        for(int i = 0; i < round; i++) {
-            Match match = groupMatches.get(groupNum).get(i);
-            fillMatchResultPanel(match, i+1);
+    private void simulateStage() {
+        for(int i = 0; i < 6; i++) {
+            simulateRound();
         }
     }
-
     /**
-     * clear all currently displayed matches in the results side-pane and
-     * set each row to a default set of values
+     * Handles method calls to simulate one round for all groups. Updates UI.
      */
-    private void clearResultsPanel() {
-        Component[] allRowPanels = this.resultsPanel.getComponents();
-        // [0]"Group Results", [1]round 1 match results row panel, [2-5]..., [6]round 6 match results row panel.
-        for(int row = 1; row < allRowPanels.length; row++) {
-            JPanel roundRowPanel = (JPanel) allRowPanels[row];
-            Component[] labels = roundRowPanel.getComponents();
+    private void simulateRound() {
+         for(int i = 0; i < this.groupTeams.size(); i++) {
+            simulateGroupRound(i+1);
+         }
+    }
+    /**
+     * Handles 1 round for a single group, this method calls for those
+     * matches to be simulated and updates the UI.
+     */
+    private void simulateGroupRound(int groupNumber) {
+        // If group has rounds remaining
+        if(this.currentRound[groupNumber-1] < 6) {
+            // get next match in the series
+            Match match = groupMatches.get(groupNumber).get(this.currentRound[groupNumber - 1]);
+            // update UI with new match data
+            updateGroupPanelInfo(groupNumber, match);
+            // Only update match results side-pane with matches from selected group
+            if(groupNumber == (this.selectedGroup.charAt(0)-64)) {
+                // +1 at end creates index of groupRowPanel for that round for method call.
+                updateMatchResultPanel(match, this.currentRound[groupNumber - 1] + 1);
+            }
+            // Rearrange group panel rows based on new point values obtained from 'match'
+            reorderGroupRowPanelsByPointValue((JPanel) groupDisplayPanel.getComponent(groupNumber-1));
+            // this group is now onto the next round
+            this.currentRound[groupNumber-1]++;
+            // update info panel with current round
+            infoPanelRoundNumberLabel.setText(String.valueOf(this.currentRound[groupNumber-1]));
+        }
 
-            // Compose
-            ((JLabel) labels[0]).setText("x");
-            ((JLabel) labels[1]).setText("x");
-            ((JLabel) labels[2]).setText("x");
-            ((JLabel) labels[3]).setText("-");
-            ((JLabel) labels[4]).setText("x");
-            ((JLabel) labels[5]).setText("x");
-            ((JLabel) labels[6]).setText("x");
+        // Highlight 1st place of group panel
+        // TODO: handling point ties??
+        if(this.currentRound[groupNumber-1] == 6) {
+            this.groupsThatAreComplete[groupNumber - 1] = true;
+            setCompletedGroupsToIndicateComplete(groupNumber - 1);
+        }
+
+    }
+    /**
+     * This method adds visual feedback to the group panel once it's complete to
+     * highlight to the user which teams will move on from the group.
+     * @param groupNumber - completed group to highlight
+     */
+    private void setCompletedGroupsToIndicateComplete(int groupNumber) {
+        JPanel groupPanel = (JPanel) groupDisplayPanel.getComponent(groupNumber);
+        JPanel rowPanel1 = (JPanel) groupPanel.getComponent(2);
+        JPanel rowPanel2 = (JPanel) groupPanel.getComponent(3);
+        rowPanel1.setBorder(new LineBorder(Color.green, 1));
+        rowPanel2.setBorder(new LineBorder(Color.green, 1));
+        groupPanel.getComponent(4).setBackground(Color.lightGray);
+        groupPanel.getComponent(5).setBackground(Color.lightGray);
+
+    }
+    /**
+     * Using List of matches, separate each team and the matches they played out into groups of 4 teams
+     * and 6 matches. total of 8 groups.
+     */
+    private void createGroups() {
+        /* put teams into groups */
+        for (Match match : matches) {
+            // get teams
+            Team team1 = match.getTeamOne();
+            Team team2 = match.getTeamTwo();
+            int groupNumber;
+
+            /* Build match, group, and team, associations */
+            if (teamGroups.containsKey(team1)) {         // __ is team1 in a group? __
+                groupNumber = teamGroups.get(team1);        // get team1 group number
+                groupMatches.get(groupNumber).add(match);   // save match to groupNumber's matches
+                if(!groupTeams.get(groupNumber).contains(team2)) {  // if group doesn't contain team 2
+                    groupTeams.get(groupNumber).add(team2);         // add team2 to team1's group
+                    teamGroups.put(team2, groupNumber);             // associate team2 to group
+                }
+            } else if (teamGroups.containsKey(team2)) {  // __ is team2 in a group? __
+                groupNumber = teamGroups.get(team2);        // get team2 group number
+                groupMatches.get(groupNumber).add(match);   // save match to groupNumber's matches
+                if(!groupTeams.get(groupNumber).contains(team1)) {  // if group doesn't contain team 2
+                    groupTeams.get(groupNumber).add(team1);         // add team1 to team2's group
+                    teamGroups.put(team1, groupNumber);             // associate team1 to group
+                }
+            } else {
+                // if < 8 groups then add new group
+                if(groupTeams.size() < 8) {
+                    int size = groupTeams.size();
+                    groupTeams.put((size + 1), new ArrayList<>());
+                    groupMatches.put((size + 1), new ArrayList<>());
+
+                }
+
+                for (Integer gn : groupTeams.keySet()) {     // Search each group for empty group
+                    if (groupTeams.get(gn).size() == 0) {    // if group is empty
+                        groupTeams.get(gn).add(team1);      // add team1 to group
+                        teamGroups.put(team1, gn); // associate team1 to group
+                        groupTeams.get(gn).add(team2);      // add team2 to group
+                        teamGroups.put(team2, gn); // associate team2 to a group
+                        groupMatches.get(gn).add(match);    // add match to group
+                    }
+                }
+            }
+
+        }
+
+        // sort the matches chronologically by date
+        for(Integer i : groupMatches.keySet()) {
+            groupMatches.get(i).sort(Comparator.comparing(Match::getMatchDate));
         }
     }
-
     /**
      * Using the country abbreviation(@param abbv) this method finds the countries flag
      * from the 'SmallFlags' directory of images and scales it down to one half the current
@@ -836,6 +742,100 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         return new ImageIcon(image);
     }
 
+    /* OVERRIDES */
+    /**
+     * Returns if the group stage matches have been fully simulated and the group stage
+     * is complete.
+     * @return state of completion
+     */
+    @Override
+    public boolean checkIfCompleted() {
+        boolean finalResult = true;
+        for(boolean groupComplete : this.groupsThatAreComplete) {
+            if(!groupComplete) {
+                finalResult = false;
+            }
+        }
+        return finalResult;
+    }
+    /**
+     * Create an empty group stage panel that will be filled in as the user interacts with function buttons
+     */
+    @Override
+    public void initPanel() {
+        /* Top bar across window for displaying current round */
+        JPanel infoPanel = new JPanel();
+        /* Center container for group results and group teams */
+        JPanel displayPanel = new JPanel();
+        displayPanel.setLayout(new GridBagLayout());
+        displayPanel.setBorder(new LineBorder(Color.BLACK));
+        GridBagConstraints constraints = new GridBagConstraints();
+        displayPanel.setBackground(new Color(0, 0, 75));
+        /* Bottom bar across window for housing functions */
+        JPanel functionPanel = new JPanel();
+
+        /* Information Panel */
+        JLabel titleLabel = new JLabel("Group Stage!");
+        infoPanel.add(titleLabel);
+        JLabel groupLabel = new JLabel("Group: ");
+        infoPanel.add(groupLabel);
+        infoPanel.add(infoPanelGroupLabel);
+        JLabel roundLabel = new JLabel("Round: ");
+        infoPanel.add(roundLabel);
+        infoPanel.add(infoPanelRoundNumberLabel);
+
+        /* __ Display Panel */
+        // Container for all group panes - displays each teams w/d/l record and points
+        groupDisplayPanel.setLayout(new GridLayout(4, 2, 2, 2));
+        groupDisplayPanel.setOpaque(false);
+        for (int i = 0; i < 8; i++) {
+            groupDisplayPanel.add(createGroupPanel(i));
+        }
+        createGroupPanelRows();
+
+        // results side-pane - displays score and outcome between each match in the group
+        resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
+        resultsPanel.setPreferredSize(new Dimension(200, 215));
+        resultsPanel.setBorder(new LineBorder(Color.black));
+        JPanel resultsTitlePane = new JPanel();
+        JLabel resultsTitleLabel = new JLabel("Group A Results");
+        resultsTitlePane.setBackground(Color.lightGray);
+        resultsTitlePane.setBorder(new LineBorder(Color.BLACK));
+        resultsTitlePane.add(resultsTitleLabel);
+        resultsPanel.add(resultsTitlePane);
+        for (int c = 0; c < 6; c++) {
+            resultsPanel.add(createMatchResultRowPanel());
+            if(c % 2 == 1) {
+                ((JPanel) resultsPanel.getComponent(c+1)).setBorder(new LineBorder(Color.BLACK));
+            }
+        }
+        // compose display panel
+        displayPanel.add(groupDisplayPanel, constraints);
+        constraints.gridx = 1;
+        constraints.insets = new Insets(0, 5, 0, 5 );
+        displayPanel.add(resultsPanel, constraints);
+
+        /* Function Panel */
+        JButton nextRoundSelectedGroupBTN = new JButton("Next round in group " + selectedGroup);
+        nextRoundSelectedGroupBTN.addActionListener(this);
+        JButton nextRoundAllGroupsBTN = new JButton("Next round for all groups");
+        nextRoundAllGroupsBTN.addActionListener(this);
+        JButton completeStageBTN = new JButton("Complete Stage");
+        completeStageBTN.addActionListener(this);
+        // compose function panel
+        functionPanel.add(nextRoundSelectedGroupBTN);
+        functionPanel.add(nextRoundAllGroupsBTN);
+        functionPanel.add(completeStageBTN);
+
+        // compose root panel
+        this.add(infoPanel, BorderLayout.NORTH);
+        this.add(displayPanel, BorderLayout.CENTER);
+        this.add(functionPanel, BorderLayout.SOUTH);
+    }
+    /**
+     * Event handler for button clicks
+     * @param e - clicked button
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         JButton pressed = (JButton) e.getSource();
@@ -866,7 +866,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
             case "Complete Stage":
                 simulateStage();
                 break;
-
         }
     }
 
