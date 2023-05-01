@@ -35,7 +35,7 @@ public class Match {
         return team2Score;
     }
 
-    public void simulateMatchResult(MatchType matchType) {
+    public MatchResult simulateMatchResult(MatchType matchType) {
         // Generate random scores for each team (0-4)
         int team1Score = (int) (Math.random() * 5);
         int team2Score = (int) (Math.random() * 5);
@@ -44,6 +44,7 @@ public class Match {
         if (team1Score > team2Score) {
             // If team1 wins, add 3 points to their qualifier points
             winner.setQualifierPoints(winner.getQualifierPoints() + 3);
+
         } else if (team1Score < team2Score) {
             // If team2 wins, add 3 points to their qualifier points
             loser.setQualifierPoints(loser.getQualifierPoints() + 3);
@@ -58,16 +59,30 @@ public class Match {
             loser.setQualifierPoints(loser.getQualifierPoints() + 1);
         }
 
-
-
         // ADD: add a method that takes in a passed in boolean to check for ties.
         // If there is a tie, follow procedure: extra time, pens, and then sudden death
 
 
         // Update the match object with the result (scores for both teams)
         setResult(team1Score, team2Score);
+        return new MatchResult(winner, loser, team1Score, team2Score);
     }
 
+    public MatchResult simulateRoundOfSixteenMatch() {
+        return simulateMatchResult(MatchType.ROUND_OF_SIXTEEN);
+    }
+
+    public MatchResult simulateQuarterfinalsMatch() {
+        return simulateMatchResult(MatchType.QUARTERFINALS);
+    }
+
+    public MatchResult simulateSemifinalsMatch() {
+        return simulateMatchResult(MatchType.SEMIFINALS);
+    }
+
+    public MatchResult simulateFinals() {
+        return simulateMatchResult(MatchType.FINALS);
+    }
 
     public Team getLosingTeam() {
         return loser;
