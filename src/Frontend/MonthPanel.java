@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MonthPanel extends JPanel {
 
@@ -39,7 +40,10 @@ public class MonthPanel extends JPanel {
         this.dayPanels = new ArrayList<>();
 
         setToMonth(year, monthNum);
-        setMatchesOnDayPanels(matches);
+        setMatchesOnDayPanels(
+                matches.stream().filter(
+                        match -> (match.getMatchDate().getYear() == monthStart.getYear() && match.getMatchDate().getMonth().equals(monthStart.getMonth()))
+                ).collect(Collectors.toList()));
     }
 
     /**
@@ -58,7 +62,7 @@ public class MonthPanel extends JPanel {
         int daysInMonth = monthStart.lengthOfMonth();
 
         this.removeAll(); // make sure MonthPanel has no child components
-        for (int i = 0; i < daysInMonth; i++) {
+        for (int i = 0; i < daysInMonth + dayOffset; i++) {
             //when the first day of the month is not a sunday, there will be empty space in the calendar
             if (i < dayOffset) {
                 //use a label for empty space
@@ -71,7 +75,7 @@ public class MonthPanel extends JPanel {
                 this.add(dayPanel, i);
             }
         }
-        for (int i = daysInMonth; i < 35; i++) {
+        for (int i = daysInMonth + dayOffset; i < 35; i++) {
             this.add(new JLabel());
         }
     }
@@ -83,7 +87,7 @@ public class MonthPanel extends JPanel {
      */
     private void setMatchesOnDayPanels(List<Match> matches) {
         for (Match match : matches) {
-            DayPanel dayPanel = dayPanels.get(match.getMatchDate().getDayOfMonth());
+            DayPanel dayPanel = dayPanels.get(match.getMatchDate().getDayOfMonth() - 1);
             if (dayPanel != null) {
                 System.out.printf("adding match to day %d\n", match.getMatchDate().getDayOfMonth());
                 dayPanel.addMatch(match);
