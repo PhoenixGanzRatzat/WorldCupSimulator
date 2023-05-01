@@ -21,8 +21,4 @@ public abstract class Stage {
     public ArrayList<Match> getMatches(){
         return matches;
     }
-
-    public Collection<Team> getTeams() {
-        return teams;
-    }
 }
