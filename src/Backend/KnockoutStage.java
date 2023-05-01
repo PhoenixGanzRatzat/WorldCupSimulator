@@ -9,7 +9,7 @@ public class KnockoutStage extends Stage {
     private Set<Match> matchesForSemifinals;
     private Match finalMatch;
 
-    public KnockoutStage(Collection<Team> teams) {
+    public KnockoutStage(ArrayList<Team> teams) {
         super(teams);
         matchesForRoundOfSixteen = createMatchesFromTeams(teams);
         matchesForQuarterfinals = new HashSet<>();
