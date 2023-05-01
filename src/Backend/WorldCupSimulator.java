@@ -24,10 +24,16 @@ public class WorldCupSimulator {
     public ArrayList<Match> stageMatches(int stage){ //1 = qualifier, 2 = groups, 3 = knockout
         switch (stage){
             case 1:
+                qualifiers.arrangeMatches();
+                qualifiers.calculateMatchResults();
                 return qualifiers.getMatches();
             case 2:
+                roundRobbin.arrangeMatches();
+                roundRobbin.calculateMatchResults();
                 return roundRobbin.getMatches();
             case 3:
+                brackets.arrangeMatches();
+                brackets.calculateMatchResults();
                 return brackets.getMatches();
         }
         return null;
