@@ -119,15 +119,7 @@ public class QualifyingStage extends Stage {
         return matches;
     }
 
-    public List<Match> interConfederationPlayOffsOFC(List<Team> groupWinners) {
-        List<Match> playOffMatches = new ArrayList<>();
-
-        playOffMatches.add(new Match(groupWinners.get(0), groupWinners.get(1)));
-        playOffMatches.add(new Match(groupWinners.get(1), groupWinners.get(0)));
-
-        return playOffMatches;
-    }
-
+ 
 
 
     public List<Match> firstRoundAFC() {
