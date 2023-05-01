@@ -21,22 +21,22 @@ public class KnockoutStage extends Stage {
 
     }
 
-    private Set<Match> createMatchesFromTeams(Collection<Team> teams) {
+    private Set<Match> createMatchesFromTeams(ArrayList<Team> teams) {
         // TODO: 4/29/2023 Impl.
         Spliterator<Team> teamSpliterator = teams.spliterator().trySplit();
         return null;
     }
 
-    private Collection<Team> simulateRoundOfSixteen(Collection<Team> teams) {
+    private ArrayList<Team> simulateRoundOfSixteen(ArrayList<Team> teams) {
         // TODO: 4/28/2023 Impl.
         return null;
     }
 
-    private Collection<Team> simulateQuarterfinals(Collection<Team> roundOfSixteenWinners) {
+    private ArrayList<Team> simulateQuarterfinals(ArrayList<Team> roundOfSixteenWinners) {
         // TODO: 4/28/2023 Impl.
         return null;
     }
-    private Collection<Team> simulateSemifinals(Collection<Team> quarterfinalsWinners) {
+    private ArrayList<Team> simulateSemifinals(ArrayList<Team> quarterfinalsWinners) {
         // TODO: 4/29/2023 Impl.
         return null;
     }
@@ -44,7 +44,9 @@ public class KnockoutStage extends Stage {
     public static void main(String[] args) {
         Team teamOne = new Team("TeamOne", "T1", Region.AFC, 0);
         Team teamTwo = new Team("TeamTwo", "T2", Region.AFC, 0);
-        List<Team> teams = Arrays.asList(teamOne, teamTwo);
+        ArrayList<Team> teams = new ArrayList<>();
+        teams.add(teamOne);
+        teams.add(teamTwo);
         KnockoutStage knockoutStage = new KnockoutStage(teams);
     }
 }
