@@ -104,6 +104,12 @@ public class KnockoutStage extends Stage {
         return matchesForSemifinals;
     }
 
+    public List<Match> getAllMatches() {
+        matchesForRoundOfSixteen.addAll(matchesForQuarterfinals);
+        matchesForRoundOfSixteen.addAll(matchesForSemifinals);
+        return Collections.unmodifiableList(matchesForRoundOfSixteen);
+    }
+
     public Team getFirstPlaceTeam() {
         return firstPlaceTeam;
     }
