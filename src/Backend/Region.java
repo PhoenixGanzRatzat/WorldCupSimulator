@@ -10,6 +10,10 @@ public enum Region {
 
     private String name;
 
+    public String getName() {
+        return name;
+    }
+
     Region(String name) {
         this.name = name;
     }
