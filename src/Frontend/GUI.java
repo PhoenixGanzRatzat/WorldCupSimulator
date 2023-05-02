@@ -12,6 +12,8 @@ import java.awt.event.ActionListener;
  */
 public class GUI extends JFrame implements ActionListener {
 
+    public final static Font TOOL_TIP_FONT = new Font("Default", Font.PLAIN, 12);
+
     private JPanel cardPanel;
     private JPanel buttonPanel;
     private JPanel startPanel;
