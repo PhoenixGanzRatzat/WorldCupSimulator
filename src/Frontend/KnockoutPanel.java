@@ -15,6 +15,18 @@ import java.util.Objects;
  * one round at a time, should the user choose to skip forward.
  **/
 public class KnockoutPanel extends JPanel implements StagePanel {
+    /**
+     * TEMPORARY
+     */
+    public static void main(String[] args) {
+        KnockoutPanel panel = new KnockoutPanel();
+        JFrame frame = new JFrame();
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.add(panel);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
+
     // attributes
     Match[] matches;
     int round;
@@ -38,6 +50,7 @@ public class KnockoutPanel extends JPanel implements StagePanel {
         this.round = 0;
         this.initialized = false;
         createWindow();
+        initialized = false;
     }
 
     private void createWindow() {
@@ -204,6 +217,11 @@ public class KnockoutPanel extends JPanel implements StagePanel {
     }
 
     @Override
+    public boolean checkIfInitialized() {
+        return initialized;
+    }
+
+    @Override
     public void initPanel() {
         initialized = true; // last line of method
     }
@@ -211,7 +229,7 @@ public class KnockoutPanel extends JPanel implements StagePanel {
         private GridBagConstraints cell;
         private  Dimension cellSize;
         private JLabel flagLabel, teamLabel;
-        private final String defaultPath = "Assets" + File.separator + "blank.png";
+        private final String defaultPath = "Assets\\blank.png";
         private int imageWidth;
         private int imageHeight;
         private int flagWidth;
@@ -228,7 +246,7 @@ public class KnockoutPanel extends JPanel implements StagePanel {
             imageHeight = 46;
             flag = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
             try {
-                flag = ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(defaultPath)));
+                flag = ImageIO.read(new File(defaultPath));
             } catch(IOException e){
                 System.out.printf("File not found at \"%s\"\n", defaultPath);
             }
