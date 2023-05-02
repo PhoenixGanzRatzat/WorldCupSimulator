@@ -66,6 +66,10 @@ public class GUI extends JFrame implements ActionListener {
         groupButton.addActionListener(this);
         knockoutButton.addActionListener(this);
 
+        qualifyingButton.setEnabled(false);
+        groupButton.setEnabled(false);
+        knockoutButton.setEnabled(false);
+
         add(buttonPanel, BorderLayout.NORTH);
         add(cardPanel, BorderLayout.CENTER);
 
@@ -96,6 +100,9 @@ public class GUI extends JFrame implements ActionListener {
         if (e.getSource() == startButton) {
             checkIfPanelNeedsInit(qualifyingPanel);
             panelString = "qual";
+            qualifyingButton.setEnabled(true);
+            groupButton.setEnabled(true);
+            knockoutButton.setEnabled(true);
         } else if (e.getSource() == qualifyingButton) {
             checkIfPanelNeedsInit(qualifyingPanel);
             panelString = "qual";
