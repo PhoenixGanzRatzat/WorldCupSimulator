@@ -87,6 +87,8 @@ public class MonthPanel extends JPanel {
      */
     private void setMatchesOnDayPanels(List<Match> matches) {
         for (Match match : matches) {
+            if (match.getMatchDate().getYear() != monthStart.getYear() || match.getMatchDate().getMonth().equals(monthStart.getMonth()))
+                return; //fail gracefully if match being added is not on the right
             DayPanel dayPanel = dayPanels.get(match.getMatchDate().getDayOfMonth() - 1);
             if (dayPanel != null) {
                 System.out.printf("adding match to day %d\n", match.getMatchDate().getDayOfMonth());
