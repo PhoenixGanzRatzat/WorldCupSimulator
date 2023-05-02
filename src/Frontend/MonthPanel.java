@@ -4,6 +4,8 @@ import Backend.Match;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.text.html.HTML;
+import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -15,7 +17,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class MonthPanel extends JPanel {
 
@@ -42,6 +43,11 @@ public class MonthPanel extends JPanel {
      * @param matches  to add to the DayPanels
      */
     public MonthPanel(int year, int monthNum, List<Match> matches) {
+        ToolTipManager.sharedInstance().setInitialDelay(0);
+//        ToolTipManager.sharedInstance().setDismissDelay(600);
+        UIManager.put("ToolTip.font", GUI.TOOL_TIP_FONT);
+
+
         this.setLayout(new BorderLayout(0, 40));
         this.dayPanels = new ArrayList<>();
         this.monthLabelPanel = new JPanel();
@@ -230,15 +236,15 @@ public class MonthPanel extends JPanel {
             this.matches.add(match);
 
             JLabel leftFlag = loadFlagLabel(match.getTeamOne().getAbbv());
-            leftFlag.setToolTipText(match.getTeamOne().toString());
+            leftFlag.setToolTipText(match.getTeamOne().getName());
             JLabel rightFlag = loadFlagLabel(match.getTeamTwo().getAbbv());
-            rightFlag.setToolTipText(match.getTeamTwo().toString());
+            rightFlag.setToolTipText(match.getTeamTwo().getName());
 
 
             //add a mouseover to display JPopupMenu
             JLabel matchLabel = new JLabel();
             matchLabel.setText(String.format("%s v. %s", match.getTeamOne().getAbbv(), match.getTeamTwo().getAbbv()));
-            matchLabel.setToolTipText(match.toString());
+            matchLabel.setToolTipText(formatMatchToolTip(match));
             matchLabel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
@@ -256,6 +262,23 @@ public class MonthPanel extends JPanel {
 
             addLabel(leftFlag, matchLabel, rightFlag);
             assert classInv();
+
+        }
+
+        private String formatMatchToolTip(Match match) {
+            return String.format(
+                    "<html>" +
+                            "<p><u><b>" +
+                            "%s v. %s" +
+                            "</b></u>" +
+                            "<br>" +
+                            "Winner: %s" +
+                            "<br>" +
+                            "with %d points to %d points" +
+                            "<br>" +
+                            "%s" +
+                            "</p></html>",
+                    match.getTeamOne().getName(), match.getTeamTwo().getName(), match.getWinner(), match.getTeamOneScore(), match.getTeamTwoScore(), "MATCH RESULT");
 
         }
 
