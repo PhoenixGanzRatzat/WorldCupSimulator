@@ -126,8 +126,7 @@ public class Match {
     }
 
 
-    @Override
-    public String toString() {
+    public String getResultsAsString() {
         String text;
         if (team1Score > team2Score) {
             text = "Match{" +
@@ -153,6 +152,17 @@ public class Match {
         }
 
         return text;
+    }
+
+    @Override
+    public String toString() {
+        return "Match{" +
+                "team1=" + team1 +
+                ", team2=" + team2 +
+                ", team1Score=" + team1Score +
+                ", team2Score=" + team2Score +
+                ", matchDate=" + matchDate +
+                '}';
     }
 
     @Override

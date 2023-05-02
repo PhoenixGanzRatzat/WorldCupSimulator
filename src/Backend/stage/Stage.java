@@ -1,4 +1,8 @@
-package Backend;
+package Backend.stage;
+
+import Backend.Match;
+import Backend.MatchType;
+import Backend.Team;
 
 import java.util.List;
 

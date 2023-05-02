@@ -1,4 +1,9 @@
-package Backend;
+package Backend.stage;
+
+import Backend.Match;
+import Backend.MatchType;
+import Backend.Region;
+import Backend.Team;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
