@@ -1,7 +1,7 @@
 package backendtest;
 
 import Backend.DataLoader;
-import Backend.KnockoutStage;
+import Backend.stage.KnockoutStage;
 import Backend.Team;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package Backend;
 
-enum MatchType {
+public enum MatchType {
     NO_MATCH_TYPE,
     QUALIFIERS,
     ROUND_OF_SIXTEEN,

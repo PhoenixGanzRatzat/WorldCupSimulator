@@ -1,4 +1,4 @@
-package Backend;
+package Backend.exception;
 
 public class TeamListNotSizedProperlyException extends RuntimeException {
     public TeamListNotSizedProperlyException(String message) {

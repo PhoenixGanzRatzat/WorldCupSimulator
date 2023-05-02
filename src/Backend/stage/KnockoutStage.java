@@ -1,4 +1,9 @@
-package Backend;
+package Backend.stage;
+
+import Backend.Match;
+import Backend.MatchType;
+import Backend.Team;
+import Backend.exception.TeamListNotSizedProperlyException;
 
 import java.util.*;
 import java.util.stream.Collectors;
