@@ -19,24 +19,31 @@ public class KnockoutStage extends Stage {
         roundOfSixteenMatches = new ArrayList<>();
         quarterfinalsMatches = new ArrayList<>();
         semifinalsMatches = new ArrayList<>();
+        arrangeMatches();
     }
 
     @Override
     public void arrangeMatches() {
-
+        if (isTeamListNotSizedProperly(getTeams()))
+            throw new TeamListNotSizedProperlyException("Can't create matches from an oddly counted, or empty, list of teams.");
+        roundOfSixteenMatches = createMatchesFromTeams(getTeams());
     }
 
     private List<Match> createMatchesFromTeams(List<Team> teams) {
         List<Match> matches = new ArrayList<>();
-        if (teams.size() <= 1)
-            return Collections.emptyList();
-        if (teams.size() % 2 != 0)
-            teams.remove(teams.size() - 1);
         for (int i = 0; i < teams.size(); i += 2) {
             Match match = new Match(teams.get(i), teams.get(i + 1));
             matches.add(match);
         }
         return matches;
+    }
+
+    private boolean isTeamListNotSizedProperly(List<Team> teams) {
+        return teams.isEmpty() || isNotEvenNumberOfTeams(teams);
+    }
+
+    private boolean isNotEvenNumberOfTeams(List<Team> teams) {
+        return teams.size() % 2 != 0;
     }
 
     @Override
@@ -71,7 +78,6 @@ public class KnockoutStage extends Stage {
     }
 
     private void simulateRoundOfSixteen() {
-        roundOfSixteenMatches = createMatchesFromTeams(getTeams());
         roundOfSixteenMatches.forEach(match -> match.simulateMatchResult(MatchType.ROUND_OF_SIXTEEN));
     }
 

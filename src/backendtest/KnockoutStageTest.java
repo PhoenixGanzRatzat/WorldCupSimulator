@@ -11,7 +11,7 @@ public class KnockoutStageTest {
     private final List<Team> teams;
 
     KnockoutStageTest() {
-        teams = DataLoader.loadTeamData();
+        teams = DataLoader.loadTeamData().subList(0, 16);
         createKnockoutStage();
         simulateRounds();
     }
@@ -21,7 +21,7 @@ public class KnockoutStageTest {
     }
 
     private void simulateRounds() {
-        KnockoutStage knockoutStage = new KnockoutStage(teams.subList(0, 16));
+        KnockoutStage knockoutStage = new KnockoutStage(teams);
         knockoutStage.calculateMatchResults();
         System.out.println("knockoutStage.getFirstPlaceTeam() = " + knockoutStage.getFirstPlaceTeam());
         System.out.println("knockoutStage.getSecondPlaceTeam() = " + knockoutStage.getSecondPlaceTeam());
