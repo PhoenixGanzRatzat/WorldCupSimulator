@@ -39,7 +39,17 @@ public class GroupStage extends Stage{
             }
         }
     }
+    public ArrayList<Team> qualified(){
+        ArrayList<Team> qualifiedTeams = new ArrayList<>();
+        Collections.sort(teams);
+        Collections.reverse(teams);
+        for(int i = 0; i < 16; i++){
+            qualifiedTeams.add(teams.get(i));
+        }
+        return qualifiedTeams;
+    }
     public ArrayList<ArrayList<Team>> getGroups(){
         return groups;
     }
+
 }

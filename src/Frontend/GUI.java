@@ -86,7 +86,9 @@ public class GUI extends JFrame implements ActionListener {
         cardPanel.add(groupPanel, "group");
         cardPanel.add(knockoutPanel, "knock");
 
-        setSize(640,480);
+        setSize(1600,900);
+        setLocation((Toolkit.getDefaultToolkit().getScreenSize().width-1600)/2, (Toolkit.getDefaultToolkit().getScreenSize().height-900)/2);
+        setMinimumSize(new Dimension(1600,900));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
     }
@@ -95,28 +97,31 @@ public class GUI extends JFrame implements ActionListener {
      * Sets actions to perform when each of the navigational buttons in the top panel of the GUI is pressed.
      * @param e
      */
-        @Override
+    @Override
     public void actionPerformed(ActionEvent e) {
+        JPanel panel;
         String panelString;
 
         if (e.getSource() == startButton) {
-            checkIfPanelNeedsInit(qualifyingPanel);
+            panel = qualifyingPanel;
             panelString = "qual";
             qualifyingButton.setEnabled(true);
             groupButton.setEnabled(true);
             knockoutButton.setEnabled(true);
         } else if (e.getSource() == qualifyingButton) {
-            checkIfPanelNeedsInit(qualifyingPanel);
+            panel = qualifyingPanel;
             panelString = "qual";
         } else if (e.getSource() == groupButton) {
-            checkIfPanelNeedsInit(groupPanel);
+            panel = groupPanel;
             panelString = "group";
         } else if (e.getSource() == knockoutButton) {
-            checkIfPanelNeedsInit(knockoutPanel);
+            panel = knockoutPanel;
             panelString = "knock";
         } else {
+            panel = null;
             panelString = "";
         }
+        checkIfPanelNeedsInit(panel);
         changeCard(cardPanel, panelString);
     }
 

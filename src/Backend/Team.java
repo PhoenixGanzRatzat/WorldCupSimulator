@@ -69,11 +69,11 @@ public class Team implements Comparable<Team>{
     @Override
     public int compareTo(Team o) {
         Team t = (Team)o;
-        if (this.getRank() > t.getRank()){
+        if (this.getPoints() > t.getPoints()){
             return 1;
-        } else if (this.getRank() == t.getRank()) {
+        } else if (this.getPoints() == t.getPoints()) {
             return 0;
-        } else if (this.getRank() < t.getRank()) {
+        } else if (this.getPoints() < t.getPoints()) {
             return -1;
         }
         return 0;
