@@ -10,6 +10,8 @@ public class GroupStage extends Stage{
     private ArrayList<Match> matches;
     public GroupStage(ArrayList<Team> teams) {
         super(teams);
+        this.teams = getTeams();
+        this.matches = getMatches();
     }
 
     @Override
