@@ -20,7 +20,7 @@ public class WorldCupSimulator {
     public static List<Team> getTeams() {
         return teams;
     }
-    public ArrayList<Match> stageMatches(int stage){ //1 = qualifier, 2 = groups, 3 = knockout
+    public List<Match> stageMatches(int stage){ //1 = qualifier, 2 = groups, 3 = knockout
         switch (stage){
             case 1:
                 qualifiers.arrangeMatches();

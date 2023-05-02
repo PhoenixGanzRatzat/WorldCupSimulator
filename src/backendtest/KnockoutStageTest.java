@@ -4,6 +4,7 @@ import Backend.DataLoader;
 import Backend.stage.KnockoutStage;
 import Backend.Team;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class KnockoutStageTest {
