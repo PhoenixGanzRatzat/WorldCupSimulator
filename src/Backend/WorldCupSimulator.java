@@ -7,17 +7,25 @@ import java.util.List;
 
 public class WorldCupSimulator {
 
-    private static List<Team> teams;
+    private static ArrayList<Team> teams;
     private static final DataLoader dataLoader = new DataLoader();
     private QualifyingStage qualifiers;
     private GroupStage roundRobbin;
     private KnockoutStage brackets;
-
+    public WorldCupSimulator(){
+        teams = DataLoader.loadTeamData();
+        qualifiers = new QualifyingStage(teams);
+        this.stageMatches(1);
+        roundRobbin = new GroupStage(teams);
+        this.stageMatches(2);
+        brackets = new KnockoutStage(teams);
+        this.stageMatches(3);
+    }
     private static void startProgram() {
         teams = dataLoader.loadTeamData();
     }
 
-    public static List<Team> getTeams() {
+    public static ArrayList<Team> getTeams() {
         return teams;
     }
     public ArrayList<Match> stageMatches(int stage){ //1 = qualifier, 2 = groups, 3 = knockout
