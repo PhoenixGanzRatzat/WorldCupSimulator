@@ -119,7 +119,7 @@ public class QualifyingStage extends Stage {
         return matches;
     }
 
- 
+
 
 
     public List<Match> firstRoundAFC() {
@@ -409,6 +409,14 @@ public class QualifyingStage extends Stage {
         return arrangeHomeAndAwayMatches(ofcFirstRoundTeams, true);
     }
 
+    @Override
+    public void calculateMatchResults() {
+        // Iterate through all the matches in the qualifying stage
+        for (Match match : getMatches()) {
+            // Simulate the match result by calling the simulateMatchResult() method on the match object
+            match.simulateMatchResult(MatchType.QUALIFIERS);
+        }
+    }
     public RoundResult secondRoundOFC(Team firstRoundWinner) {
         List<Team> ofcSecondRoundTeams = getTeams().stream()
                 .filter(team -> team.getRegion().equals(Region.OFC.getName()))
@@ -431,10 +439,8 @@ public class QualifyingStage extends Stage {
             qualifiedTeams.add(group.get(1));
             qualifiedTeams.add(group.get(2));
         }
-
         return new RoundResult(qualifiedTeams, secondRoundMatches);
     }
-
     public RoundResult thirdRoundOFC(List<Team> secondRoundWinners) {
         List<List<Team>> groups = createGroups(secondRoundWinners, 2, 3);
         List<Match> thirdRoundMatches = new ArrayList<>();

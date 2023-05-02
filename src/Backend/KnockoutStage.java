@@ -1,19 +1,24 @@
 package Backend;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class KnockoutStage extends Stage {
 
-    private Set<Match> matchesForRoundOfSixteen;
-    private Set<Match> matchesForQuarterfinals;
-    private Set<Match> matchesForSemifinals;
-    private Match finalMatch;
+    private List<Match> roundOfSixteenMatches;
+    private List<Match> quarterfinalsMatches;
+    private List<Match> semifinalsMatches;
+    private Match finalsMatch;
+    private Match thirdPlaceMatch;
+    private Team firstPlaceTeam;
+    private Team secondPlaceTeam;
+    private Team thirdPlaceTeam;
 
-    public KnockoutStage(ArrayList<Team> teams) {
+    public KnockoutStage(List<Team> teams) {
         super(teams);
-        matchesForRoundOfSixteen = createMatchesFromTeams(teams);
-        matchesForQuarterfinals = new HashSet<>();
-        matchesForSemifinals = new HashSet<>();
+        roundOfSixteenMatches = new ArrayList<>();
+        quarterfinalsMatches = new ArrayList<>();
+        semifinalsMatches = new ArrayList<>();
     }
 
     @Override
@@ -21,32 +26,105 @@ public class KnockoutStage extends Stage {
 
     }
 
-    private Set<Match> createMatchesFromTeams(ArrayList<Team> teams) {
-        // TODO: 4/29/2023 Impl.
-        Spliterator<Team> teamSpliterator = teams.spliterator().trySplit();
-        return null;
+    private List<Match> createMatchesFromTeams(List<Team> teams) {
+        List<Match> matches = new ArrayList<>();
+        if (teams.size() <= 1)
+            return Collections.emptyList();
+        if (teams.size() % 2 != 0)
+            teams.remove(teams.size() - 1);
+        for (int i = 0; i < teams.size(); i += 2) {
+            Match match = new Match(teams.get(i), teams.get(i + 1));
+            matches.add(match);
+        }
+        return matches;
     }
 
-    private ArrayList<Team> simulateRoundOfSixteen(ArrayList<Team> teams) {
-        // TODO: 4/28/2023 Impl.
-        return null;
+    @Override
+    public void calculateMatchResults() {
+        simulateRounds();
     }
 
-    private ArrayList<Team> simulateQuarterfinals(ArrayList<Team> roundOfSixteenWinners) {
-        // TODO: 4/28/2023 Impl.
-        return null;
-    }
-    private ArrayList<Team> simulateSemifinals(ArrayList<Team> quarterfinalsWinners) {
-        // TODO: 4/29/2023 Impl.
-        return null;
+    private void simulateRounds() {
+        simulateRoundOfSixteen();
+        List<Team> lastMatchWinners = getWinningTeamsOfMatchResults(roundOfSixteenMatches);
+
+        simulateQuarterfinals(lastMatchWinners);
+        lastMatchWinners = getWinningTeamsOfMatchResults(quarterfinalsMatches);
+
+        simulateSemifinals(lastMatchWinners);
+        lastMatchWinners = getWinningTeamsOfMatchResults(semifinalsMatches);
+        List<Team> lastMatchLosers = getLosingTeamsOfMatches(semifinalsMatches);
+        thirdPlaceMatch = simulateMatch(lastMatchLosers.get(0), lastMatchLosers.get(1), MatchType.THIRD_PLACE_PLAYOFF);
+        thirdPlaceTeam = thirdPlaceMatch.getWinningTeam();
+
+        finalsMatch = simulateMatch(lastMatchWinners.get(0), lastMatchWinners.get(1), MatchType.FINALS);
+        firstPlaceTeam = finalsMatch.getWinningTeam();
+        secondPlaceTeam = finalsMatch.getLosingTeam();
     }
 
-    public static void main(String[] args) {
-        Team teamOne = new Team("TeamOne", "T1", Region.AFC, 0);
-        Team teamTwo = new Team("TeamTwo", "T2", Region.AFC, 0);
-        ArrayList<Team> teams = new ArrayList<>();
-        teams.add(teamOne);
-        teams.add(teamTwo);
-        KnockoutStage knockoutStage = new KnockoutStage(teams);
+    private List<Team> getWinningTeamsOfMatchResults(List<Match> match) {
+        return match.stream().map(Match::getWinningTeam).collect(Collectors.toList());
+    }
+
+    private List<Team> getLosingTeamsOfMatches(List<Match> matches) {
+        return matches.stream().map(Match::getLosingTeam).collect(Collectors.toList());
+    }
+
+    private void simulateRoundOfSixteen() {
+        roundOfSixteenMatches = createMatchesFromTeams(getTeams());
+        roundOfSixteenMatches.forEach(match -> match.simulateMatchResult(MatchType.ROUND_OF_SIXTEEN));
+    }
+
+    private void simulateQuarterfinals(List<Team> teams) {
+        quarterfinalsMatches = createMatchesFromTeams(teams);
+        quarterfinalsMatches.forEach(match -> match.simulateMatchResult(MatchType.QUARTERFINALS));
+    }
+
+    private void simulateSemifinals(List<Team> teams) {
+        semifinalsMatches = createMatchesFromTeams(teams);
+        semifinalsMatches.forEach(match -> match.simulateMatchResult(MatchType.SEMIFINALS));
+    }
+
+    private Match simulateMatch(Team teamOne, Team teamTwo, MatchType matchType) {
+        Match match = new Match(teamOne, teamTwo);
+        match.simulateMatchResult(matchType);
+        return match;
+    }
+
+    public List<Match> getMatchesForRoundOfSixteen() {
+        return roundOfSixteenMatches;
+    }
+
+    public List<Match> getMatchesForQuarterfinals() {
+        return quarterfinalsMatches;
+    }
+
+    public List<Match> getMatchesForSemifinals() {
+        return semifinalsMatches;
+    }
+
+    public Match getFinalsMatch() {
+        return finalsMatch;
+    }
+
+    public List<Match> getAllMatches() {
+        List<Match> allMatches = new ArrayList<>(roundOfSixteenMatches);
+        allMatches.addAll(quarterfinalsMatches);
+        allMatches.addAll(semifinalsMatches);
+        allMatches.add(finalsMatch);
+        allMatches.add(thirdPlaceMatch);
+        return Collections.unmodifiableList(allMatches);
+    }
+
+    public Team getFirstPlaceTeam() {
+        return firstPlaceTeam;
+    }
+
+    public Team getSecondPlaceTeam() {
+        return secondPlaceTeam;
+    }
+
+    public Team getThirdPlaceTeam() {
+        return thirdPlaceTeam;
     }
 }
