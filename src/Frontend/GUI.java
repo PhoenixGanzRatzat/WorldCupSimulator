@@ -93,6 +93,7 @@ public class GUI extends JFrame implements ActionListener {
         cardPanel.add(groupPanel, "group");
         cardPanel.add(knockoutPanel, "knock");
 
+        setTitle("World Cup Simulator");
         setSize(1600,900);
         setLocation((Toolkit.getDefaultToolkit().getScreenSize().width-1600)/2, (Toolkit.getDefaultToolkit().getScreenSize().height-900)/2);
         setMinimumSize(new Dimension(1600,900));
