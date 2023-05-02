@@ -52,10 +52,8 @@ public class testClass {
         GroupStage gTest = new GroupStage(teams);
         gTest.arrangeMatches();
         gTest.calculateMatchResults();
-        int count = 0;
-        for(Match M:gTest.getMatches()){
-            count++;
-            System.out.println(count);
+        for(Team t:gTest.qualified()){
+            System.out.println(t.getRank());
         }
     }
 
