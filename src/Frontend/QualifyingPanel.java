@@ -58,6 +58,8 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         regions[4] = "OFC";
         regions[5] = "UEFA";
 
+        initialized = false;
+
     }
 
     /**
