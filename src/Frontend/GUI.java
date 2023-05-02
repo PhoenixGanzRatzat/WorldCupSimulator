@@ -1,5 +1,7 @@
 package Frontend;
 
+import Backend.Team;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -29,7 +31,7 @@ public class GUI extends JFrame implements ActionListener {
         buttonPanel = new JPanel(new FlowLayout());
 
         startPanel = new JPanel();
-        qualifyingPanel = new QualifyingPanel();
+        qualifyingPanel = new QualifyingPanel(new Team[]{});  // change once we get actual Teams
         groupPanel = new GroupPanel();
         knockoutPanel = new KnockoutPanel();
 

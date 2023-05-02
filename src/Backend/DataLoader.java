@@ -23,8 +23,8 @@ public class DataLoader {
      *
      * @return A list of Teams.
      */
-    public static List<Team> loadTeamData() {
-        final List<Team> teams = new ArrayList<>();
+    public static ArrayList<Team> loadTeamData() {
+        final ArrayList<Team> teams = new ArrayList<>();
         final InputStream dataFileStream = GUI.class.getResourceAsStream(TEAM_DATA_FILE_NAME);
 
         Objects.requireNonNull(dataFileStream);
