@@ -21,7 +21,7 @@ public class KnockoutStageTest {
     }
 
     private void simulateRounds() {
-        KnockoutStage knockoutStage = new KnockoutStage(teams.subList(0, 8));
+        KnockoutStage knockoutStage = new KnockoutStage(teams.subList(0, 16));
         knockoutStage.calculateMatchResults();
         System.out.println("knockoutStage.getFirstPlaceTeam() = " + knockoutStage.getFirstPlaceTeam());
         System.out.println("knockoutStage.getSecondPlaceTeam() = " + knockoutStage.getSecondPlaceTeam());
