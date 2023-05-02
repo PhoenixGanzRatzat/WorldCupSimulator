@@ -1,6 +1,7 @@
 package Frontend;
 
 import Backend.Team;
+import Backend.WorldCupSimulator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +13,7 @@ import java.awt.event.ActionListener;
  */
 public class GUI extends JFrame implements ActionListener {
 
+    private WorldCupSimulator gameSim;
     private JPanel cardPanel;
     private JPanel buttonPanel;
     private JPanel startPanel;
@@ -27,11 +29,14 @@ public class GUI extends JFrame implements ActionListener {
      * Default constructor for GUI.  Calls initGUI to initialize instantiated objects.
      */
     public GUI() {
+        //gameSim = new WorldCupSimulator();  WorldCupSimulator doesn't construct right yet
+
         cardPanel = new JPanel(new CardLayout());
         buttonPanel = new JPanel(new FlowLayout());
 
         startPanel = new JPanel();
-        qualifyingPanel = new QualifyingPanel(new Team[]{});  // change once we get actual Teams
+        //qualifyingPanel = new QualifyingPanel((gameSim.getTeams().toArray(new Team[0])));  // change once we get actual Teams
+        qualifyingPanel = new QualifyingPanel(new Team[0]);
         groupPanel = new GroupPanel();
         knockoutPanel = new KnockoutPanel();
 
