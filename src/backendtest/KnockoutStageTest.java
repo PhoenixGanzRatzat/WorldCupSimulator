@@ -8,10 +8,11 @@ import java.util.List;
 
 public class KnockoutStageTest {
 
+    private static final int NUM_OF_TEAMS_IN_KNOCKOUT_STAGE = 16;
     private final List<Team> teams;
 
     KnockoutStageTest() {
-        teams = DataLoader.loadTeamData().subList(0, 16);
+        teams = DataLoader.loadTeamData().subList(0, NUM_OF_TEAMS_IN_KNOCKOUT_STAGE);
         createKnockoutStage();
         simulateRounds();
     }
