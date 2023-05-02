@@ -2,6 +2,7 @@ package Backend;
 
 import Backend.Region;
 import Backend.Team;
+import Frontend.GUI;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class DataLoader {
      */
     public static List<Team> loadTeamData() {
         final List<Team> teams = new ArrayList<>();
-        final InputStream dataFileStream = WorldCupSimulator.class.getResourceAsStream(TEAM_DATA_FILE_NAME);
+        final InputStream dataFileStream = GUI.class.getResourceAsStream(TEAM_DATA_FILE_NAME);
 
         Objects.requireNonNull(dataFileStream);
 
