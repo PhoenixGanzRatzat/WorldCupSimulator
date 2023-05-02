@@ -6,13 +6,15 @@ package Frontend;
  */
 public interface StagePanel {
     /**
-     * Checks StagPanel state to see if the next stage can be moved onto
+     * prepares the panel for display
+     */
+    public void initPanel();
+
+    /**
+     * Checks StagePanel state to see if the next stage can be moved onto
      * @return
      */
     public boolean checkIfCompleted();
 
-    /**
-     * prepares the panel for display
-     */
-    public void initPanel();
+    public boolean checkIfInitialized();
 }

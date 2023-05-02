@@ -50,6 +50,7 @@ public class KnockoutPanel extends JPanel implements StagePanel {
         this.round = 0;
         this.initialized = false;
         createWindow();
+        initialized = false;
     }
 
     private void createWindow() {
@@ -212,6 +213,11 @@ public class KnockoutPanel extends JPanel implements StagePanel {
 
     @Override
     public boolean checkIfCompleted() {
+        return initialized;
+    }
+
+    @Override
+    public boolean checkIfInitialized() {
         return initialized;
     }
 

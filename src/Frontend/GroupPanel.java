@@ -68,6 +68,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     private JPanel groupDisplayPanel;
     /* Tracker for groups that have completed displaying all of their matches*/
     private boolean[] groupsThatAreComplete;
+    private boolean initialized;
 
     /* TODO:
         >>> who moves on? top points in each group? what if multiple teams have the same final points?
@@ -212,6 +213,8 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         match34, match35, match36, match37, match38, match39, match40, match41, match42,
         match43, match44, match45, match46, match47, match48};
         createGroups();
+
+        initialized = false;
     }
 
     /* __ CONSTRUCTORS __ */
@@ -758,6 +761,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         }
         return finalResult;
     }
+
     /**
      * Create an empty group stage panel that will be filled in as the user interacts with function buttons
      */
@@ -831,6 +835,13 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         this.add(infoPanel, BorderLayout.NORTH);
         this.add(displayPanel, BorderLayout.CENTER);
         this.add(functionPanel, BorderLayout.SOUTH);
+
+        initialized = true;
+    }
+
+    @Override
+    public boolean checkIfInitialized() {
+        return initialized;
     }
     /**
      * Event handler for button clicks
