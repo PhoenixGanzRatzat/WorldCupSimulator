@@ -1,4 +1,7 @@
-package Backend;
+package Backend.stage;
+import Backend.Match;
+import Backend.Team;
+
 import java.util.*;
 
 public class GroupStage extends Stage{

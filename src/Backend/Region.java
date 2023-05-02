@@ -6,9 +6,14 @@ public enum Region {
     CONCACAF("CONCACAF"),
     CONMEBOL("CONMEBOL"),
     OFC("OFC"),
-    UEFA("UEFA");
+    UEFA("UEFA"),
+    UNNAMED_REGION("UNNAMED REGIONS");
 
     private String name;
+
+    public String getName() {
+        return name;
+    }
 
     Region(String name) {
         this.name = name;

@@ -1,12 +1,9 @@
 package Frontend;
 
-import Backend.Team;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Main class containing the base graphical elements for the program as well as the entry point for the program.
@@ -15,9 +12,11 @@ public class GUI extends JFrame implements ActionListener {
 
     private JPanel cardPanel;
     private JPanel buttonPanel;
+    private JPanel startPanel;
     private JPanel qualifyingPanel;
     private JPanel groupPanel;
     private JPanel knockoutPanel;
+    private JButton startButton;
     private JButton qualifyingButton;
     private JButton groupButton;
     private JButton knockoutButton;
@@ -29,10 +28,12 @@ public class GUI extends JFrame implements ActionListener {
         cardPanel = new JPanel(new CardLayout());
         buttonPanel = new JPanel(new FlowLayout());
 
+        startPanel = new JPanel();
         qualifyingPanel = new QualifyingPanel();
         groupPanel = new GroupPanel();
         knockoutPanel = new KnockoutPanel();
 
+        startButton = new JButton();
         qualifyingButton = new JButton();
         groupButton = new JButton();
         knockoutButton = new JButton();
@@ -55,13 +56,19 @@ public class GUI extends JFrame implements ActionListener {
      * display panels.  Finally sets JFrame parameters to make the window visible and close properly.
      */
     private void initGUI() {
+        startButton.setText("Start Simulation");
         qualifyingButton.setText("Qualifying Panel");
         groupButton.setText("Group Panel");
         knockoutButton.setText("Knockout Panel");
 
+        startButton.addActionListener(this);
         qualifyingButton.addActionListener(this);
         groupButton.addActionListener(this);
         knockoutButton.addActionListener(this);
+
+        qualifyingButton.setEnabled(false);
+        groupButton.setEnabled(false);
+        knockoutButton.setEnabled(false);
 
         add(buttonPanel, BorderLayout.NORTH);
         add(cardPanel, BorderLayout.CENTER);
@@ -70,6 +77,9 @@ public class GUI extends JFrame implements ActionListener {
         buttonPanel.add(groupButton);
         buttonPanel.add(knockoutButton);
 
+        startPanel.add(startButton);
+
+        cardPanel.add(startPanel, "start");
         cardPanel.add(qualifyingPanel, "qual");
         cardPanel.add(groupPanel, "group");
         cardPanel.add(knockoutPanel, "knock");
@@ -87,16 +97,36 @@ public class GUI extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         String panelString;
 
-        if (e.getSource() == qualifyingButton) {
+        if (e.getSource() == startButton) {
+            checkIfPanelNeedsInit(qualifyingPanel);
+            panelString = "qual";
+            qualifyingButton.setEnabled(true);
+            groupButton.setEnabled(true);
+            knockoutButton.setEnabled(true);
+        } else if (e.getSource() == qualifyingButton) {
+            checkIfPanelNeedsInit(qualifyingPanel);
             panelString = "qual";
         } else if (e.getSource() == groupButton) {
+            checkIfPanelNeedsInit(groupPanel);
             panelString = "group";
         } else if (e.getSource() == knockoutButton) {
+            checkIfPanelNeedsInit(knockoutPanel);
             panelString = "knock";
         } else {
             panelString = "";
         }
         changeCard(cardPanel, panelString);
+    }
+
+    private void checkIfPanelNeedsInit(JPanel panel) {
+        StagePanel objectSP;
+
+        if (panel instanceof StagePanel) {
+            objectSP = (StagePanel) panel;
+            if (!objectSP.checkIfInitialized()) {
+                objectSP.initPanel();
+            }
+        }
     }
 
     /**

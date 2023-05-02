@@ -18,6 +18,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     //ough IDK
     private String[] regions = new String[6];
     private JTabbedPane tabPane;
+    private boolean initialized;
 
     /**
     An in progress constructor that is subject to change.
@@ -37,7 +38,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         regions[4] = "OFC";
         regions[5] = "UEFA";
 
-
+        initialized = false;
     }
 
     /**
@@ -175,6 +176,11 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     @Override
     public boolean checkIfCompleted() {
         return true;
+    }
+
+    @Override
+    public boolean checkIfInitialized() {
+        return initialized;
     }
 
     /**

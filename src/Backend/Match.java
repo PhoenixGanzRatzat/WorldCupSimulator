@@ -37,11 +37,14 @@ public class Match {
         this.matchDate = date;
     }
 
+    public void simulateMatchResult() {
+        simulateMatchResult(MatchType.NO_MATCH_TYPE);
+    }
     /**
      * Randomly generates score values for 2 teams and then processes the match for any
      * overtime or tie dispute.
      */
-    public void simulateMatchResult() {
+    public void simulateMatchResult(MatchType matchType) {
         // Generate random scores for each team (0-4)
         int team1Score = (int) (Math.random() * 5);
         int team2Score = (int) (Math.random() * 5);
@@ -73,6 +76,16 @@ public class Match {
         this.team1Score = team1Score;
         this.team2Score = team2Score;
     }
+    public Team getLosingTeam() {
+        return team1;
+    }
+
+    public Team getWinningTeam() {
+        return team2;
+    }
+    public int getTeam1Score() {
+        return team1Score;
+    }
     public Team getTeamOne() {
         return team1;
     }
@@ -103,6 +116,7 @@ public class Match {
     public int getTeamTwoScore() {
         return team2Score;
     }
+
     // TODO: Add appropriate accessors/mutators for Dates (getDate/setDate)
     public LocalDate getMatchDate(){
         return matchDate;
@@ -111,8 +125,8 @@ public class Match {
         this.matchDate = desiredDate;
     }
 
-    @Override
-    public String toString() {
+
+    public String getResultsAsString() {
         String text;
         if (team1Score > team2Score) {
             text = "Match{" +
@@ -138,6 +152,17 @@ public class Match {
         }
 
         return text;
+    }
+
+    @Override
+    public String toString() {
+        return "Match{" +
+                "team1=" + team1 +
+                ", team2=" + team2 +
+                ", team1Score=" + team1Score +
+                ", team2Score=" + team2Score +
+                ", matchDate=" + matchDate +
+                '}';
     }
 
     @Override

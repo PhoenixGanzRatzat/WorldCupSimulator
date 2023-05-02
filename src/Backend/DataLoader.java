@@ -2,10 +2,9 @@ package Backend;
 
 import Backend.Region;
 import Backend.Team;
+import Frontend.GUI;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,7 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DataLoader {
-    private static final String TEAM_DATA_FILE_NAME = "teams.txt";
+    private static final String TEAM_DATA_FILE_NAME = "../teams.txt";
     private static final String DATA_DELIMITER = ",";
 
     /**
@@ -24,22 +23,23 @@ public class DataLoader {
      *
      * @return A list of Teams.
      */
-    public List<Team> loadTeamData() {
-        List<Team> teams = new ArrayList<>();
-        // InputStream stream = Objects.requireNonNull(WorldCupSimulator.class.getResourceAsStream(TEAM_DATA_FILE_NAME));
-        InputStreamReader stream;
-        try {
-            stream = new InputStreamReader(new FileInputStream(TEAM_DATA_FILE_NAME));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+    public static List<Team> loadTeamData() {
+        final List<Team> teams = new ArrayList<>();
+        final InputStream dataFileStream = GUI.class.getResourceAsStream(TEAM_DATA_FILE_NAME);
 
-        try (BufferedReader reader = new BufferedReader(stream)) {
-            final Region[] region = {null};
-            List<String> trimmedLines = removeEmptyLinesAndSpaces(reader.lines());
-            trimmedLines.forEach(line -> {
-                if (isLineARegionName(line)) region[0] = Region.valueOf(line);
-                else teams.add(createTeamFromLine(line, region[0]));
+        Objects.requireNonNull(dataFileStream);
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(dataFileStream))) {
+            final Region[] currentTeamRegion = {null};
+            final List<String> fileTextLines = filterOutEmptyLinesThenTrim(reader.lines());
+
+            fileTextLines.forEach(lineText -> {
+                if (isLineTextARegionName(lineText)) {
+                    currentTeamRegion[0] = Region.valueOf(lineText);
+                } else {
+                    Team team = createTeamFromLineText(lineText, currentTeamRegion[0]);
+                    teams.add(team);
+                }
             });
         } catch (IOException e) {
             System.out.println("Error loading team data.");
@@ -49,16 +49,19 @@ public class DataLoader {
         return teams;
     }
 
-    private Team createTeamFromLine(String line, Region region) {
+    private static Team createTeamFromLineText(String line, Region region) {
         String[] parts = line.split(DATA_DELIMITER);
         return new Team(parts[0], parts[1], region, Integer.parseInt(parts[2]));
     }
 
-    private List<String> removeEmptyLinesAndSpaces(Stream<String> reader) {
-        return reader.filter(line -> !line.isEmpty()).map(String::trim).collect(Collectors.toList());
+    private static List<String> filterOutEmptyLinesThenTrim(Stream<String> reader) {
+        return reader
+                .filter(line -> !line.isEmpty())
+                .map(String::trim)
+                .collect(Collectors.toList());
     }
 
-    private boolean isLineARegionName(String line) {
+    private static  boolean isLineTextARegionName(String line) {
         return !line.contains(DATA_DELIMITER);
     }
 }
