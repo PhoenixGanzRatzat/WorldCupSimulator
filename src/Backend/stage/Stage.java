@@ -16,6 +16,7 @@ public abstract class Stage {
     private List<Match> matches;
     public Stage(List<Team> teams){
         this.teams = teams;
+        matches = new ArrayList<>();
     }
     public abstract void arrangeMatches();
     public void calculateMatchResults(){
