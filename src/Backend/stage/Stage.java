@@ -1,11 +1,6 @@
 package Backend.stage;
 
 import Backend.Match;
-import Backend.MatchType;
-import Backend.Team;
-
-import Backend.Match;
-import Backend.MatchType;
 import Backend.Team;
 
 import java.util.ArrayList;
@@ -21,7 +16,7 @@ public abstract class Stage {
     public abstract void arrangeMatches();
     public void calculateMatchResults(){
         for(Match m:matches){
-            m.simulateMatchResult(MatchType.NO_MATCH_TYPE);
+            m.simulateMatchResult();
         }
     }
     public List<Team> getTeams(){
