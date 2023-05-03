@@ -5,9 +5,9 @@ import Backend.Team;
 import java.util.*;
 
 public class GroupStage extends Stage{
-    ArrayList<ArrayList<Team>> groups;
-    private ArrayList<Team> teams;
-    private ArrayList<Match> matches;
+    List<List<Team>> groups;
+    private List<Team> teams;
+    private List<Match> matches;
     public GroupStage(ArrayList<Team> teams) {
         super(teams);
         this.teams = getTeams();
@@ -32,7 +32,7 @@ public class GroupStage extends Stage{
             }
             groups.add(group);
         }
-        for (ArrayList<Team> g:groups){
+        for (List<Team> g:groups){
             for(Team home:g){
                 for(int i = g.indexOf(home)+1; i < 4; i++){
                     matches.add(new Match(home, g.get(i)));
@@ -49,7 +49,7 @@ public class GroupStage extends Stage{
         }
         return qualifiedTeams;
     }
-    public ArrayList<ArrayList<Team>> getGroups(){
+    public List<List<Team>> getGroups(){
         return groups;
     }
 

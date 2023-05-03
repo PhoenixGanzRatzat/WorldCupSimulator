@@ -26,7 +26,7 @@ public class KnockoutStage extends Stage {
     private Team thirdPlaceTeam;
 
     public KnockoutStage(List<Team> teams) {
-        super((ArrayList)teams);
+        super(teams);
         roundOfSixteenMatches = new ArrayList<>();
         quarterfinalsMatches = new ArrayList<>();
         semifinalsMatches = new ArrayList<>();

@@ -37,14 +37,12 @@ public class Match {
         this.matchDate = date;
     }
 
-    public void simulateMatchResult() {
-        simulateMatchResult(MatchType.NO_MATCH_TYPE);
-    }
+
     /**
      * Randomly generates score values for 2 teams and then processes the match for any
      * overtime or tie dispute.
      */
-    public void simulateMatchResult(MatchType matchType) {
+    public void simulateMatchResult() {
         // Generate random scores for each team (0-4)
         int team1Score = (int) (Math.random() * 5);
         int team2Score = (int) (Math.random() * 5);
