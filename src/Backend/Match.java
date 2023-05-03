@@ -10,6 +10,8 @@ public class Match {
     private LocalDate matchDate;
 
 
+
+
     public Match(Team teamOne, Team teamTwo){
         this.team1 = teamOne;
         this.team2 = teamTwo;
@@ -49,28 +51,59 @@ public class Match {
         int team1Score = (int) (Math.random() * 5);
         int team2Score = (int) (Math.random() * 5);
 
-        // Update team points based on match result
-        if (team1Score > team2Score) {
-            // If team1 wins, add 3 points to their qualifier points
-            team1.setQualifierPoints(team1.getQualifierPoints() + 3);
-        } else if (team1Score < team2Score) {
-            // If team2 wins, add 3 points to their qualifier points
-            team2.setQualifierPoints(team2.getQualifierPoints() + 3);
-        } else {
-            // If the match ends in a draw, add 1 point to both teams' qualifier points
-            team1.setQualifierPoints(team1.getQualifierPoints() + 1);
-            team2.setQualifierPoints(team2.getQualifierPoints() + 1);
+        // Below is the Knockout Stage Tiebreaker code
+        // If a tiebreaker is needed and the match ends in a draw during this stage, execute the tiebreaker procedure
+        if (matchType == MatchType.KNOCKOUT && team1Score == team2Score) {
+            // Simulate extra time being played, generate new scores
+            int extraTimeTeam1Score = (int) (Math.random() * 2);
+            int extraTimeTeam2Score = (int) (Math.random() * 2);
+            team1Score += extraTimeTeam1Score;
+            team2Score += extraTimeTeam2Score;
+
+            // If there's still a tie after the extra time added, simulate penalty shootout
+            if (team1Score == team2Score) {
+                int penaltiesTeam1Score = (int) (Math.random() * 5) + 1;
+                int penaltiesTeam2Score = (int) (Math.random() * 5) + 1;
+                team1Score += penaltiesTeam1Score;
+                team2Score += penaltiesTeam2Score;
+
+                // If there's still a tie after the penalty shootout, simulate sudden death
+                while (team1Score == team2Score) {
+                    team1Score += (int) (Math.random() * 2);
+                    team2Score += (int) (Math.random() * 2);
+                }
+            }
         }
 
+        // Get the most recent scores for both teams
+        int team1MostRecentScore = team1.getMostRecentPoints(matchDate);
+        int team2MostRecentScore = team2.getMostRecentPoints(matchDate);
+
+        // Update team points based on match result
+        if (team1Score > team2Score) {
+            team1.setPoints(matchDate, team1MostRecentScore + 3);
+        } else if (team1Score < team2Score) {
+            team2.setPoints(matchDate, team2MostRecentScore + 3);
+        } else {
+            team1.setPoints(matchDate, team1MostRecentScore + 1);
+            team2.setPoints(matchDate, team2MostRecentScore + 1);
+        }
+
+        // Update the match object with the result (scores for both teams)
+        setResult(team1Score, team2Score);
 
 
         // ADD: add a method that takes in a passed in boolean to check for ties.
         // If there is a tie, follow procedure: extra time, pens, and then sudden death
 
 
-        // Update the match object with the result (scores for both teams)
-        setResult(team1Score, team2Score);
+
+
+
     }
+
+
+
 
     public void setResult(int team1Score, int team2Score) {
         this.team1Score = team1Score;
@@ -133,27 +166,28 @@ public class Match {
             text = "Match{" +
                     "Winner =" + team1 +
                     ", Loser =" + team2 +
-                    ", Winner Score =" + team1.getQualifierPoints() +
-                    ", teamTwoScore =" + team2.getQualifierPoints()  +
+                    ", Winner Score =" + team1.getPoints(matchDate) +
+                    ", teamTwoScore =" + team2.getPoints(matchDate)  +
                     '}';
         } else if (team1Score < team2Score) {
             text = "Match{" +
                     "Winner =" + team2 +
                     ", Loser =" + team1 +
-                    ", Winner Score =" + team2.getQualifierPoints() +
-                    ", teamTwoScore =" + team1.getQualifierPoints()  +
+                    ", Winner Score =" + team2.getPoints(matchDate) +
+                    ", teamTwoScore =" + team1.getPoints(matchDate)  +
                     '}';
         } else {
             text = "Match{ Draw : " +
                     "Team 1 =" + team1 +
                     ", Team 2 =" + team2 +
-                    ", Team 1 Score =" + team1.getQualifierPoints() +
-                    ", team 2 Score =" + team2.getQualifierPoints()  +
+                    ", Team 1 Score =" + team1.getPoints(matchDate) +
+                    ", team 2 Score =" + team2.getPoints(matchDate)  +
                     '}';
         }
 
         return text;
     }
+
 
     @Override
     public boolean equals(Object obj) {
