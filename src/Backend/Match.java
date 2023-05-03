@@ -99,6 +99,24 @@ public class Match {
             return null;
         }
     }
+    public int getWinnerScore() {
+        if (team1Score > team2Score) {
+            return team1Score;
+        } else if (team1Score < team2Score) {
+            return team2Score;
+        } else {
+            return -1;
+        }
+    }
+    public int getLoserScore() {
+        if (team1Score > team2Score) {
+            return team2Score;
+        } else if (team1Score < team2Score) {
+            return team1Score;
+        } else {
+            return -1;
+        }
+    }
     public Team getLoser() {
         if (team1Score > team2Score) {
             return team2;
