@@ -80,6 +80,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         tabPane.insertTab("Matches by Month", null, genPanel, null, 0);
 
         month = new MonthPanel(2020, curMonth, matches);
+        month.setPreferredSize(new Dimension(800, 600));
         //JLabel monthLabel = new JLabel(String.valueOf(Month.of(curMonth)));
         //JComboBox<String> dropDown = new JComboBox<String>();
         JButton forward = new JButton(">");
@@ -101,6 +102,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         genPanel.add(backward, BorderLayout.WEST);
         //genPanel.add(dropDown, BorderLayout.EAST);
         genPanel.add(month, BorderLayout.CENTER);
+        //genPanel.add(new JLabel("This is for space and will be removed"), BorderLayout.SOUTH);
 
 
 
