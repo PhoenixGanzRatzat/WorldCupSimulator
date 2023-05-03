@@ -4,6 +4,8 @@ import Backend.Match;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.text.html.HTML;
+import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -11,16 +13,22 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class MonthPanel extends JPanel {
 
+    private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MMMM u");
+
+    private JPanel calendarPanel;
+    private JPanel monthLabelPanel;
+    private JLabel monthLabel;
+    private List<DayPanel> dayPanels; //TODO: can probably use JPanel::getComponent(int)
+
     private java.time.LocalDate monthStart;
 
-    private List<DayPanel> dayPanels; //TODO: can probably use JPanel::getComponent(int)
 
     /**
      * Default Constructor
@@ -35,15 +43,28 @@ public class MonthPanel extends JPanel {
      * @param matches  to add to the DayPanels
      */
     public MonthPanel(int year, int monthNum, List<Match> matches) {
-        this.setPreferredSize(new Dimension(1000, 800));
-        this.setLayout(new GridLayout(5, 7, 10, 10));
+        ToolTipManager.sharedInstance().setInitialDelay(0);
+//        ToolTipManager.sharedInstance().setDismissDelay(600);
+        UIManager.put("ToolTip.font", GUI.TOOL_TIP_FONT);
+
+
+        this.setLayout(new BorderLayout(0, 40));
         this.dayPanels = new ArrayList<>();
+        this.monthLabelPanel = new JPanel();
+        monthLabelPanel.setLayout(new BoxLayout(monthLabelPanel, BoxLayout.Y_AXIS));
+        this.monthLabel = new JLabel();
+        monthLabel.setFont(new Font("Default",  Font.PLAIN, 24));
+        monthLabel.setVerticalAlignment(SwingConstants.CENTER);
+        monthLabelPanel.add(monthLabel);
+        monthLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        this.calendarPanel = new JPanel();
+        calendarPanel.setPreferredSize(new Dimension(1000, 1000));
+        calendarPanel.setLayout(new GridLayout(5, 7, 10, 10));
+        this.add(monthLabelPanel, BorderLayout.NORTH);
+        this.add(calendarPanel, BorderLayout.CENTER);
 
         setToMonth(year, monthNum);
-        setMatchesOnDayPanels(
-                matches.stream().filter(
-                        match -> (match.getMatchDate().getYear() == monthStart.getYear() && match.getMatchDate().getMonth().equals(monthStart.getMonth()))
-                ).collect(Collectors.toList()));
+        setMatchesOnDayPanels(matches);
     }
 
     /**
@@ -54,6 +75,7 @@ public class MonthPanel extends JPanel {
      */
     private void setToMonth(int year, int monthNum) {
         this.monthStart = java.time.LocalDate.of(year, monthNum, 1);
+        updateLabel();
 
         //if the first day of the month is not a sunday, we need empty space to pad out the grid cells
         //getDayOfWeek returns a java.time.DayOfWeek enum where 1 = Monday and 7 = Sunday
@@ -61,22 +83,22 @@ public class MonthPanel extends JPanel {
         int dayOffset = monthStart.getDayOfWeek().getValue() % 7;
         int daysInMonth = monthStart.lengthOfMonth();
 
-        this.removeAll(); // make sure MonthPanel has no child components
+        calendarPanel.removeAll(); // make sure MonthPanel has no child components
         for (int i = 0; i < daysInMonth + dayOffset; i++) {
             //when the first day of the month is not a sunday, there will be empty space in the calendar
             if (i < dayOffset) {
                 //use a label for empty space
-                this.add(new JLabel());
+                calendarPanel.add(new JLabel());
             } else {
                 //Grid cells are 0 indexed, but month days aren't. Subtract the offset to get the actual date.
                 LocalDate date = monthStart.withDayOfMonth(i + 1 - dayOffset);
                 DayPanel dayPanel = new DayPanel(date);
                 dayPanels.add(dayPanel);
-                this.add(dayPanel, i);
+                calendarPanel.add(dayPanel, i);
             }
         }
         for (int i = daysInMonth + dayOffset; i < 35; i++) {
-            this.add(new JLabel());
+            calendarPanel.add(new JLabel());
         }
     }
 
@@ -86,15 +108,21 @@ public class MonthPanel extends JPanel {
      * @param matches to add
      */
     private void setMatchesOnDayPanels(List<Match> matches) {
-        for (Match match : matches) {
-            if (match.getMatchDate().getYear() != monthStart.getYear() || match.getMatchDate().getMonth().equals(monthStart.getMonth()))
-                return; //fail gracefully if match being added is not on the right
+
+        matches.stream().filter( //filter matches to only use matches from this year and month
+                match ->
+                        match.getMatchDate().getYear() == monthStart.getYear() && match.getMatchDate().getMonth().equals(monthStart.getMonth())
+        ).forEach(match -> {
             DayPanel dayPanel = dayPanels.get(match.getMatchDate().getDayOfMonth() - 1);
             if (dayPanel != null) {
                 System.out.printf("adding match to day %d\n", match.getMatchDate().getDayOfMonth());
                 dayPanel.addMatch(match);
             }
-        }
+        });
+    }
+
+    private void updateLabel() {
+        monthLabel.setText(monthStart.format(dateFormat));
     }
 
     @Override
@@ -203,20 +231,20 @@ public class MonthPanel extends JPanel {
          *
          * @param match to add
          */
-        public void addMatch(Match match) {
+        private void addMatch(Match match) {
             System.out.printf("adding match %s\n", match);
             this.matches.add(match);
 
             JLabel leftFlag = loadFlagLabel(match.getTeamOne().getAbbv());
-            leftFlag.setToolTipText(match.getTeamOne().toString());
+            leftFlag.setToolTipText(match.getTeamOne().getName());
             JLabel rightFlag = loadFlagLabel(match.getTeamTwo().getAbbv());
-            rightFlag.setToolTipText(match.getTeamTwo().toString());
+            rightFlag.setToolTipText(match.getTeamTwo().getName());
 
 
             //add a mouseover to display JPopupMenu
             JLabel matchLabel = new JLabel();
             matchLabel.setText(String.format("%s v. %s", match.getTeamOne().getAbbv(), match.getTeamTwo().getAbbv()));
-            matchLabel.setToolTipText(match.toString());
+            matchLabel.setToolTipText(formatMatchToolTip(match));
             matchLabel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
@@ -234,6 +262,23 @@ public class MonthPanel extends JPanel {
 
             addLabel(leftFlag, matchLabel, rightFlag);
             assert classInv();
+
+        }
+
+        private String formatMatchToolTip(Match match) {
+            return String.format(
+                    "<html>" +
+                            "<p><u><b>" +
+                            "%s v. %s" +
+                            "</b></u>" +
+                            "<br>" +
+                            "Winner: %s" +
+                            "<br>" +
+                            "with %d points to %d points" +
+                            "<br>" +
+                            "%s" +
+                            "</p></html>",
+                    match.getTeamOne().getName(), match.getTeamTwo().getName(), match.getWinner(), match.getTeamOneScore(), match.getTeamTwoScore(), "MATCH RESULT");
 
         }
 

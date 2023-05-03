@@ -17,6 +17,7 @@ public class WorldCupSimulator {
         qualifiers = new QualifyingStage(teams);
         this.stageMatches(1);
         roundRobbin = new GroupStage(teams);
+        teams = roundRobbin.qualified();
         this.stageMatches(2);
         brackets = new KnockoutStage(teams);
         this.stageMatches(3);

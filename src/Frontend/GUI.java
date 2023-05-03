@@ -1,6 +1,7 @@
 package Frontend;
 
 import Backend.Team;
+import Backend.WorldCupSimulator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,6 +12,9 @@ import java.awt.event.ActionListener;
  * Main class containing the base graphical elements for the program as well as the entry point for the program.
  */
 public class GUI extends JFrame implements ActionListener {
+
+    private WorldCupSimulator gameSim;
+    public final static Font TOOL_TIP_FONT = new Font("Default", Font.PLAIN, 12);
 
     private JPanel cardPanel;
     private JPanel buttonPanel;
@@ -27,11 +31,14 @@ public class GUI extends JFrame implements ActionListener {
      * Default constructor for GUI.  Calls initGUI to initialize instantiated objects.
      */
     public GUI() {
+        //gameSim = new WorldCupSimulator();  WorldCupSimulator doesn't construct right yet
+
         cardPanel = new JPanel(new CardLayout());
         buttonPanel = new JPanel(new FlowLayout());
 
         startPanel = new JPanel();
-        qualifyingPanel = new QualifyingPanel(new Team[]{});  // change once we get actual Teams
+        //qualifyingPanel = new QualifyingPanel((gameSim.getTeams().toArray(new Team[0])));  // change once we get actual Teams
+        qualifyingPanel = new QualifyingPanel(new Team[0]);
         groupPanel = new GroupPanel();
         knockoutPanel = new KnockoutPanel();
 
@@ -86,6 +93,7 @@ public class GUI extends JFrame implements ActionListener {
         cardPanel.add(groupPanel, "group");
         cardPanel.add(knockoutPanel, "knock");
 
+        setTitle("World Cup Simulator");
         setSize(1600,900);
         setLocation((Toolkit.getDefaultToolkit().getScreenSize().width-1600)/2, (Toolkit.getDefaultToolkit().getScreenSize().height-900)/2);
         setMinimumSize(new Dimension(1600,900));
