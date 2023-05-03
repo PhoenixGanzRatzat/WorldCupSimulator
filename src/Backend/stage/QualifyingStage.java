@@ -1,7 +1,6 @@
 package Backend.stage;
 
 import Backend.Match;
-import Backend.MatchType;
 import Backend.Region;
 import Backend.Team;
 

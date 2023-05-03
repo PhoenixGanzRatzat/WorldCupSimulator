@@ -1,14 +1,8 @@
 package Backend.stage;
 
 import Backend.Match;
-import Backend.MatchType;
 import Backend.Team;
 
-import Backend.Match;
-import Backend.MatchType;
-import Backend.Team;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Stage {
