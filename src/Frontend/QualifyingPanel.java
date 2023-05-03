@@ -80,15 +80,13 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         tabPane.insertTab("Matches by Month", null, genPanel, null, 0);
 
         month = new MonthPanel(2020, curMonth, matches);
-        JLabel monthLabel = new JLabel(String.valueOf(Month.of(curMonth)));
+        //JLabel monthLabel = new JLabel(String.valueOf(Month.of(curMonth)));
         //JComboBox<String> dropDown = new JComboBox<String>();
         JButton forward = new JButton(">");
         JButton backward = new JButton("<");
 
         forward.addActionListener(listener);
         backward.addActionListener(listener);
-        forward.setMaximumSize(new Dimension(30, 10));
-        backward.setMaximumSize(new Dimension(30, 10));
 
         forward.setActionCommand("next");
         backward.setActionCommand("back");
@@ -98,7 +96,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         dropDown.addItem("c"); */
 
 
-        genPanel.add(monthLabel, BorderLayout.NORTH);
+       // genPanel.add(monthLabel, BorderLayout.NORTH);
         genPanel.add(forward, BorderLayout.EAST);
         genPanel.add(backward, BorderLayout.WEST);
         //genPanel.add(dropDown, BorderLayout.EAST);
@@ -256,13 +254,17 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         curMonth = 1;
         fillMonth(new ArrayList<Match>());
 
+        this.add(tabPane);
+        this.setSize(1600, 900);
+        initialized = true;
+
     }
 
     ActionListener listener = new ActionListener() {
         @Override
         public void actionPerformed (ActionEvent e) {
             String command = e.getActionCommand();
-            System.out.println(command);
+            //System.out.println(command);
 
             switch(command) {
                 case "next": curMonth++;
