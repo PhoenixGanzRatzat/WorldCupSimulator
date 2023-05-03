@@ -1,7 +1,6 @@
 package Backend.stage;
 
 import Backend.Match;
-import Backend.MatchType;
 import Backend.Team;
 import Backend.exception.TeamListNotSizedProperlyException;
 
@@ -122,30 +121,30 @@ public class KnockoutStage extends Stage {
     }
 
     private void simulateRoundOfSixteen() {
-        roundOfSixteenMatches.forEach(match -> match.simulateMatchResult(MatchType.ROUND_OF_SIXTEEN));
+        roundOfSixteenMatches.forEach(Match::simulateMatchResult);
     }
 
     private void simulateQuarterfinals(List<Team> teams) {
         quarterfinalsMatches = createMatchesFromTeams(teams);
-        quarterfinalsMatches.forEach(match -> match.simulateMatchResult(MatchType.QUARTERFINALS));
+        quarterfinalsMatches.forEach(Match::simulateMatchResult);
     }
 
     private void simulateSemifinals(List<Team> teams) {
         semifinalsMatches = createMatchesFromTeams(teams);
-        semifinalsMatches.forEach(match -> match.simulateMatchResult(MatchType.SEMIFINALS));
+        semifinalsMatches.forEach(Match::simulateMatchResult);
     }
 
     private Match simulateFinalsMatch(Team teamOne, Team teamTwo) {
         LocalDate matchDate = LocalDate.of(WORLD_CUP_YEAR, Month.JULY.getValue(), 15);
         Match match = new Match(teamOne, teamTwo, matchDate);
-        match.simulateMatchResult(MatchType.FINALS);
+        match.simulateMatchResult();
         return match;
     }
 
     private Match simulateThirdPlacePlayoffMatch(Team teamOne, Team teamTwo) {
         LocalDate matchDate = LocalDate.of(WORLD_CUP_YEAR, Month.JULY.getValue(), 14);
         Match match = new Match(teamOne, teamTwo, matchDate);
-        match.simulateMatchResult(MatchType.THIRD_PLACE_PLAYOFF);
+        match.simulateMatchResult();
         return match;
     }
 

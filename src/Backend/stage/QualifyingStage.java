@@ -1,7 +1,6 @@
 package Backend.stage;
 
 import Backend.Match;
-import Backend.MatchType;
 import Backend.Region;
 import Backend.Team;
 
@@ -419,7 +418,7 @@ public class QualifyingStage extends Stage {
         // Iterate through all the matches in the qualifying stage
         for (Match match : getMatches()) {
             // Simulate the match result by calling the simulateMatchResult() method on the match object
-            match.simulateMatchResult(MatchType.QUALIFIERS);
+            match.simulateMatchResult();
         }
     }
     public RoundResult secondRoundOFC(Team firstRoundWinner) {
