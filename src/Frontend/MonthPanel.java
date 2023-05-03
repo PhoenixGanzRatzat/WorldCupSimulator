@@ -266,6 +266,7 @@ public class MonthPanel extends JPanel {
         }
 
         private String formatMatchToolTip(Match match) {
+            /*
             return String.format(
                     "<html>" +
                             "<p><u><b>" +
@@ -279,7 +280,41 @@ public class MonthPanel extends JPanel {
                             "%s" +
                             "</p></html>",
                     match.getTeamOne().getName(), match.getTeamTwo().getName(), match.getWinner(), match.getTeamOneScore(), match.getTeamTwoScore(), "MATCH RESULT");
+             */
+            // Check if match was tied
 
+            String winnerScore = String.valueOf(match.getWinnerScore());
+            String loserScore = String.valueOf(match.getLoserScore());
+            if(match.getWinner() == null) {
+                winnerScore = String.valueOf(match.getTeamOneScore());
+                return String.format(
+                        "<html>" +
+                                "<p><u><b>" +
+                                "%s v. %s" +
+                                "</b></u>" +
+                                "<br>" +
+                                "Result: Draw" +
+                                "<br>" +
+                                "Score: %s - %s" +
+                                "</p></html>",
+                        match.getTeamOne().getName(), match.getTeamTwo().getName(), winnerScore, winnerScore);
+
+
+            } else {
+                String winnerDisplayName = match.getWinner().getName();
+                return String.format(
+                        "<html>" +
+                                "<p><u><b>" +
+                                "%s v. %s" +
+                                "</b></u>" +
+                                "<br>" +
+                                "Winner: %s" +
+                                "<br>" +
+                                "Score: %s - %s" +
+                                "</p></html>",
+                        match.getTeamOne().getName(), match.getTeamTwo().getName(), winnerDisplayName, winnerScore, loserScore);
+
+            }
         }
 
         @Override
