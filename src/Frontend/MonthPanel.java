@@ -115,7 +115,6 @@ public class MonthPanel extends JPanel {
         ).forEach(match -> {
             DayPanel dayPanel = dayPanels.get(match.getMatchDate().getDayOfMonth() - 1);
             if (dayPanel != null) {
-                System.out.printf("adding match to day %d\n", match.getMatchDate().getDayOfMonth());
                 dayPanel.addMatch(match);
             }
         });
@@ -232,7 +231,6 @@ public class MonthPanel extends JPanel {
          * @param match to add
          */
         private void addMatch(Match match) {
-            System.out.printf("adding match %s\n", match);
             this.matches.add(match);
 
             JLabel leftFlag = loadFlagLabel(match.getTeamOne().getAbbv());
