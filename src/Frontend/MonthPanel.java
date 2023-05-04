@@ -73,7 +73,7 @@ public class MonthPanel extends JPanel {
      * @param year
      * @param monthNum
      */
-    private void setToMonth(int year, int monthNum) {
+    public void setToMonth(int year, int monthNum) {
         this.monthStart = java.time.LocalDate.of(year, monthNum, 1);
         updateLabel();
 
@@ -107,7 +107,7 @@ public class MonthPanel extends JPanel {
      *
      * @param matches to add
      */
-    private void setMatchesOnDayPanels(List<Match> matches) {
+    public void setMatchesOnDayPanels(List<Match> matches) {
 
         matches.stream().filter( //filter matches to only use matches from this year and month
                 match ->
@@ -245,19 +245,6 @@ public class MonthPanel extends JPanel {
             JLabel matchLabel = new JLabel();
             matchLabel.setText(String.format("%s v. %s", match.getTeamOne().getAbbv(), match.getTeamTwo().getAbbv()));
             matchLabel.setToolTipText(formatMatchToolTip(match));
-            matchLabel.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    super.mouseEntered(e);
-                    System.out.printf("entered %s\n", matchLabel.getText());
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    super.mouseExited(e);
-                    System.out.printf("exited %s\n", matchLabel.getText());
-                }
-            });
 
 
             addLabel(leftFlag, matchLabel, rightFlag);
@@ -266,20 +253,38 @@ public class MonthPanel extends JPanel {
         }
 
         private String formatMatchToolTip(Match match) {
-            return String.format(
-                    "<html>" +
-                            "<p><u><b>" +
-                            "%s v. %s" +
-                            "</b></u>" +
-                            "<br>" +
-                            "Winner: %s" +
-                            "<br>" +
-                            "with %d points to %d points" +
-                            "<br>" +
-                            "%s" +
-                            "</p></html>",
-                    match.getTeamOne().getName(), match.getTeamTwo().getName(), match.getWinner(), match.getTeamOneScore(), match.getTeamTwoScore(), "MATCH RESULT");
+            String winnerScore = String.valueOf(match.getWinnerScore());
+            String loserScore = String.valueOf(match.getLoserScore());
+            if(match.getWinner() == null) {
+                winnerScore = String.valueOf(match.getTeamOneScore());
+                return String.format(
+                        "<html>" +
+                                "<p><u><b>" +
+                                "%s v. %s" +
+                                "</b></u>" +
+                                "<br>" +
+                                "Result: Draw" +
+                                "<br>" +
+                                "Score: %s - %s" +
+                                "</p></html>",
+                        match.getTeamOne().getName(), match.getTeamTwo().getName(), winnerScore, winnerScore);
 
+
+            } else {
+                String winnerDisplayName = match.getWinner().getName();
+                return String.format(
+                        "<html>" +
+                                "<p><u><b>" +
+                                "%s v. %s" +
+                                "</b></u>" +
+                                "<br>" +
+                                "Winner: %s" +
+                                "<br>" +
+                                "Score: %s - %s" +
+                                "</p></html>",
+                        match.getTeamOne().getName(), match.getTeamTwo().getName(), winnerDisplayName, winnerScore, loserScore);
+
+            }
         }
 
         @Override
