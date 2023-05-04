@@ -54,11 +54,6 @@ public class DataLoader {
         return trimLinesAndConvertToList(nonEmptyFileLines);
     }
 
-    private static Team createTeamFromTextLine(String line, Region region) {
-        String[] parts = line.split(DATA_DELIMITER);
-        return new Team(parts[0], parts[1], region, Integer.parseInt(parts[2]));
-    }
-
     private static Stream<String> filterOutEmptyLines(Stream<String> lines) {
         return lines.filter(s -> !s.isEmpty());
     }
@@ -69,5 +64,10 @@ public class DataLoader {
 
     private static boolean isLineTextARegionName(String line) {
         return !line.contains(DATA_DELIMITER);
+    }
+
+    private static Team createTeamFromTextLine(String line, Region region) {
+        String[] parts = line.split(DATA_DELIMITER);
+        return new Team(parts[0], parts[1], region, Integer.parseInt(parts[2]));
     }
 }
