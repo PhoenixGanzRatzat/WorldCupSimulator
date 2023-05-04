@@ -8,7 +8,7 @@ public class GroupStage extends Stage{
     List<List<Team>> groups;
     private List<Team> teams;
     private List<Match> matches;
-    public GroupStage(ArrayList<Team> teams) {
+    public GroupStage(List<Team> teams) {
         super(teams);
         this.teams = getTeams();
         this.matches = getMatches();

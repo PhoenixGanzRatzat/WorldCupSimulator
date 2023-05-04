@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class QualifyingStage extends Stage {
 
-    public QualifyingStage(ArrayList<Team> teams) {
+    public QualifyingStage(List<Team> teams) {
         super(teams);
     }
 

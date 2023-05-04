@@ -2,13 +2,11 @@ package Backend;
 
 import Backend.stage.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class WorldCupSimulator {
 
-    private static ArrayList<Team> teams;
-    private static final DataLoader dataLoader = new DataLoader();
+    private static List<Team> teams;
     private QualifyingStage qualifiers;
     private GroupStage roundRobbin;
     private KnockoutStage brackets;
@@ -23,10 +21,10 @@ public class WorldCupSimulator {
         this.stageMatches(3);
     }
     private static void startProgram() {
-        teams = dataLoader.loadTeamData();
+        teams = DataLoader.loadTeamData();
     }
 
-    public static ArrayList<Team> getTeams() {
+    public static List<Team> getTeams() {
         return teams;
     }
     public List<Match> stageMatches(int stage){ //1 = qualifier, 2 = groups, 3 = knockout

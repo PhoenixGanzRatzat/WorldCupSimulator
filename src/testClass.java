@@ -10,7 +10,6 @@ import java.util.List;
 public class testClass {
 
     private static ArrayList<Team> teams;
-    private static final DataLoader dataLoader = new DataLoader();
 
     private static void startProgram() {
         teams = new ArrayList<Team>();

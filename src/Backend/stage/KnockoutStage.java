@@ -40,6 +40,14 @@ public class KnockoutStage extends Stage {
         roundOfSixteenMatches = createMatchesFromTeams(getTeams());
     }
 
+    private boolean isTeamListNotSizedProperly(List<Team> teams) {
+        return teams.isEmpty() || isNotEvenNumberOfTeams(teams);
+    }
+
+    private boolean isNotEvenNumberOfTeams(List<Team> teams) {
+        return teams.size() % 2 != 0;
+    }
+
     private List<Match> createMatchesFromTeams(List<Team> teams) {
         List<Match> matches = new ArrayList<>();
         List<LocalDate> matchDates = getMatchDatesFromNumberOfTeams(teams.size());
@@ -89,20 +97,12 @@ public class KnockoutStage extends Stage {
         );
     }
 
-    private boolean isTeamListNotSizedProperly(List<Team> teams) {
-        return teams.isEmpty() || isNotEvenNumberOfTeams(teams);
-    }
-
-    private boolean isNotEvenNumberOfTeams(List<Team> teams) {
-        return teams.size() % 2 != 0;
-    }
-
     @Override
     public void calculateMatchResults() {
-        simulateRounds();
+        simulateAllStageRounds();
     }
 
-    private void simulateRounds() {
+    private void simulateAllStageRounds() {
         simulateRoundOfSixteen();
         List<Team> lastMatchWinners = getWinningTeamsOfMatchResults(roundOfSixteenMatches);
 
