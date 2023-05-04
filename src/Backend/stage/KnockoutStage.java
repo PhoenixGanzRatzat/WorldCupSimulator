@@ -172,13 +172,13 @@ public class KnockoutStage extends Stage {
         return finalsMatch;
     }
 
-    public List<Match> getAllMatches() {
-        List<Match> allMatches = new ArrayList<>(roundOfSixteenMatches);
-        allMatches.addAll(quarterfinalsMatches);
-        allMatches.addAll(semifinalsMatches);
-        allMatches.add(finalsMatch);
-        allMatches.add(thirdPlaceMatch);
-        return Collections.unmodifiableList(allMatches);
+    @Override
+    public List<Match> getMatches() {
+        super.getMatches().addAll(quarterfinalsMatches);
+        super.getMatches().addAll(semifinalsMatches);
+        super.getMatches().add(finalsMatch);
+        super.getMatches().add(thirdPlaceMatch);
+        return Collections.unmodifiableList(super.getMatches());
     }
 
     public Team getFirstPlaceTeam() {
