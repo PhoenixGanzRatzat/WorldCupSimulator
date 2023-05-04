@@ -7,7 +7,7 @@ import java.util.List;
 
 public class WorldCupSimulator {
 
-    private static ArrayList<Team> teams;
+    private static List<Team> teams;
     private QualifyingStage qualifiers;
     private GroupStage roundRobbin;
     private KnockoutStage brackets;
@@ -25,7 +25,7 @@ public class WorldCupSimulator {
         teams = DataLoader.loadTeamData();
     }
 
-    public static ArrayList<Team> getTeams() {
+    public static List<Team> getTeams() {
         return teams;
     }
     public List<Match> stageMatches(int stage){ //1 = qualifier, 2 = groups, 3 = knockout

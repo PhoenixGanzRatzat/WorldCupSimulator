@@ -24,8 +24,8 @@ public class DataLoader {
      *
      * @return A list of Teams.
      */
-    public static ArrayList<Team> loadTeamData() {// TODO: 5/4/2023 Change return type to List
-        final ArrayList<Team> teams = new ArrayList<>();
+    public static List<Team> loadTeamData() {// TODO: 5/4/2023 Change return type to List
+        final List<Team> teams = new ArrayList<>();
         final InputStream dataFileStream = getDataInputStream();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(dataFileStream))) {
             createTeamsFromLinesOfText(teams, reader);
