@@ -24,7 +24,7 @@ public class DataLoader {
      *
      * @return A list of Teams.
      */
-    public static List<Team> loadTeamData() {// TODO: 5/4/2023 Change return type to List
+    public static List<Team> loadTeamData() {
         final List<Team> teams = new ArrayList<>();
         final InputStream dataFileStream = getDataInputStream();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(dataFileStream))) {

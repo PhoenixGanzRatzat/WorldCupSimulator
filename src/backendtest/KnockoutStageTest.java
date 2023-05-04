@@ -29,7 +29,7 @@ public class KnockoutStageTest {
         System.out.println("knockoutStage.getSecondPlaceTeam() = " + knockoutStage.getSecondPlaceTeam());
         System.out.println("knockoutStage.getThirdPlaceTeam() = " + knockoutStage.getThirdPlaceTeam());
 
-        knockoutStage.getAllMatches().forEach(match -> System.out.println("match = " + match));
+        knockoutStage.getMatches().forEach(match -> System.out.println("match = " + match));
     }
 
     public static void main(String[] args) {
