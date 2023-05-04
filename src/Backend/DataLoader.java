@@ -18,6 +18,9 @@ public class DataLoader {
     private static final String TEAM_DATA_FILE_NAME = "../teams.txt";
     private static final String DATA_DELIMITER = ",";
 
+    private DataLoader() {
+    }
+
     /**
      * Reads team data from the team data file.
      *
@@ -61,7 +64,7 @@ public class DataLoader {
                 .collect(Collectors.toList());
     }
 
-    private static  boolean isLineTextARegionName(String line) {
+    private static boolean isLineTextARegionName(String line) {
         return !line.contains(DATA_DELIMITER);
     }
 }
