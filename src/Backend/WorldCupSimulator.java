@@ -2,6 +2,7 @@ package Backend;
 
 import Backend.stage.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WorldCupSimulator {
@@ -12,7 +13,7 @@ public class WorldCupSimulator {
     private KnockoutStage brackets;
     public WorldCupSimulator(){
         teams = DataLoader.loadTeamData();
-        qualifiers = new QualifyingStage(teams);
+        qualifiers = new QualifyingStage((ArrayList<Team>) teams);
         this.stageMatches(1);
         roundRobbin = new GroupStage(teams);
         teams = roundRobbin.qualified();
