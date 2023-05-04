@@ -73,7 +73,7 @@ public class MonthPanel extends JPanel {
      * @param year
      * @param monthNum
      */
-    private void setToMonth(int year, int monthNum) {
+    public void setToMonth(int year, int monthNum) {
         this.monthStart = java.time.LocalDate.of(year, monthNum, 1);
         updateLabel();
 
@@ -107,7 +107,7 @@ public class MonthPanel extends JPanel {
      *
      * @param matches to add
      */
-    private void setMatchesOnDayPanels(List<Match> matches) {
+    public void setMatchesOnDayPanels(List<Match> matches) {
 
         matches.stream().filter( //filter matches to only use matches from this year and month
                 match ->

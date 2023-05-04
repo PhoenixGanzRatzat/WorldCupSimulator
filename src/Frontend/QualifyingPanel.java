@@ -15,6 +15,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
     private Match[] matches;
     private int curMonth;
+    private int curYear;
     private Team[] teams;
     private MonthPanel month;
     private JPanel[] cards;
@@ -79,7 +80,8 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         tabPane.removeTabAt(0);
         tabPane.insertTab("Matches by Month", null, genPanel, null, 0);
 
-        month = new MonthPanel(2020, curMonth, matches);
+        month.setToMonth(curYear, curMonth);
+        month.setMatchesOnDayPanels(matches);
         month.setPreferredSize(new Dimension(800, 600));
         //JLabel monthLabel = new JLabel(String.valueOf(Month.of(curMonth)));
         //JComboBox<String> dropDown = new JComboBox<String>();
@@ -105,6 +107,37 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         //genPanel.add(new JLabel("This is for space and will be removed"), BorderLayout.SOUTH);
 
 
+
+
+    }
+
+    public void initMonthPanel(ArrayList<Match> matches) {
+
+        month.setToMonth(curYear, curMonth);
+        month.setMatchesOnDayPanels(matches);
+        month.setPreferredSize(new Dimension(800, 600));
+
+
+        JButton forward = new JButton(">");
+        JButton backward = new JButton("<");
+
+        forward.addActionListener(listener);
+        backward.addActionListener(listener);
+
+        forward.setActionCommand("next");
+        backward.setActionCommand("back");
+
+
+        JPanel genPanel = new JPanel();
+        BorderLayout layout = new BorderLayout();
+        genPanel.setLayout(layout);
+
+        genPanel.add(forward, BorderLayout.EAST);
+        genPanel.add(backward, BorderLayout.WEST);
+        genPanel.add(month, BorderLayout.CENTER);
+
+
+        tabPane.insertTab("Matches by Month", null, genPanel, null, 0);
 
 
     }
@@ -235,14 +268,16 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      */
     @Override
     public void initPanel() {
+        curMonth = 1;
+        curYear = 2018;
         tabPane =  new JTabbedPane();
         cards = new JPanel[6];
-
       /*  JPanel testThis = new JPanel();
         testThis.setLayout(new GridLayout(2, 1));
         testThis.add(new JLabel("This is a Label"));
         testThis.add(month); */
-        tabPane.addTab("Matches by Month", month);
+
+        initMonthPanel(new ArrayList<Match>());
 
         for(int i = 0; i < 6; i++) {
             JPanel subPanel = new JPanel();
@@ -253,8 +288,6 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         }
 
         fillResults();
-        curMonth = 1;
-        fillMonth(new ArrayList<Match>());
 
         this.add(tabPane);
         this.setSize(1600, 900);
@@ -278,11 +311,14 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
             if(curMonth > 12) {
                 curMonth = 1;
+                curYear++;
             }
             if(curMonth < 1) {
                 curMonth = 12;
+                curYear--;
             }
-            fillMonth(new ArrayList<Match>());
+            month.setToMonth(curYear, curMonth);
+            month.setMatchesOnDayPanels(new ArrayList<Match>()); //backend.getMatchesForYearMonth(
         }
     };
 }
