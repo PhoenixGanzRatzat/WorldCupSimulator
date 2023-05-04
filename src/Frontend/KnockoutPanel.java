@@ -40,7 +40,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     public KnockoutPanel() {
         super(new GridBagLayout());
         this.cells = new BracketCell[][]{new BracketCell[16], new BracketCell[8], new BracketCell[4], new BracketCell[2], new BracketCell[1]};
-        this.setBackground(new Color(197, 197, 197));
+        //this.setBackground(new Color(197, 197, 197));
         this.currentRound = 0;
         this.initialized = false;
         createWindow();
@@ -57,11 +57,11 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         /*Insets insCenter = new Insets(20,20,40,20);
         Insets insLeft = new Insets(10, 30, 10, 10);
         Insets insRight = new Insets(10, 10, 10, 30);*/
-        Insets insCenter = new Insets(0,0,0,0);
-        Insets insLeft = new Insets(0,0,0,0);
-        Insets insRight = new Insets(0,0,0,0);
 
-        GridBagConstraints bracket = new GridBagConstraints(0,0,1,2,0,1,10, 0, insCenter,0, 0);
+        GridBagConstraints bracket = new GridBagConstraints();
+        bracket.insets = new Insets(0,0,0,0);
+        bracket.weighty = 0;
+
 
         /*
          *
@@ -100,30 +100,29 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
 
         for (int i = 0; i < 8; i++) {
             bracket.gridwidth = 1;
-            bracket.gridheight = 2;
+            bracket.gridheight = 1;
+            if (i == 0) bracket.anchor = GridBagConstraints.SOUTH;
+            if (i == 7) bracket.anchor = GridBagConstraints.NORTH;
             // first round
             bracket.gridy = row[ROUND_OF_SIXTEEN][i];
             // left
             cells[ROUND_OF_SIXTEEN][i] = new BracketCell(row[ROUND_OF_SIXTEEN][i], ROUND_OF_SIXTEEN, LEFT);
-            bracket.insets = insLeft;
             bracket.gridx = 1;
             this.add(this.cells[ROUND_OF_SIXTEEN][i], bracket);
             // right
             cells[ROUND_OF_SIXTEEN][i+8] = new BracketCell(row[ROUND_OF_SIXTEEN][i], ROUND_OF_SIXTEEN, RIGHT);
-            bracket.insets = insRight;
             bracket.gridx = 16;
             this.add(this.cells[ROUND_OF_SIXTEEN][i+8], bracket);
+            bracket.anchor = GridBagConstraints.CENTER;
             // second round
             if (i < 4) {
                 bracket.gridy = row[QUARTERFINALS][i];
                 // left
                 cells[QUARTERFINALS][i] = new BracketCell(row[QUARTERFINALS][i], QUARTERFINALS, LEFT);
-                bracket.insets = insLeft;
                 bracket.gridx = 3;
                 this.add(this.cells[QUARTERFINALS][i], bracket);
                 // right
                 cells[QUARTERFINALS][i+4] = new BracketCell(row[QUARTERFINALS][i], QUARTERFINALS, RIGHT);
-                bracket.insets = insRight;
                 bracket.gridx = 14;
                 this.add(this.cells[QUARTERFINALS][i+4], bracket);
             }
@@ -132,38 +131,32 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
                 bracket.gridy = row[SEMIFINALS][i];
                 // left
                 cells[SEMIFINALS][i] = new BracketCell(row[SEMIFINALS][i], SEMIFINALS, LEFT);
-                bracket.insets = insLeft;
                 bracket.gridx = 5;
                 this.add(this.cells[SEMIFINALS][i], bracket);
                 // right
                 cells[SEMIFINALS][i+2] = new BracketCell(row[SEMIFINALS][i], SEMIFINALS, RIGHT);
-                bracket.insets = insRight;
                 bracket.gridx = 12;
                 this.add(this.cells[SEMIFINALS][i+2], bracket);
             }
             // final + winner
             if (i == 0) {
                 // left
-
                 cells[FINAL][i] = new BracketCell(row[FINAL][i], FINAL, LEFT);
-                bracket.insets = insLeft;
                 bracket.gridx = 7;
-                bracket.gridy = 8;
+                bracket.gridy = row[FINAL][i];
                 this.add(this.cells[FINAL][i], bracket);
                 // right
-
                 cells[FINAL][i+1] = new BracketCell(row[FINAL][i], FINAL, RIGHT);
-                bracket.insets = insRight;
                 bracket.gridx = 10;
-                bracket.gridy = 8;
+                bracket.gridy = row[FINAL][i];
                 this.add(this.cells[FINAL][i+1], bracket);
 
                 // winner
                 cells[WINNER][i] = new BracketCell(row[WINNER][i], WINNER, CENTER);
-                bracket.insets = insCenter;
                 bracket.gridwidth = 2;
+                bracket.gridheight = 2;
                 bracket.gridx = 8;
-                bracket.gridy = 5;
+                bracket.gridy = row[WINNER][i];
                 this.add(this.cells[WINNER][i], bracket);
             }
         }
@@ -176,30 +169,45 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         }
         // remainder of method is spacers between cells
 
-        //18x1 vertical spacers, as top & bottom margins of the whole bracket (2x total)
+        // 18x1 vertical spacers, as top & bottom margins of the whole bracket (2x total)
         addSpacer(0,0,18,1,true, false);
-        addSpacer(0,17,18,1,true, false);
-        // 1x16 horizontal spacers, four each padding the two groups of four outermost columns of cells (8x total)
-        addSpacer(0,1,1,16,false,true);
-        addSpacer(2,1,1,16,false,true);
-        addSpacer(4,1,1,16,false,true);
-        addSpacer(6,1,1,16,false,true);
-        addSpacer(11,1,1,16,false,true);
-        addSpacer(13,1,1,16,false,true);
-        addSpacer(15,1,1,16,false,true);
-        addSpacer(17,1,1,16,false,true);
+        addSpacer(0,16,18,1,true, false);
+        // 1x15 horizontal spacers, four each padding the two groups of four outermost columns of cells (8x total)
+        addSpacer(0,1,1,15,false,true);
+        addSpacer(2,1,1,15,false,true);
+        addSpacer(4,1,1,15,false,true);
+        addSpacer(6,1,1,15,false,true);
+        addSpacer(11,1,1,15,false,true);
+        addSpacer(13,1,1,15,false,true);
+        addSpacer(15,1,1,15,false,true);
+        addSpacer(17,1,1,15,false,true);
         // 1x1 vertical spacers, two each at the top & bottom of the quarterfinal columns (4x total)
         addSpacer(3,1,1,1,true,false);
         addSpacer(14,1,1,1,true,false);
-        addSpacer(3,16,1,1,true,false);
-        addSpacer(14,16,1,1,true,false);
-        // 1x2 vertical spacers, three each between the four rows of the quarterfinal columns (6x total)
-        addSpacer(3,4,1,2,true,false);
-        addSpacer(14,4,1,2,true,false);
-        addSpacer(3,8,1,2,true,false);
-        addSpacer(14,8,1,2,true,false);
-        addSpacer(3,12,1,2,true,false);
-        addSpacer(14,12,1,2,true,false);
+        addSpacer(3,15,1,1,true,false);
+        addSpacer(14,15,1,1,true,false);
+        // 1x1 vertical spacers, between all round-of-sixteen rows (14x total)
+        addSpacer(1,2,1,1,true,false);
+        addSpacer(16,2,1,1,true,false);
+        addSpacer(1,4,1,1,true,false);
+        addSpacer(16,4,1,1,true,false);
+        addSpacer(1,6,1,1,true,false);
+        addSpacer(16,6,1,1,true,false);
+        addSpacer(1,8,1,1,true,false);
+        addSpacer(16,8,1,1,true,false);
+        addSpacer(1,10,1,1,true,false);
+        addSpacer(16,10,1,1,true,false);
+        addSpacer(1,12,1,1,true,false);
+        addSpacer(16,12,1,1,true,false);
+        addSpacer(1,14,1,1,true,false);
+        addSpacer(16,14,1,1,true,false);
+        // 1x3 vertical spacers, three each between the four rows of the quarterfinal columns (8x total)
+        addSpacer(3,3,1,3,true,false);
+        addSpacer(14,7,1,3,true,false);
+        addSpacer(3,8,1,3,true,false);
+        addSpacer(14,8,1,3,true,false);
+        addSpacer(3,11,1,3,true,false);
+        addSpacer(14,11,1,3,true,false);
         // 1x6 vertical spacers, one each between the two rows of the semifinal columns (2x total)
         addSpacer(5,6,1,6,true,false);
         addSpacer(12,6,1,6,true,false);
@@ -211,12 +219,12 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         // 1x7 vertical spacers, two each above and below the single row of the final columns (4x total)
         addSpacer(7,1,1,7,true,false);
         addSpacer(10,1,1,7,true,false);
-        addSpacer(7,8,1,7,true,false);
-        addSpacer(10,8,1,7,true,false);
-        // 2x4 two-way spacer, above the winner's cell (1x only)
+        addSpacer(7,10,1,7,true,false);
+        addSpacer(10,10,1,7,true,false);
+        //2x4 two-way spacer, above the winner's cell (1x only)
         addSpacer(8,1,2,4,true,true);
-        // 2x10 two-way spacer, below the winner's cell and between the final columns (1x only)
-        addSpacer(8,7,2,10,true,true);
+        // 2x9 two-way spacer, below the winner's cell and between the final columns (1x only)
+        addSpacer(8,7,2,9,true,true);
         revalidate();
         repaint();
     }
@@ -231,12 +239,12 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
 
         // uncomment the next line if u wanna see something ~nasty~
 
-        //spacerPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 1, false));
+        // spacerPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 1, false));
 
-        double weightx = 0.2;
-        double weighty = 0.2;
-        if(isVertical) weighty = 0.9;
-        if(isHorizontal) weightx = 0.9;
+        double weightx = 0;
+        double weighty = 0;
+        if(isVertical) weighty = 1;
+        if(isHorizontal) weightx = 1;
         Insets insZero = new Insets(0,0,0,0);
         this.add(spacerPanel, new GridBagConstraints(gridx,gridy,width,height,weightx,weighty,10, 1, insZero,0, 0));
     }
@@ -287,9 +295,10 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
      */
     private class BracketCell extends JPanel {
         private final String defaultPath = "Assets" + File.separator + "blank.png";
+        private String flagPath;
         private GridBagConstraints cellConstraints;
         JPanel mainCell;
-        JComponent innerVertex, outerVertex;
+        Component innerVertex, outerVertex;
         private JLabel flagLabel;
         private JButton teamLabel;
         private Dimension cellSize;
@@ -315,7 +324,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             this.flagWidth = flagWidth;
             this.flagHeight = flagHeight;
 
-            cellSize = new Dimension(120+this.flagWidth, this.flagHeight);
+            cellSize = new Dimension(40+this.flagWidth, this.flagHeight);
             this.setMinimumSize(cellSize);
             this.setMaximumSize(cellSize);
             this.setOpaque(false);
@@ -335,11 +344,12 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
 
             // initialize & add teamLabel to mainCell with GridBagConstraints conditional on orientation
 
-            teamLabel = new JButton("Team Name");
+            teamLabel = new JButton("TEAM");
             teamLabel.setContentAreaFilled(false);
             teamLabel.setBorderPainted(false);
             teamLabel.setFocusPainted(false);
             teamLabel.setForeground(Color.WHITE);
+            teamLabel.setFont(new Font ("Arial", Font.BOLD, 14));
 
             if (this.position == LEFT) {
                 cellConstraints.gridx = 0;
@@ -351,7 +361,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             cellConstraints.anchor = GridBagConstraints.CENTER;
             cellConstraints.weightx = 1;
             cellConstraints.gridwidth = 2;
-            cellConstraints.insets = new Insets(2,5,2,5);
+            cellConstraints.insets = new Insets(0,0,0,0);
 
             mainCell.add(teamLabel, cellConstraints);
 
@@ -377,33 +387,48 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
 
             mainCell.add(flagLabel, cellConstraints);
 
-            mainCell.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1, true));
+            if (position == LEFT || position == RIGHT) {
+                cellConstraints.gridx = 1;
+                cellConstraints.anchor = GridBagConstraints.CENTER;
+                cellConstraints.weightx = 1;
+            } else if (position == CENTER) {
+                cellConstraints.gridx = 0;
+                cellConstraints.gridy = 0;
+                cellConstraints.weighty = 1;
+            }
 
+            mainCell.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1, true));
+            this.add(mainCell, cellConstraints);
             // initialize and add inner- & outerVertex, conditional GridBagConstraints based on position
 
-            innerVertex = (JComponent)(Box.createHorizontalStrut(1));
-            innerVertex.setOpaque(false);
-            outerVertex = (JComponent)(Box.createHorizontalStrut(1));
-            outerVertex.setOpaque(false);
+            innerVertex = Box.createHorizontalStrut(0);
+            outerVertex = Box.createHorizontalStrut(0);
+
+            cellConstraints.weightx = 0.01;
+            cellConstraints.weighty = 0.01;
+
 
             if (position == LEFT) {
                 cellConstraints.gridx = 0;
                 cellConstraints.anchor = GridBagConstraints.WEST;
                 this.add(outerVertex, cellConstraints);
+                cellConstraints.gridx = 2;
+                cellConstraints.anchor = GridBagConstraints.EAST;
+                this.add(innerVertex, cellConstraints);
+            } else if (position == RIGHT) {
                 cellConstraints.gridx = 0;
                 cellConstraints.anchor = GridBagConstraints.WEST;
                 this.add(innerVertex, cellConstraints);
-            } else if (position == RIGHT) {
-                cellConstraints.gridx = 3;
-                cellConstraints.anchor = GridBagConstraints.WEST;
+                cellConstraints.gridx = 2;
+                cellConstraints.anchor = GridBagConstraints.EAST;
+                this.add(outerVertex, cellConstraints);
             } else if (position == CENTER) {
+                outerVertex = Box.createVerticalStrut(0);
                 cellConstraints.gridx = 0;
+                cellConstraints.gridy = 1;
+                cellConstraints.anchor = GridBagConstraints.CENTER;
+                this.add(outerVertex, cellConstraints);
             }
-
-            cellConstraints.weightx = 0.1;
-            cellConstraints.anchor = GridBagConstraints.CENTER;
-
-            this.add(mainCell, cellConstraints);
 
             this.validate();
         }
@@ -426,20 +451,28 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         /*private ImageIcon getFlagIcon() {
             return (ImageIcon)(flagLabel.getIcon());
         }*/
-        private void setFlagIcon(BufferedImage newFlag) {
-            this.flag = newFlag;
-            this.flagLabel.setIcon(scaledFlag(flagHeight));
+        private void setFlagIcon(String teamAbbv) {
+            flagPath = "Assets" + File.separator + "Images"  + File.separator + "smallFlags" + File.separator + teamAbbv + ".png";
+            flag = new BufferedImage(this.imageWidth, this.imageHeight, BufferedImage.TYPE_INT_ARGB);
+            try {
+                flag = ImageIO.read(new File(flagPath));
+            } catch(IOException e){
+                System.out.printf("File not found at \"%s\"\n", defaultPath);
+            }
+            flagLabel.setIcon(scaledFlag(flagHeight));
             this.revalidate();
         }
         private JButton getTeamLabel() {
             return teamLabel;
         }
-        private void setTeamLabel(String teamLabel) {this.teamLabel.setText(teamLabel);}
+        private void setTeamLabel(String teamAbbv) {
+            this.teamLabel.setText(teamAbbv);
+        }
         private ImageIcon scaledFlag(int targetHeight) {
-            float scaleFactor = (float)(targetHeight) / (float)(this.flag.getHeight());
-            int iconX = (int) (this.flag.getWidth() * scaleFactor);
-            int iconY = (int) (this.flag.getHeight() * scaleFactor);
-            Image scaledPreviewImage = this.flag.getScaledInstance(iconX, iconY, Image.SCALE_SMOOTH);
+            float scaleFactor = (float)(targetHeight) / (float)(flag.getHeight());
+            int iconX = (int) (flag.getWidth() * scaleFactor);
+            int iconY = (int) (flag.getHeight() * scaleFactor);
+            Image scaledPreviewImage = flag.getScaledInstance(iconX, iconY, Image.SCALE_SMOOTH);
             BufferedImage image = new BufferedImage(iconX, iconY, BufferedImage.TYPE_INT_ARGB);
             image.getGraphics().drawImage(scaledPreviewImage, 0, 0, null);
             return new ImageIcon(image);
