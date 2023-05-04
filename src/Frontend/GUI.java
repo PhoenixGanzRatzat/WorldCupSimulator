@@ -156,16 +156,4 @@ public class GUI extends JFrame implements ActionListener {
         cl.show(cardPanel, panelString);
     }
 
-
-    /*
-
-    + createMainMenuWindow() : JPanel
-
-+ createQualifierStageWindow(Match[], Team[]) : JPanel
- + createGroupStageWindow(Match[]) : JPanel
- + createKnockoutStageWindow(Match[]) : JPanel
-
-     */
-
-
 }
