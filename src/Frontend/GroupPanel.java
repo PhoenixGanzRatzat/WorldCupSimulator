@@ -29,6 +29,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -207,14 +209,12 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         Match match48 = new Match(team29, team30, 1,0, LocalDate.of(2020, 1, 1));
 
         this.matches = new Match[]{match1, match2, match3, match4, match5, match6,
-        match7, match8, match9, match10, match11, match12, match13, match14, match15,
-        match16, match17, match18, match19, match20, match21, match22, match23, match24,
-        match25, match26, match27, match28, match29, match30, match31, match32, match33,
-        match34, match35, match36, match37, match38, match39, match40, match41, match42,
-        match43, match44, match45, match46, match47, match48};
+                match7, match8, match9, match10, match11, match12, match13, match14, match15,
+                match16, match17, match18, match19, match20, match21, match22, match23, match24,
+                match25, match26, match27, match28, match29, match30, match31, match32, match33,
+                match34, match35, match36, match37, match38, match39, match40, match41, match42,
+                match43, match44, match45, match46, match47, match48};
         createGroups();
-
-        initialized = false;
     }
 
     /* __ CONSTRUCTORS __ */
@@ -226,6 +226,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         infoPanelGroupLabel = new JLabel("A");
         infoPanelRoundNumberLabel = new JLabel("0");
         groupMatches.put(1, new ArrayList<>());
+        initialized = false;
         currentRound = new int[8];
         groupDisplayPanel = new JPanel();
         selectedGroup = "A";
@@ -239,6 +240,8 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
             throw new RuntimeException(e);
         }
         initPanel();
+
+
     }
 
     /* __ FUNCTIONS __ */
@@ -256,8 +259,8 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     private JPanel createGroupPanel(int groupNumber) {
         // panel that is returned is 'base'
         JPanel base = new JPanel();
-        base.setLayout(new GridLayout(6,1,0,0));
-        base.setPreferredSize(new Dimension(500, 150));
+        base.setLayout(new GridLayout(6,1,1,1));
+        base.setPreferredSize(new Dimension(500, 125));
         base.setBorder(new LineBorder(Color.BLACK));
 
         // top button used to select this group
@@ -302,10 +305,8 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         for (int i = 0; i < 4; i++) {
             // initialize
             rowPanes[i] = new JPanel();
-            if(i % 2 == 0) {
-                rowPanes[i].setBorder(new LineBorder(Color.BLACK));
-            }
-            rowPanes[i].setLayout(new GridLayout(1,7,2,2));
+            rowPanes[i].setBorder(new LineBorder(Color.BLACK));
+            rowPanes[i].setLayout(new GridLayout(1,7));
             rowPanes[i].setFont(new Font("Arial", Font.BOLD, 10));
 
             // compose
@@ -460,12 +461,9 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         // remove each panel and add them back in the sorted order
         for (int i = 2; i < numRowPanels; i++) {
             ((JLabel) panelsToSort[i-2].getComponent(0)).setText(String.valueOf(i-1));
-            panelsToSort[i-2].setBorder(null);
+            panelsToSort[i-2].setBorder(new CompoundBorder(new LineBorder(Color.BLACK), new EmptyBorder(2,2,2,2)));
             groupPanel.remove(panelsToSort[i-2]);
             groupPanel.add(panelsToSort[i-2], i);
-            if(i % 2 == 0) {
-                ((JPanel) groupPanel.getComponent(i)).setBorder(new LineBorder(Color.BLACK));
-            }
         }
 
         // refreshes the display with changes
@@ -620,9 +618,9 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
      * Handles method calls to simulate one round for all groups. Updates UI.
      */
     private void simulateRound() {
-         for(int i = 0; i < this.groupTeams.size(); i++) {
+        for(int i = 0; i < this.groupTeams.size(); i++) {
             simulateGroupRound(i+1);
-         }
+        }
     }
     /**
      * Handles 1 round for a single group, this method calls for those
@@ -648,8 +646,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
             infoPanelRoundNumberLabel.setText(String.valueOf(this.currentRound[groupNumber-1]));
         }
 
-        // Highlight 1st place of group panel
-        // TODO: handling point ties??
+        // Highlight 1st/2nd place of group panel
         if(this.currentRound[groupNumber-1] == 6) {
             this.groupsThatAreComplete[groupNumber - 1] = true;
             setCompletedGroupsToIndicateComplete(groupNumber - 1);
@@ -684,16 +681,16 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
             int groupNumber;
 
             /* Build match, group, and team, associations */
-            if (teamGroups.containsKey(team1)) {         // __ is team1 in a group? __
-                groupNumber = teamGroups.get(team1);        // get team1 group number
-                groupMatches.get(groupNumber).add(match);   // save match to groupNumber's matches
+            if (teamGroups.containsKey(team1)) {                    // __ is team1 in a group? __
+                groupNumber = teamGroups.get(team1);                // get team1 group number
+                groupMatches.get(groupNumber).add(match);           // save match to groupNumber's matches
                 if(!groupTeams.get(groupNumber).contains(team2)) {  // if group doesn't contain team 2
                     groupTeams.get(groupNumber).add(team2);         // add team2 to team1's group
                     teamGroups.put(team2, groupNumber);             // associate team2 to group
                 }
-            } else if (teamGroups.containsKey(team2)) {  // __ is team2 in a group? __
-                groupNumber = teamGroups.get(team2);        // get team2 group number
-                groupMatches.get(groupNumber).add(match);   // save match to groupNumber's matches
+            } else if (teamGroups.containsKey(team2)) {             // __ is team2 in a group? __
+                groupNumber = teamGroups.get(team2);                // get team2 group number
+                groupMatches.get(groupNumber).add(match);           // save match to groupNumber's matches
                 if(!groupTeams.get(groupNumber).contains(team1)) {  // if group doesn't contain team 2
                     groupTeams.get(groupNumber).add(team1);         // add team1 to team2's group
                     teamGroups.put(team1, groupNumber);             // associate team1 to group
@@ -762,6 +759,13 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         return finalResult;
     }
 
+    @Override
+    public void initPanel(Match[] matchArr) {
+        this.matches = matchArr;
+        createGroups();
+        initPanel();
+    }
+
     /**
      * Create an empty group stage panel that will be filled in as the user interacts with function buttons
      */
@@ -809,9 +813,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         resultsPanel.add(resultsTitlePane);
         for (int c = 0; c < 6; c++) {
             resultsPanel.add(createMatchResultRowPanel());
-            if(c % 2 == 1) {
-                ((JPanel) resultsPanel.getComponent(c+1)).setBorder(new LineBorder(Color.BLACK));
-            }
+            ((JPanel) resultsPanel.getComponent(c+1)).setBorder(new LineBorder(Color.BLACK));
         }
         // compose display panel
         displayPanel.add(groupDisplayPanel, constraints);
