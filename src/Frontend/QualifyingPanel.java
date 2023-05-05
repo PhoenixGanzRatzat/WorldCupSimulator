@@ -3,18 +3,26 @@ package Frontend;
 import Backend.Match;
 import Backend.Team;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class QualifyingPanel extends JPanel implements StagePanel {
 
+    //ARIAL BLACK BOLD
+
     private Match[] matches;
     private int curMonth;
+    private HashMap<String, BufferedImage> flags;
     private int curYear;
     private Team[] teams;
     private MonthPanel month;
@@ -40,6 +48,13 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         regions[4] = "OFC";
         regions[5] = "UEFA";
 
+        try {
+            initFlags();
+        }
+        catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
         initialized = false;
     }
 
@@ -49,6 +64,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      */
     public QualifyingPanel () {
 
+        teams = new Team[0];
 
         month = new MonthPanel();
 
@@ -58,6 +74,13 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         regions[3] = "CONMEBOL";
         regions[4] = "OFC";
         regions[5] = "UEFA";
+
+        try {
+            initFlags();
+        }
+        catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
 
         initialized = false;
 
@@ -71,46 +94,13 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         return tabPane;
     }
 
-    public void fillMonth(ArrayList<Match> matches) {
-
-        JPanel genPanel = new JPanel();
-        BorderLayout layout = new BorderLayout();
-        genPanel.setLayout(layout);
-
-        tabPane.removeTabAt(0);
-        tabPane.insertTab("Matches by Month", null, genPanel, null, 0);
-
-        month.setToMonth(curYear, curMonth);
-        month.setMatchesOnDayPanels(matches);
-        month.setPreferredSize(new Dimension(800, 600));
-        //JLabel monthLabel = new JLabel(String.valueOf(Month.of(curMonth)));
-        //JComboBox<String> dropDown = new JComboBox<String>();
-        JButton forward = new JButton(">");
-        JButton backward = new JButton("<");
-
-        forward.addActionListener(listener);
-        backward.addActionListener(listener);
-
-        forward.setActionCommand("next");
-        backward.setActionCommand("back");
-
-       /* dropDown.addItem("a");
-        dropDown.addItem("b");
-        dropDown.addItem("c"); */
-
-
-       // genPanel.add(monthLabel, BorderLayout.NORTH);
-        genPanel.add(forward, BorderLayout.EAST);
-        genPanel.add(backward, BorderLayout.WEST);
-        //genPanel.add(dropDown, BorderLayout.EAST);
-        genPanel.add(month, BorderLayout.CENTER);
-        //genPanel.add(new JLabel("This is for space and will be removed"), BorderLayout.SOUTH);
-
-
-
-
-    }
-
+    /**
+     * Takes an array of matches and fills the visible day panels
+     * with that matches that took place on those days.
+     * Uses a border layout to display the month panel and navigation controls.
+     *
+     * @param matches
+     */
     public void initMonthPanel(ArrayList<Match> matches) {
 
         month.setToMonth(curYear, curMonth);
@@ -211,29 +201,40 @@ public class QualifyingPanel extends JPanel implements StagePanel {
                 JLabel teamName = new JLabel(team.getName());
                 JLabel teamPoints = new JLabel("" + team.getQualifierPoints());
                 JLabel teamRank = new JLabel("" + (sortedArr.indexOf(team) + 1));
+                ImageIcon teamFlag = new ImageIcon(flags.get(team.getAbbv()).getScaledInstance(40, 24, 1));
+                JLabel flagLabel = new JLabel();
+                flagLabel.setIcon(teamFlag);
 
+                newTab.add(flagLabel);
                 newTab.add(teamName);
                 newTab.add(teamPoints);
                 newTab.add(teamRank);
 
                 SpringLayout.Constraints cRank = layout.getConstraints(teamRank);
                 cRank.setX(Spring.constant(10));
-                //sets top of label to 14 (which is arbitrary) * its place in the array + 1,
+                //sets top of label to 30 (which is less than arbitrary) * its place in the array + 1,
                 // which is how far down in the column it is, and all that goes below
-                //the apropriate label.
-                cRank.setY(Spring.sum(Spring.constant(14 * (sortedArr.indexOf(team) + 1)),
+                //the appropriate label.
+                cRank.setY(Spring.sum(Spring.constant(30 * (sortedArr.indexOf(team) + 1)),
                         con1.getConstraint(SpringLayout.SOUTH)));
 
-                SpringLayout.Constraints cName = layout.getConstraints(teamName);
+                SpringLayout.Constraints cFlag = layout.getConstraints(flagLabel);
                 //sets right edge to align with right edge of the TEAMS: label
-                cName.setX(con2.getConstraint(SpringLayout.WEST));
-                cName.setY(Spring.sum(Spring.constant(14 * (sortedArr.indexOf(team) + 1)),
+                cFlag.setX(con2.getConstraint(SpringLayout.WEST));
+                cFlag.setY(Spring.sum(Spring.constant(30 * (sortedArr.indexOf(team) + 1)),
+                        con2.getConstraint(SpringLayout.SOUTH)));
+
+                SpringLayout.Constraints cName = layout.getConstraints(teamName);
+                //sets x to have a 5 pixel buffer between team name and flag
+                cName.setX(Spring.sum(Spring.constant(5), cFlag.getConstraint(SpringLayout.EAST)));
+                cName.setY(Spring.sum(Spring.constant(30 * (sortedArr.indexOf(team) + 1)),
                         con2.getConstraint(SpringLayout.SOUTH)));
 
                 SpringLayout.Constraints cPoints = layout.getConstraints(teamPoints);
                 cPoints.setX(con3.getConstraint(SpringLayout.WEST));
-                cPoints.setY(Spring.sum(Spring.constant(14 * (sortedArr.indexOf(team) + 1)),
+                cPoints.setY(Spring.sum(Spring.constant(30 * (sortedArr.indexOf(team) + 1)),
                         con3.getConstraint(SpringLayout.SOUTH)));
+
 
             }
 
@@ -256,10 +257,16 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         return true;
     }
 
+    /**
+     * Returns true if the panel has already been initialized by initPanel(),
+     * returns false otherwise.
+     * @return boolean
+     */
     @Override
     public boolean checkIfInitialized() {
         return initialized;
     }
+
 
     /**
      * Initiates the JTabbedPane before the simulation has started, with a blank calandar
@@ -267,15 +274,11 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      *
      */
     @Override
-    public void initPanel() {
+    public void initPanel()  {
         curMonth = 1;
         curYear = 2018;
         tabPane =  new JTabbedPane();
         cards = new JPanel[6];
-      /*  JPanel testThis = new JPanel();
-        testThis.setLayout(new GridLayout(2, 1));
-        testThis.add(new JLabel("This is a Label"));
-        testThis.add(month); */
 
         initMonthPanel(new ArrayList<Match>());
 
@@ -286,6 +289,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
             tabPane.addTab(regions[i], cards[i]);
         }
+
 
         fillResults();
 
@@ -321,4 +325,24 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             month.setMatchesOnDayPanels(new ArrayList<Match>()); //backend.getMatchesForYearMonth(
         }
     };
+
+    /**
+     * Written by Chris P. and reused here for the same purpose.
+     * Fills a HashMap with Flag images that are accessed by the
+     * relevant team abbreviation.
+     * @throws IOException
+     */
+    private void initFlags() throws IOException {
+        flags = new HashMap<String, BufferedImage>();
+        for(Team team : this.teams) {
+            String abbv = team.getAbbv();
+            BufferedImage flag = ImageIO.read(new File("Assets" + File.separator + "Images" + File.separator + "smallFlags" + File.separator +  abbv + ".png"));
+            flags.put(abbv, flag);
+        }
+    }
+
+    @Override
+    public void initPanel(Match[] m) {
+        //don't need this? Could use it for initMonthPanel but that would be confusing.
+    }
 }
