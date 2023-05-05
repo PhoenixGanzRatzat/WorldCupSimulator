@@ -9,20 +9,6 @@ public class Match {
     private int team2Score;
     private LocalDate matchDate;
 
-
-
-
-    public Match(Team teamOne, Team teamTwo){
-        this.team1 = teamOne;
-        this.team2 = teamTwo;
-    }
-
-    public Match (Team teamOne, Team teamTwo, LocalDate date){
-        this.team1 = teamOne;
-        this.team2 = teamTwo;
-        this.matchDate = date;
-    }
-
     /**
      * TEMPORARY - used for groupPanel testing, delete later.
      * @param teamOne
@@ -39,68 +25,73 @@ public class Match {
         this.matchDate = date;
     }
 
-    public void simulateMatchResult() {
-        simulateMatchResult(MatchType.NO_MATCH_TYPE);
-    }
-    /**
-     * Randomly generates score values for 2 teams and then processes the match for any
-     * overtime or tie dispute.
-     */
-    public void simulateMatchResult(MatchType matchType) {
-        // Generate random scores for each team (0-4)
-        int team1Score = (int) (Math.random() * 5);
-        int team2Score = (int) (Math.random() * 5);
 
-        // Below is the Knockout Stage Tiebreaker code
-        // If a tiebreaker is needed and the match ends in a draw during this stage, execute the tiebreaker procedure
-        if (matchType == MatchType.KNOCKOUT && team1Score == team2Score) {
-            // Simulate extra time being played, generate new scores
+
+    /*
+    Below code is the real class without testing code.
+     */
+    public Match(Team teamOne, Team teamTwo){
+        this(teamOne, teamTwo, LocalDate.now());
+    }
+
+    public Match (Team teamOne, Team teamTwo, LocalDate date){
+        this.team1 = teamOne;
+        this.team2 = teamTwo;
+        this.matchDate = date;
+        simulateMatchResult();
+    }
+
+
+
+    public void simulateMatchResult() {
+        // Generate random scores for each team (0-4)
+        this.team1Score = (int) (Math.random() * 5);
+        this.team2Score = (int) (Math.random() * 5);
+
+        // Check if match is in knockout stage
+        boolean isKnockoutActive = matchDate.getMonthValue() >= 6;
+
+        // If match is taking place during the knockout stage and ends in a draw, execute tiebreaker procedure
+        if (isKnockoutActive && team1Score == team2Score) {
+            // Simulate extra time being played, generate new scores for each team
             int extraTimeTeam1Score = (int) (Math.random() * 2);
             int extraTimeTeam2Score = (int) (Math.random() * 2);
-            team1Score += extraTimeTeam1Score;
-            team2Score += extraTimeTeam2Score;
+            this.team1Score += extraTimeTeam1Score;
+            this.team2Score += extraTimeTeam2Score;
 
             // If there's still a tie after the extra time added, simulate penalty shootout
             if (team1Score == team2Score) {
-                int penaltiesTeam1Score = (int) (Math.random() * 5) + 1;
-                int penaltiesTeam2Score = (int) (Math.random() * 5) + 1;
-                team1Score += penaltiesTeam1Score;
-                team2Score += penaltiesTeam2Score;
+                int pensTeam1Score = (int) (Math.random() * 5) + 1;
+                int pensTeam2Score = (int) (Math.random() * 5) + 1;
+                this.team1Score += pensTeam1Score;
+                this.team2Score += pensTeam2Score;
 
                 // If there's still a tie after the penalty shootout, simulate sudden death
                 while (team1Score == team2Score) {
-                    team1Score += (int) (Math.random() * 2);
-                    team2Score += (int) (Math.random() * 2);
+                    this.team1Score += (int) (Math.random() * 2);
+                    this.team2Score += (int) (Math.random() * 2);
                 }
             }
         }
 
         // Get the most recent scores for both teams
-        int team1MostRecentScore = team1.getMostRecentPoints(matchDate);
-        int team2MostRecentScore = team2.getMostRecentPoints(matchDate);
+        int team1MostRecentScoreFromMap = team1.getMostRecentScore(matchDate);
+        int team2MostRecentScoreFromMap = team2.getMostRecentScore(matchDate);
 
         // Update team points based on match result
-        if (team1Score > team2Score) {
-            team1.setPoints(matchDate, team1MostRecentScore + 3);
-        } else if (team1Score < team2Score) {
-            team2.setPoints(matchDate, team2MostRecentScore + 3);
+        if (this.team1Score > this.team2Score) {
+            team1.setPoints(matchDate, team1MostRecentScoreFromMap + 3);
+        } else if (this.team1Score < this.team2Score) {
+            team2.setPoints(this.matchDate, team2MostRecentScoreFromMap + 3);
         } else {
-            team1.setPoints(matchDate, team1MostRecentScore + 1);
-            team2.setPoints(matchDate, team2MostRecentScore + 1);
+            this.team1.setPoints(this.matchDate, team1MostRecentScoreFromMap + 1);
+            this.team2.setPoints(this.matchDate, team2MostRecentScoreFromMap + 1);
         }
 
         // Update the match object with the result (scores for both teams)
         setResult(team1Score, team2Score);
-
-
-        // ADD: add a method that takes in a passed in boolean to check for ties.
-        // If there is a tie, follow procedure: extra time, pens, and then sudden death
-
-
-
-
-
     }
+
 
 
 
