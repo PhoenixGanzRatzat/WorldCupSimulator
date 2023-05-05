@@ -213,8 +213,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         match34, match35, match36, match37, match38, match39, match40, match41, match42,
         match43, match44, match45, match46, match47, match48};
         createGroups();
-
-        initialized = false;
     }
 
     /* __ CONSTRUCTORS __ */
@@ -226,19 +224,22 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         infoPanelGroupLabel = new JLabel("A");
         infoPanelRoundNumberLabel = new JLabel("0");
         groupMatches.put(1, new ArrayList<>());
+        initialized = false;
         currentRound = new int[8];
         groupDisplayPanel = new JPanel();
         selectedGroup = "A";
         groupsThatAreComplete = new boolean[]{false, false, false, false, false, false, false, false};
         resultsPanel = new JPanel();
         flags = new HashMap<>();
-        testMatches();
+        /* testMatches();
         try {
             initFlags();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         initPanel();
+
+         */
     }
 
     /* __ FUNCTIONS __ */
@@ -257,7 +258,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         // panel that is returned is 'base'
         JPanel base = new JPanel();
         base.setLayout(new GridLayout(6,1,0,0));
-        base.setPreferredSize(new Dimension(500, 150));
+        base.setPreferredSize(new Dimension(500, 125));
         base.setBorder(new LineBorder(Color.BLACK));
 
         // top button used to select this group
@@ -648,8 +649,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
             infoPanelRoundNumberLabel.setText(String.valueOf(this.currentRound[groupNumber-1]));
         }
 
-        // Highlight 1st place of group panel
-        // TODO: handling point ties??
+        // Highlight 1st/2nd place of group panel
         if(this.currentRound[groupNumber-1] == 6) {
             this.groupsThatAreComplete[groupNumber - 1] = true;
             setCompletedGroupsToIndicateComplete(groupNumber - 1);
@@ -684,16 +684,16 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
             int groupNumber;
 
             /* Build match, group, and team, associations */
-            if (teamGroups.containsKey(team1)) {         // __ is team1 in a group? __
-                groupNumber = teamGroups.get(team1);        // get team1 group number
-                groupMatches.get(groupNumber).add(match);   // save match to groupNumber's matches
+            if (teamGroups.containsKey(team1)) {                    // __ is team1 in a group? __
+                groupNumber = teamGroups.get(team1);                // get team1 group number
+                groupMatches.get(groupNumber).add(match);           // save match to groupNumber's matches
                 if(!groupTeams.get(groupNumber).contains(team2)) {  // if group doesn't contain team 2
                     groupTeams.get(groupNumber).add(team2);         // add team2 to team1's group
                     teamGroups.put(team2, groupNumber);             // associate team2 to group
                 }
-            } else if (teamGroups.containsKey(team2)) {  // __ is team2 in a group? __
-                groupNumber = teamGroups.get(team2);        // get team2 group number
-                groupMatches.get(groupNumber).add(match);   // save match to groupNumber's matches
+            } else if (teamGroups.containsKey(team2)) {             // __ is team2 in a group? __
+                groupNumber = teamGroups.get(team2);                // get team2 group number
+                groupMatches.get(groupNumber).add(match);           // save match to groupNumber's matches
                 if(!groupTeams.get(groupNumber).contains(team1)) {  // if group doesn't contain team 2
                     groupTeams.get(groupNumber).add(team1);         // add team1 to team2's group
                     teamGroups.put(team1, groupNumber);             // associate team1 to group
@@ -760,6 +760,13 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
             }
         }
         return finalResult;
+    }
+
+    @Override
+    public void initPanel(Match[] matchArr) {
+        this.matches = matchArr;
+        createGroups();
+        initPanel();
     }
 
     /**

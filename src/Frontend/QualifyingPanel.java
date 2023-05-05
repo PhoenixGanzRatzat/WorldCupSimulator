@@ -295,6 +295,11 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
     }
 
+    @Override
+    public void initPanel(Match[] m) {
+
+    }
+
     ActionListener listener = new ActionListener() {
         @Override
         public void actionPerformed (ActionEvent e) {

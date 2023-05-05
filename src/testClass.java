@@ -51,9 +51,9 @@ public class testClass {
         GroupStage gTest = new GroupStage(teams);
         gTest.arrangeMatches();
         gTest.calculateMatchResults();
-        for(Team t:gTest.qualified()){
-            System.out.println(t.getRank());
-        }
+        //for(Team t:gTest.qualified()){
+         //   System.out.println(t.getRank());
+        //}
     }
 
     public static List<Team> getTeams() {

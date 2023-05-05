@@ -31,7 +31,7 @@ public class GUI extends JFrame implements ActionListener {
      * Default constructor for GUI.  Calls initGUI to initialize instantiated objects.
      */
     public GUI() {
-        //gameSim = new WorldCupSimulator();  WorldCupSimulator doesn't construct right yet
+        gameSim = new WorldCupSimulator();  //WorldCupSimulator doesn't construct right yet
 
         cardPanel = new JPanel(new CardLayout());
         buttonPanel = new JPanel(new FlowLayout());
