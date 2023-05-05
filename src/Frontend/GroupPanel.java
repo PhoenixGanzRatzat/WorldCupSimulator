@@ -231,7 +231,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         groupsThatAreComplete = new boolean[]{false, false, false, false, false, false, false, false};
         resultsPanel = new JPanel();
         flags = new HashMap<>();
-        /* testMatches();
+         testMatches();
         try {
             initFlags();
         } catch (IOException e) {
@@ -239,7 +239,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         }
         initPanel();
 
-         */
+
     }
 
     /* __ FUNCTIONS __ */
@@ -303,9 +303,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         for (int i = 0; i < 4; i++) {
             // initialize
             rowPanes[i] = new JPanel();
-            if(i % 2 == 0) {
-                rowPanes[i].setBorder(new LineBorder(Color.BLACK));
-            }
+            rowPanes[i].setBorder(new LineBorder(Color.BLACK));
             rowPanes[i].setLayout(new GridLayout(1,7,2,2));
             rowPanes[i].setFont(new Font("Arial", Font.BOLD, 10));
 
@@ -464,9 +462,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
             panelsToSort[i-2].setBorder(null);
             groupPanel.remove(panelsToSort[i-2]);
             groupPanel.add(panelsToSort[i-2], i);
-            if(i % 2 == 0) {
-                ((JPanel) groupPanel.getComponent(i)).setBorder(new LineBorder(Color.BLACK));
-            }
         }
 
         // refreshes the display with changes
@@ -816,9 +811,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         resultsPanel.add(resultsTitlePane);
         for (int c = 0; c < 6; c++) {
             resultsPanel.add(createMatchResultRowPanel());
-            if(c % 2 == 1) {
-                ((JPanel) resultsPanel.getComponent(c+1)).setBorder(new LineBorder(Color.BLACK));
-            }
+            ((JPanel) resultsPanel.getComponent(c+1)).setBorder(new LineBorder(Color.BLACK));
         }
         // compose display panel
         displayPanel.add(groupDisplayPanel, constraints);
