@@ -302,9 +302,8 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         for (int i = 0; i < 4; i++) {
             // initialize
             rowPanes[i] = new JPanel();
-            if(i % 2 == 0) {
-                rowPanes[i].setBorder(new LineBorder(Color.BLACK));
-            }
+
+            rowPanes[i].setBorder(new LineBorder(Color.BLACK));
             rowPanes[i].setLayout(new GridLayout(1,7,2,2));
             rowPanes[i].setFont(new Font("Arial", Font.BOLD, 10));
 
@@ -809,9 +808,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         resultsPanel.add(resultsTitlePane);
         for (int c = 0; c < 6; c++) {
             resultsPanel.add(createMatchResultRowPanel());
-            if(c % 2 == 1) {
-                ((JPanel) resultsPanel.getComponent(c+1)).setBorder(new LineBorder(Color.BLACK));
-            }
+            ((JPanel) resultsPanel.getComponent(c+1)).setBorder(new LineBorder(Color.BLACK));
         }
         // compose display panel
         displayPanel.add(groupDisplayPanel, constraints);
@@ -837,6 +834,11 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         this.add(functionPanel, BorderLayout.SOUTH);
 
         initialized = true;
+    }
+
+    @Override
+    public void initPanel(Match[] m) {
+
     }
 
     @Override

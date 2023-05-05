@@ -264,6 +264,12 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     public void initPanel() {
         initialized = true; // last line of method
     }
+
+    @Override
+    public void initPanel(Match[] m) {
+
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         System.out.println(e.getActionCommand());
