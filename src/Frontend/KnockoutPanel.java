@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Displays KnockoutStage results either one match at a time or
@@ -415,7 +416,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     public void initPanel() {
         initialized = true;
     }
-    public void initPanel(Match[] m){
+    public void initPanel(List<Match> matches){
         initialized = true;
     }
     @Override

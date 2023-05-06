@@ -178,15 +178,13 @@ public class GUI extends JFrame implements ActionListener {
     }
 
     private void checkIfPanelNeedsInit(JPanel panel) {
-        StagePanel objectSP;
-
         if (panel instanceof StagePanel) {
-            objectSP = (StagePanel) panel;
-            if (!objectSP.checkIfInitialized()) {
-                if(objectSP instanceof KnockoutPanel) {
-                    objectSP.initPanel(gameSim.stageMatches(3).toArray(new Match[]{}));
+            StagePanel stage = (StagePanel) panel;
+            if (!stage.checkIfInitialized()) {
+                if(stage instanceof KnockoutPanel) {
+                    stage.initPanel(gameSim.stageMatches(3));
                 }
-                objectSP.initPanel();
+                stage.initPanel();
             }
         }
     }
