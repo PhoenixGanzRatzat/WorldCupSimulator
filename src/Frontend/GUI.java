@@ -3,10 +3,13 @@ package Frontend;
 import Backend.Team;
 import Backend.WorldCupSimulator;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Main class containing the base graphical elements for the program as well as the entry point for the program.
@@ -30,13 +33,13 @@ public class GUI extends JFrame implements ActionListener {
     /**
      * Default constructor for GUI.  Calls initGUI to initialize instantiated objects.
      */
-    public GUI() {
+    public GUI() throws IOException {
         //gameSim = new WorldCupSimulator();  WorldCupSimulator doesn't construct right yet
 
         cardPanel = new JPanel(new CardLayout());
         buttonPanel = new JPanel(new FlowLayout());
 
-        startPanel = new JPanel();
+        startPanel = new JPanel(new GridBagLayout());
         //qualifyingPanel = new QualifyingPanel((gameSim.getTeams().toArray(new Team[0])));  // change once we get actual Teams
         qualifyingPanel = new QualifyingPanel(new Team[0]);
         groupPanel = new GroupPanel();
@@ -54,7 +57,7 @@ public class GUI extends JFrame implements ActionListener {
      * Entry point for code; creates a new GUI object with default constructor.
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         GUI mainGUI = new GUI();
     }
 
@@ -64,7 +67,10 @@ public class GUI extends JFrame implements ActionListener {
      * GUI elements for use of the GUI.  Binds actionListener to buttons and sets card key values for each of the
      * display panels.  Finally sets JFrame parameters to make the window visible and close properly.
      */
-    private void initGUI() {
+    private void initGUI() throws IOException {
+        GridBagConstraints layoutConstraints = new GridBagConstraints();
+        JLabel fifaLogoLabel = new JLabel(new ImageIcon(ImageIO.read(new File("Assets\\Images\\FIFA_logo.png"))));
+
         startButton.setText("Start Simulation");
         qualifyingButton.setText("Qualifying Panel");
         groupButton.setText("Group Panel");
@@ -75,9 +81,9 @@ public class GUI extends JFrame implements ActionListener {
         groupButton.addActionListener(this);
         knockoutButton.addActionListener(this);
 
-        qualifyingButton.setEnabled(false);
-        groupButton.setEnabled(false);
-        knockoutButton.setEnabled(false);
+        qualifyingButton.setVisible(false);
+        groupButton.setVisible(false);
+        knockoutButton.setVisible(false);
 
         add(buttonPanel, BorderLayout.NORTH);
         add(cardPanel, BorderLayout.CENTER);
@@ -86,7 +92,16 @@ public class GUI extends JFrame implements ActionListener {
         buttonPanel.add(groupButton);
         buttonPanel.add(knockoutButton);
 
-        startPanel.add(startButton);
+        layoutConstraints.insets = new Insets(50,50,50,50);
+
+        layoutConstraints.gridx = 0;
+        layoutConstraints.gridy = 0;
+        startPanel.add(fifaLogoLabel, layoutConstraints);
+
+
+        layoutConstraints.gridx = 0;
+        layoutConstraints.gridy = 1;
+        startPanel.add(startButton, layoutConstraints);
 
         cardPanel.add(startPanel, "start");
         cardPanel.add(qualifyingPanel, "qual");
@@ -113,9 +128,9 @@ public class GUI extends JFrame implements ActionListener {
         if (e.getSource() == startButton) {
             panel = qualifyingPanel;
             panelString = "qual";
-            qualifyingButton.setEnabled(true);
-            groupButton.setEnabled(true);
-            knockoutButton.setEnabled(true);
+            qualifyingButton.setVisible(true);
+            groupButton.setVisible(true);
+            knockoutButton.setVisible(true);
         } else if (e.getSource() == qualifyingButton) {
             panel = qualifyingPanel;
             panelString = "qual";
