@@ -30,7 +30,6 @@ public class KnockoutStage extends Stage {
         roundOfSixteenMatches = new ArrayList<>();
         quarterfinalsMatches = new ArrayList<>();
         semifinalsMatches = new ArrayList<>();
-        arrangeMatches();
     }
 
     @Override
