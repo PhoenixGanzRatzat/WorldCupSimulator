@@ -1,6 +1,5 @@
 import Backend.*;
 import Backend.stage.GroupStage;
-import Backend.stage.QualifyingStage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,9 +49,6 @@ public class testClass {
         teams.add(new Team("Abed","ABC", Region.AFC, 8));
 
         GroupStage gTest = new GroupStage(teams);
-        QualifyingStage qTest = new QualifyingStage(teams);
-        qTest.arrangeMatches();
-        qTest.calculateMatchResults();
         gTest.arrangeMatches();
         gTest.calculateMatchResults();
         for(Team t:gTest.qualified()){

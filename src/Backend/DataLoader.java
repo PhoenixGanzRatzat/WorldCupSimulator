@@ -1,7 +1,5 @@
 package Backend;
 
-import Backend.Region;
-import Backend.Team;
 import Frontend.GUI;
 
 import java.io.BufferedReader;
