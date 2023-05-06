@@ -50,7 +50,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             initFlags();
         }
         catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
 
         initialized = false;
@@ -76,7 +76,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             initFlags();
         }
         catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
 
         initialized = false;
@@ -343,7 +343,12 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         flags = new HashMap<String, BufferedImage>();
         for(Team team : this.teams) {
             String abbv = team.getAbbv();
-            BufferedImage flag = ImageIO.read(new File("Assets" + File.separator + "Images" + File.separator + "smallFlags" + File.separator +  abbv + ".png"));
+            BufferedImage flag = null;
+            try {
+                flag = ImageIO.read(new File("Assets" + File.separator + "Images" + File.separator + "smallFlags" + File.separator +  abbv + ".png"));
+            } catch (IOException e) {
+                throw new IOException("Couldn't load flag for team " + abbv + " (" + team.getName() + ")", e);
+            }
             flags.put(abbv, flag);
         }
     }
