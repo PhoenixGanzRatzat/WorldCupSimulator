@@ -30,6 +30,10 @@ public class GUI extends JFrame implements ActionListener {
     private JButton groupButton;
     private JButton knockoutButton;
 
+    private final static Color text = new Color(213, 226, 216);
+    private final static Color fifaBG = new Color(50, 98, 149);
+
+
     /**
      * Default constructor for GUI.  Calls initGUI to initialize instantiated objects.
      */
@@ -70,6 +74,7 @@ public class GUI extends JFrame implements ActionListener {
     private void initGUI() throws IOException {
         GridBagConstraints layoutConstraints = new GridBagConstraints();
         JLabel fifaLogoLabel = new JLabel(new ImageIcon(ImageIO.read(new File("Assets\\Images\\FIFA_logo.png"))));
+        JLabel subHeaderLabel = new JLabel();
 
         startButton.setText("Start Simulation");
         qualifyingButton.setText("Qualifying Panel");
@@ -92,15 +97,39 @@ public class GUI extends JFrame implements ActionListener {
         buttonPanel.add(groupButton);
         buttonPanel.add(knockoutButton);
 
-        layoutConstraints.insets = new Insets(50,50,50,50);
+        layoutConstraints.insets = new Insets(10,10,10,10);
+        layoutConstraints.weightx = 1;
+        layoutConstraints.weighty = 1;
 
         layoutConstraints.gridx = 0;
         layoutConstraints.gridy = 0;
         startPanel.add(fifaLogoLabel, layoutConstraints);
 
+        startPanel.setBackground(fifaBG);
+
 
         layoutConstraints.gridx = 0;
         layoutConstraints.gridy = 1;
+
+        subHeaderLabel = new JLabel("World Cup 2018 Simulator");
+        subHeaderLabel.setFont(new Font ("Arial Black", Font.PLAIN, 48));
+        subHeaderLabel.setForeground(text);
+        startPanel.add(subHeaderLabel, layoutConstraints);
+
+
+        layoutConstraints.gridx = 0;
+        layoutConstraints.gridy = 3;
+
+        //startButton.setContentAreaFilled(false);
+//        startButton.setBorderPainted(false);
+        //startButton.setFocusPainted(false);
+        startButton.setForeground(text);
+        startButton.setBackground(fifaBG);
+        startButton.setFont(new Font ("Arial Black", Font.PLAIN, 14));
+
+        //Font font = new Font("Arial Black", Font.BOLD, 12);
+        //Font newFont = font.deriveFont(Font.PLAIN, 18);
+        //startButton.setBorder(BorderFactory.createEmptyBorder(0,5,0,5));
         startPanel.add(startButton, layoutConstraints);
 
         cardPanel.add(startPanel, "start");
