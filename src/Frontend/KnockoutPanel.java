@@ -28,7 +28,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     private static final int FINAL = 3;
     private static final int WINNER = 4;
     // positional constants
-    private static final int CENTER = 0;//soon deprecated
+    private static final int CENTER = 0;//soon to be deprecated
     private static final int LEFT = 1;
     private static final int RIGHT = 2;
     // colors
@@ -280,11 +280,9 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             spacer = (JComponent) Box.createHorizontalStrut(1);
         }
 
-        // uncomment the next block if u wanna see something ~nasty~
-
-        /*spacer.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1,0,0,1),BorderFactory.createLineBorder(Color.RED, 1, false)));
-        spacer.setToolTipText("<html>" + "(" + gX + "," + gY + ")" + "<br>"
-                                   + ""+ gW + "x" + gH + "</html>");*/
+        /*//Makes things really ugly, but good for visual troubleshooting
+        spacer.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1,0,0,1),BorderFactory.createLineBorder(Color.RED, 1, false)));
+        spacer.setToolTipText("<html>" + "(" + gX + "," + gY + ")" + "<br>" + ""+ gW + "x" + gH + "</html>");*/
 
         this.add(spacer, new GridBagConstraints(gX,gY,gW,gH,wX,wY,10,1,(new Insets(0,0,0,0)),0,0));
     }

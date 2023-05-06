@@ -1,5 +1,6 @@
 package Frontend;
 
+import Backend.Match;
 import Backend.Team;
 import Backend.WorldCupSimulator;
 
@@ -10,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Main class containing the base graphical elements for the program as well as the entry point for the program.
@@ -38,16 +40,19 @@ public class GUI extends JFrame implements ActionListener {
      * Default constructor for GUI.  Calls initGUI to initialize instantiated objects.
      */
     public GUI() throws IOException {
-        //gameSim = new WorldCupSimulator();  WorldCupSimulator doesn't construct right yet
+        gameSim = new WorldCupSimulator();
 
         cardPanel = new JPanel(new CardLayout());
         buttonPanel = new JPanel(new FlowLayout());
 
         startPanel = new JPanel(new GridBagLayout());
-        //qualifyingPanel = new QualifyingPanel((gameSim.getTeams().toArray(new Team[0])));  // change once we get actual Teams
-        qualifyingPanel = new QualifyingPanel(new Team[0]);
+        gameSim.stageMatches(1);
+        qualifyingPanel = new QualifyingPanel(gameSim.getTeams());
+        gameSim.stageMatches(2);
         groupPanel = new GroupPanel();
+
         knockoutPanel = new KnockoutPanel();
+
 
         startButton = new JButton();
         qualifyingButton = new JButton();
@@ -120,16 +125,11 @@ public class GUI extends JFrame implements ActionListener {
         layoutConstraints.gridx = 0;
         layoutConstraints.gridy = 3;
 
-        //startButton.setContentAreaFilled(false);
-//        startButton.setBorderPainted(false);
-        //startButton.setFocusPainted(false);
+        startButton.setFocusPainted(false);
         startButton.setForeground(text);
         startButton.setBackground(fifaBG);
         startButton.setFont(new Font ("Arial Black", Font.PLAIN, 14));
 
-        //Font font = new Font("Arial Black", Font.BOLD, 12);
-        //Font newFont = font.deriveFont(Font.PLAIN, 18);
-        //startButton.setBorder(BorderFactory.createEmptyBorder(0,5,0,5));
         startPanel.add(startButton, layoutConstraints);
 
         cardPanel.add(startPanel, "start");
@@ -183,6 +183,9 @@ public class GUI extends JFrame implements ActionListener {
         if (panel instanceof StagePanel) {
             objectSP = (StagePanel) panel;
             if (!objectSP.checkIfInitialized()) {
+                if(objectSP instanceof KnockoutPanel) {
+                    objectSP.initPanel(gameSim.stageMatches(3).toArray(new Match[]{}));
+                }
                 objectSP.initPanel();
             }
         }
