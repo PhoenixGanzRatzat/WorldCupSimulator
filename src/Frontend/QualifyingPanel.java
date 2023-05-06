@@ -5,19 +5,23 @@ import Backend.Team;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.time.Month;
 import java.util.ArrayList;
 
 
 public class QualifyingPanel extends JPanel implements StagePanel {
 
     private Match[] matches;
+    private int curMonth;
+    private int curYear;
     private Team[] teams;
-    private MonthPanel[] months;
-    private JPanel stage;
+    private MonthPanel month;
     private JPanel[] cards;
-    //ough IDK
     private String[] regions = new String[6];
     private JTabbedPane tabPane;
+    private boolean initialized;
 
     /**
     An in progress constructor that is subject to change.
@@ -27,8 +31,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         //matches = matchIn;
         teams = teamIn;
 
-        months = new MonthPanel[1];
-        months[0] = new MonthPanel();
+        month = new MonthPanel();
 
         regions[0] = "AFC";
         regions[1] = "CAF";
@@ -37,7 +40,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         regions[4] = "OFC";
         regions[5] = "UEFA";
 
-
+        initialized = false;
     }
 
     /**
@@ -46,9 +49,8 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      */
     public QualifyingPanel () {
 
-        //for testing basically
-        months = new MonthPanel[1];
-        months[0] = new MonthPanel();
+
+        month = new MonthPanel();
 
         regions[0] = "AFC";
         regions[1] = "CAF";
@@ -56,6 +58,8 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         regions[3] = "CONMEBOL";
         regions[4] = "OFC";
         regions[5] = "UEFA";
+
+        initialized = false;
 
     }
 
@@ -65,6 +69,77 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      */
     public JTabbedPane getPane() {
         return tabPane;
+    }
+
+    public void fillMonth(ArrayList<Match> matches) {
+
+        JPanel genPanel = new JPanel();
+        BorderLayout layout = new BorderLayout();
+        genPanel.setLayout(layout);
+
+        tabPane.removeTabAt(0);
+        tabPane.insertTab("Matches by Month", null, genPanel, null, 0);
+
+        month.setToMonth(curYear, curMonth);
+        month.setMatchesOnDayPanels(matches);
+        month.setPreferredSize(new Dimension(800, 600));
+        //JLabel monthLabel = new JLabel(String.valueOf(Month.of(curMonth)));
+        //JComboBox<String> dropDown = new JComboBox<String>();
+        JButton forward = new JButton(">");
+        JButton backward = new JButton("<");
+
+        forward.addActionListener(listener);
+        backward.addActionListener(listener);
+
+        forward.setActionCommand("next");
+        backward.setActionCommand("back");
+
+       /* dropDown.addItem("a");
+        dropDown.addItem("b");
+        dropDown.addItem("c"); */
+
+
+       // genPanel.add(monthLabel, BorderLayout.NORTH);
+        genPanel.add(forward, BorderLayout.EAST);
+        genPanel.add(backward, BorderLayout.WEST);
+        //genPanel.add(dropDown, BorderLayout.EAST);
+        genPanel.add(month, BorderLayout.CENTER);
+        //genPanel.add(new JLabel("This is for space and will be removed"), BorderLayout.SOUTH);
+
+
+
+
+    }
+
+    public void initMonthPanel(ArrayList<Match> matches) {
+
+        month.setToMonth(curYear, curMonth);
+        month.setMatchesOnDayPanels(matches);
+        month.setPreferredSize(new Dimension(800, 600));
+
+
+        JButton forward = new JButton(">");
+        JButton backward = new JButton("<");
+
+        forward.addActionListener(listener);
+        backward.addActionListener(listener);
+
+        forward.setActionCommand("next");
+        backward.setActionCommand("back");
+
+
+        JPanel genPanel = new JPanel();
+        BorderLayout layout = new BorderLayout();
+        genPanel.setLayout(layout);
+
+        genPanel.add(forward, BorderLayout.EAST);
+        genPanel.add(backward, BorderLayout.WEST);
+        genPanel.add(month, BorderLayout.CENTER);
+
+
+        tabPane.insertTab("Matches by Month", null, genPanel, null, 0);
+
+
     }
 
 
@@ -143,10 +218,14 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
                 SpringLayout.Constraints cRank = layout.getConstraints(teamRank);
                 cRank.setX(Spring.constant(10));
+                //sets top of label to 14 (which is arbitrary) * its place in the array + 1,
+                // which is how far down in the column it is, and all that goes below
+                //the apropriate label.
                 cRank.setY(Spring.sum(Spring.constant(14 * (sortedArr.indexOf(team) + 1)),
                         con1.getConstraint(SpringLayout.SOUTH)));
 
                 SpringLayout.Constraints cName = layout.getConstraints(teamName);
+                //sets right edge to align with right edge of the TEAMS: label
                 cName.setX(con2.getConstraint(SpringLayout.WEST));
                 cName.setY(Spring.sum(Spring.constant(14 * (sortedArr.indexOf(team) + 1)),
                         con2.getConstraint(SpringLayout.SOUTH)));
@@ -177,6 +256,11 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         return true;
     }
 
+    @Override
+    public boolean checkIfInitialized() {
+        return initialized;
+    }
+
     /**
      * Initiates the JTabbedPane before the simulation has started, with a blank calandar
      * tab and temporary region tabs. Will likely never need parameters.
@@ -184,27 +268,62 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      */
     @Override
     public void initPanel() {
+        curMonth = 1;
+        curYear = 2018;
         tabPane =  new JTabbedPane();
         cards = new JPanel[6];
+      /*  JPanel testThis = new JPanel();
+        testThis.setLayout(new GridLayout(2, 1));
+        testThis.add(new JLabel("This is a Label"));
+        testThis.add(month); */
 
-        //placeholder
-        //JPanel month = new JPanel();
-        //month.add(new JLabel("This is a calendar"));
+        initMonthPanel(new ArrayList<Match>());
 
-        tabPane.addTab("Matches by Month", months[0]);
-
-        for(int i = 0; i < cards.length; i++) {
+        for(int i = 0; i < 6; i++) {
             JPanel subPanel = new JPanel();
             subPanel.add(new JLabel("Results coming soon for " + regions[i]));
             cards[i] = subPanel;
-        }
-
-        for(int i = 0; i < 6; i++) {
 
             tabPane.addTab(regions[i], cards[i]);
         }
 
         fillResults();
 
+        this.add(tabPane);
+        this.setSize(1600, 900);
+        initialized = true;
+
     }
+
+    @Override
+    public void initPanel(Match[] m) {
+
+    }
+
+    ActionListener listener = new ActionListener() {
+        @Override
+        public void actionPerformed (ActionEvent e) {
+            String command = e.getActionCommand();
+            //System.out.println(command);
+
+            switch(command) {
+                case "next": curMonth++;
+                break;
+                case "back": curMonth--;
+                break;
+                default: System.out.println("error message");
+            }
+
+            if(curMonth > 12) {
+                curMonth = 1;
+                curYear++;
+            }
+            if(curMonth < 1) {
+                curMonth = 12;
+                curYear--;
+            }
+            month.setToMonth(curYear, curMonth);
+            month.setMatchesOnDayPanels(new ArrayList<Match>()); //backend.getMatchesForYearMonth(
+        }
+    };
 }
