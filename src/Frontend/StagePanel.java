@@ -2,6 +2,8 @@ package Frontend;
 
 import Backend.Match;
 
+import java.util.List;
+
 /**
  * Interface to ensure the various stage panels have necessary functions for GUi to be able to ensure the next stage
  * is ready to be displayed before switching to it visually
@@ -16,7 +18,7 @@ public interface StagePanel {
      * Checks StagePanel state to see if the next stage can be moved onto
      * @return
      */
-    public void initPanel(Match[] m);
+    public void initPanel(List<Match> matches);
     public boolean checkIfCompleted();
 
     public boolean checkIfInitialized();

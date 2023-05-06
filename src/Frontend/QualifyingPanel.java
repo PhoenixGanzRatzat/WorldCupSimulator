@@ -11,7 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.time.Month;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
@@ -98,7 +98,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      *
      * @param matches
      */
-    public void initMonthPanel(ArrayList<Match> matches) {
+    public void initMonthPanel(List<Match> matches) {
 
         month.setToMonth(curYear, curMonth);
         month.setMatchesOnDayPanels(matches);
@@ -297,7 +297,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     }
 
     @Override
-    public void initPanel(Match[] m) {
+    public void initPanel(List<Match> matches) {
         //don't need this? Could use it for initMonthPanel but that would be confusing.
     }
 
