@@ -68,6 +68,7 @@ public class QualifyingStage extends Stage {
     public List<Match> getMatches() {
         return QualifierMatches;
     }
+    
 
     // Get the list of all qualified teams
     public ArrayList<Team> qualifiedTeams(){
