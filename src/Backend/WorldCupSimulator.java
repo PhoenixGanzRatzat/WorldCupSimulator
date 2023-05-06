@@ -2,7 +2,6 @@ package Backend;
 
 import Backend.stage.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class WorldCupSimulator {
@@ -10,12 +9,12 @@ public class WorldCupSimulator {
     private List<Team> teams;
     private final DataLoader dataLoader = new DataLoader();
     private QualifyingStage qualifiers;
-    private GroupStage roundRobbin;
+    private GroupStage roundRobin;
     private KnockoutStage brackets;
     public WorldCupSimulator(){
         this.startProgram();
         qualifiers = new QualifyingStage(teams);
-        roundRobbin = null;
+        roundRobin = null;
         brackets = null;
     }
     private void startProgram() {
@@ -33,12 +32,12 @@ public class WorldCupSimulator {
                 return qualifiers.getMatches();
             case 2:
                 teams = qualifiers.qualifiedTeams();
-                roundRobbin = new GroupStage(teams);
-                roundRobbin.arrangeMatches();
-                roundRobbin.calculateMatchResults();
-                return roundRobbin.getMatches();
+                roundRobin = new GroupStage(teams);
+                roundRobin.arrangeMatches();
+                roundRobin.calculateMatchResults();
+                return roundRobin.getMatches();
             case 3:
-                teams = roundRobbin.qualified();
+                teams = roundRobin.qualified();
                 brackets = new KnockoutStage(teams);
                 brackets.arrangeMatches();
                 brackets.calculateMatchResults();
