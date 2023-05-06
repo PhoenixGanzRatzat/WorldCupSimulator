@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 
 
@@ -22,7 +23,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     private int curMonth;
     private HashMap<String, BufferedImage> flags;
     private int curYear;
-    private ArrayList<Team> teams;
+    private List<Team> teams;
     private MonthPanel month;
     private JPanel[] cards;
     private String[] regions = new String[6];
@@ -33,7 +34,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     An in progress constructor that is subject to change.
     @param teamIn an array of all teams participating.
      */
-    public QualifyingPanel (ArrayList<Team> teamIn) {
+    public QualifyingPanel (List<Team> teamIn) {
 
         teams = teamIn;
         month = new MonthPanel();

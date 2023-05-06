@@ -4,11 +4,7 @@ import Backend.Match;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.text.html.HTML;
-import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +15,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class MonthPanel extends JPanel {
+
+
+    private static final GridLayout LAYOUT_FIVE_ROW = new GridLayout(5, 7, 10, 10);
+    private static final GridLayout LAYOUT_SIX_ROW = new GridLayout(6, 7, 10, 10);
 
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MMMM u");
 
@@ -59,7 +59,7 @@ public class MonthPanel extends JPanel {
         monthLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.calendarPanel = new JPanel();
         calendarPanel.setPreferredSize(new Dimension(1000, 1000));
-        calendarPanel.setLayout(new GridLayout(5, 7, 10, 10));
+        calendarPanel.setLayout(LAYOUT_FIVE_ROW);
         this.add(monthLabelPanel, BorderLayout.NORTH);
         this.add(calendarPanel, BorderLayout.CENTER);
 
@@ -75,13 +75,23 @@ public class MonthPanel extends JPanel {
      */
     public void setToMonth(int year, int monthNum) {
         this.monthStart = java.time.LocalDate.of(year, monthNum, 1);
-        updateLabel();
+        monthLabel.setText(monthStart.format(dateFormat));
 
         //if the first day of the month is not a sunday, we need empty space to pad out the grid cells
         //getDayOfWeek returns a java.time.DayOfWeek enum where 1 = Monday and 7 = Sunday
         //We want sunday to be the leftmost column, so do getDayOfWeek % 7 to find how many empty cells we need to pad
         int dayOffset = monthStart.getDayOfWeek().getValue() % 7;
+
+
         int daysInMonth = monthStart.lengthOfMonth();
+
+        boolean sixRowsNeeded = daysInMonth + dayOffset > 35;
+
+        if (sixRowsNeeded){
+            calendarPanel.setLayout(LAYOUT_SIX_ROW);
+        } else {
+            calendarPanel.setLayout(LAYOUT_FIVE_ROW);
+        }
 
         calendarPanel.removeAll(); // make sure MonthPanel has no child components
         for (int i = 0; i < daysInMonth + dayOffset; i++) {
@@ -97,7 +107,7 @@ public class MonthPanel extends JPanel {
                 calendarPanel.add(dayPanel, i);
             }
         }
-        for (int i = daysInMonth + dayOffset; i < 35; i++) {
+        for (int i = daysInMonth + dayOffset; i < (sixRowsNeeded ? 42:35); i++) {
             calendarPanel.add(new JLabel());
         }
     }
@@ -118,10 +128,6 @@ public class MonthPanel extends JPanel {
                 dayPanel.addMatch(match);
             }
         });
-    }
-
-    private void updateLabel() {
-        monthLabel.setText(monthStart.format(dateFormat));
     }
 
     @Override
