@@ -19,12 +19,10 @@ import java.util.HashMap;
 public class QualifyingPanel extends JPanel implements StagePanel {
 
     //ARIAL BLACK BOLD
-
-    private Match[] matches;
     private int curMonth;
     private HashMap<String, BufferedImage> flags;
     private int curYear;
-    private Team[] teams;
+    private ArrayList<Team> teams;
     private MonthPanel month;
     private JPanel[] cards;
     private String[] regions = new String[6];
@@ -35,10 +33,9 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     An in progress constructor that is subject to change.
     @param teamIn an array of all teams participating.
      */
-    public QualifyingPanel (Team[] teamIn) {
-        //matches = matchIn;
-        teams = teamIn;
+    public QualifyingPanel (ArrayList<Team> teamIn) {
 
+        teams = teamIn;
         month = new MonthPanel();
 
         regions[0] = "AFC";
@@ -64,8 +61,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      */
     public QualifyingPanel () {
 
-        teams = new Team[0];
-
+        teams = new ArrayList<Team>();
         month = new MonthPanel();
 
         regions[0] = "AFC";
@@ -322,10 +318,15 @@ public class QualifyingPanel extends JPanel implements StagePanel {
                 curMonth = 1;
                 curYear++;
             }
-            if(curMonth < 1) {
+            if(curMonth < 1 || curYear > 2018) {
                 curMonth = 12;
                 curYear--;
             }
+            if(curYear < 2016) {
+                curMonth = 1;
+                curYear++;
+            }
+
             month.setToMonth(curYear, curMonth);
             month.setMatchesOnDayPanels(new ArrayList<Match>()); //backend.getMatchesForYearMonth(
         }
