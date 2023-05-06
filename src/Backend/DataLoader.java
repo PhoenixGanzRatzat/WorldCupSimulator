@@ -16,7 +16,7 @@ public class DataLoader {
     private static final String TEAM_DATA_FILE_NAME = "../teams.txt";
     private static final String DATA_DELIMITER = ",";
 
-    private DataLoader() {
+    DataLoader() {
     }
 
     /**
