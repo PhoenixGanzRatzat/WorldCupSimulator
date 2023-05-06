@@ -2,285 +2,576 @@ package Frontend;
 
 import Backend.Match;
 
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
+import java.util.ArrayList;
 
 /**
  * Displays KnockoutStage results either one match at a time or
  * one round at a time, should the user choose to skip forward.
- **/
-public class KnockoutPanel extends JPanel implements StagePanel {
-    /**
-     * TEMPORARY
-     */
-    public static void main(String[] args) {
-        KnockoutPanel panel = new KnockoutPanel();
-        JFrame frame = new JFrame();
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.add(panel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-    }
+ */
+public class KnockoutPanel extends JPanel implements StagePanel, ActionListener {
+    // round constants
+    private static final int ROUND_OF_SIXTEEN = 0;
+    private static final int QUARTERFINALS = 1;
+    private static final int SEMIFINALS = 2;
+    private static final int FINALS = 3;
+    private static final int WINNER = 4;
+    // positional constants
+    private static final int CENTER = 0;
+    private static final int LEFT = 1;
+    private static final int RIGHT = 2;
+    // colors
+    private final static Color canvas = new Color(17, 132, 39);
+    private final static Color text = new Color(213, 226, 216);
+    private final static Color stroke = new Color(163, 207, 172);
 
-    // attributes
-    Match[] matches;
-    int round;
-    boolean initialized;
-
-    /**
-     * Default constructor; passes empty Match array to main constructor
-     **/
-    public KnockoutPanel() {
-        this(new Match[]{});
-    }
+    private boolean initialized;
+    private BracketCell[][] cells;
 
     /**
-     * Main constructor; initializes JPanel with BorderLayout, sets size,
+     * Default constructor; initializes JPanel with BorderLayout, sets size,
      * initializes matches, initializes init boolean, & calls createWindow()
-     **/
-    public KnockoutPanel(Match[] matches) {
-        super(new BorderLayout());
-        this.setSize(new Dimension(800, 600));
-        this.matches = matches;
-        this.round = 0;
+     */
+    public KnockoutPanel() {
+        super(new GridBagLayout(), true);
+        this.cells = new BracketCell[][]{new BracketCell[16], new BracketCell[8], new BracketCell[4], new BracketCell[4], new BracketCell[2]};
+        this.setBackground(canvas);
         this.initialized = false;
         createWindow();
-        initialized = false;
     }
-
-    private void createWindow() {
-        this.add(knockoutBracket(), BorderLayout.CENTER);
-        this.add(knockoutButtons(), BorderLayout.SOUTH);
-    }
-
     /*TODO:
-     * Implement knockoutButtons(), nextMatch(), & nextRound()
-     * Make knockoutBracket() draw lines between the labels (it paintComponent time)
-     * Ponder the redundancy of createWindow()
-     * Make more ugly ASCII art comments
+     * Implement initPanel(), nextMatch(), & nextRound()
+     * Make those 90 lines of addSpacer() calls into 10 lines of batchSpacers() calls
+     * Write a loop in batchSpacers() iterated to the length of the shorter array passed in
+     * Bracket layout changes: either turn Matches into two BracketCells stacked or make BracketCell "double up" by default
      */
-    private JPanel knockoutButtons() {
-        JPanel buttons = new JPanel(new GridBagLayout());
-        return buttons;
-    }
-
     /**
-     * Assembles a GridBagLayout-based bracket of labels for the teams competing in each match
-     **/
-    private JPanel knockoutBracket() {
-        JPanel knock = new JPanel(new GridBagLayout());
-        GridBagConstraints out = new GridBagConstraints();
+     * Assembles a GridBagLayout-based bracket of BracketCell objects and buttons for the teams competing in each match
+     */
+    private void createWindow() {
+        /*Insets insCenter = new Insets(20,20,40,20);
+        Insets insLeft = new Insets(10, 30, 10, 10);
+        Insets insRight = new Insets(10, 10, 10, 30);*/
 
-        out.weightx = 0.2;
-        out.weighty = 0.2;
-        out.insets = new Insets(10, 10, 10, 10);
-        out.ipadx = 180;
-        out.ipady = 40;
+        GridBagConstraints bracket = new GridBagConstraints();
+        bracket.insets = new Insets(0,0,0,0);
+        bracket.weighty = 0;
 
-        /*    << Bracket Column Legend with GridBagConstraints coordinates >>
+
+        /*
          *
-         *       0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19
-         *      _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L
-         *   0 |      ↓ 8x left                            8x right ↓      |
-         *   1 |      ■■                                           ■■      |
-         *   2 |      ■■    ↓ 4x left                4x right ↓    ■■      |
-         *   3 |            ■■             winner            ■■            |
-         *   4 |      ■■    ■■               ↓               ■■    ■■      |
-         *   5 |      ■■     final left ↓  ■■■■■  ↓ final right    ■■      |
-         *   6 |                  ■■    ■■       ■■    ■■                  |
-         *   7 |                  ■■                   ■■                  |
-         *   8 |      ■■          ↑          semi right ↑          ■■      |
-         *   9 |      ■■    ■■    semi left                  ■■    ■■      |
-         *  10 |            ■■                               ■■            |
-         *  11 |      ■■                                           ■■      |
-         *  12 |      ■■                                           ■■      |
-         *  13 |_L _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L|
+         *    << Bracket Column Legend with GridBagConstraints coordinates >>
+         *
+         *       0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16
+         *      _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L
+         *   0 |                                                  |
+         *   1 |   ■■                                        ■■   |
+         *   2 |         ■■                            ■■         |
+         *   3 |   ■■                   ■■                   ■■   |
+         *   4 |               ■■                ■■               |
+         *   5 |   ■■                                        ■■   |
+         *   6 |         ■■          ■■    ■■          ■■         |
+         *   7 |   ■■                                        ■■   |
+         *   8 |                                                  |
+         *   9 |   ■■                                        ■■   |
+         *  10 |         ■■          ■■    ■■          ■■         |
+         *  11 |   ■■                                        ■■   |
+         *  12 |               ■■                ■■               |
+         *  13 |   ■■                   ■■                   ■■   |
+         *  14 |         ■■                            ■■         |
+         *  15 |   ■■                                        ■■   |
+         *  16 |_L _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L|
          *
          *        by Naomi                                 4/28/23
          */
 
-        // initialized from left to right:
+        int[][] row = new int[][]{new int[]{1, 3, 5, 7, 9, 11, 13, 15},
+                                  new int[]{2, 6, 10, 14},
+                                  new int[]{4, 12},
+                                  new int[]{6, 10},
+                                  new int[]{3, 13}};
 
+        for (int i = 0; i < 8; i++) {
+            bracket.gridwidth = 1;
+            bracket.gridheight = 1;
+            //if (i == 0) bracket.anchor = GridBagConstraints.SOUTH;
+            //if (i == 7) bracket.anchor = GridBagConstraints.NORTH;
+            if (i%2==0) {
+                bracket.anchor = GridBagConstraints.SOUTH;
+            } else bracket.anchor = GridBagConstraints.NORTH;
+            // first round
+            bracket.gridy = row[ROUND_OF_SIXTEEN][i];
+            // left
+            cells[ROUND_OF_SIXTEEN][i] = new BracketCell(row[ROUND_OF_SIXTEEN][i], ROUND_OF_SIXTEEN, LEFT);
+            bracket.gridx = 1;
+            this.add(this.cells[ROUND_OF_SIXTEEN][i], bracket);
+            // right
+            cells[ROUND_OF_SIXTEEN][i+8] = new BracketCell(row[ROUND_OF_SIXTEEN][i], ROUND_OF_SIXTEEN, RIGHT);
+            bracket.gridx = 15;
+            this.add(this.cells[ROUND_OF_SIXTEEN][i+8], bracket);
+            bracket.anchor = GridBagConstraints.CENTER;
+            // second round
+            if (i < 4) {
+                bracket.gridy = row[QUARTERFINALS][i];
+                // left
+                cells[QUARTERFINALS][i] = new BracketCell(row[QUARTERFINALS][i], QUARTERFINALS, LEFT);
+                bracket.gridx = 3;
+                this.add(this.cells[QUARTERFINALS][i], bracket);
+                // right
+                cells[QUARTERFINALS][i+4] = new BracketCell(row[QUARTERFINALS][i], QUARTERFINALS, RIGHT);
+                bracket.gridx = 13;
+                this.add(this.cells[QUARTERFINALS][i+4], bracket);
+            }
+            // semi-final round
+            if (i < 2) {
+                bracket.gridy = row[SEMIFINALS][i];
+                // left
+                cells[SEMIFINALS][i] = new BracketCell(row[SEMIFINALS][i], SEMIFINALS, LEFT);
+                bracket.gridx = 5;
+                this.add(this.cells[SEMIFINALS][i], bracket);
+                // right
+                cells[SEMIFINALS][i+2] = new BracketCell(row[SEMIFINALS][i], SEMIFINALS, RIGHT);
+                bracket.gridx = 11;
+                this.add(this.cells[SEMIFINALS][i+2], bracket);
+            }
+            // finals + winner
+            if (i == 0) {
+                // first place match
+                // left
+                cells[FINALS][i] = new BracketCell(row[FINALS][i], FINALS, LEFT);
+                bracket.gridx = 7;
+                bracket.gridy = row[FINALS][i];
+                this.add(this.cells[FINALS][i], bracket);
+                // right
+                cells[FINALS][i+2] = new BracketCell(row[FINALS][i], FINALS, RIGHT);
+                bracket.gridx = 9;
+                bracket.gridy = row[FINALS][i];
+                this.add(this.cells[FINALS][i+2], bracket);
+                // winner
+                cells[WINNER][i] = new BracketCell(row[WINNER][i], WINNER, CENTER);
+                bracket.gridx = 8;
+                bracket.gridy = row[WINNER][i];
+                this.add(this.cells[WINNER][i], bracket);
+                // third place match
+                // left
+                cells[FINALS][i+1] = new BracketCell(row[FINALS][i+1], FINALS, LEFT);
+                bracket.gridx = 7;
+                bracket.gridy = row[FINALS][i+1];
+                this.add(this.cells[FINALS][i+1], bracket);
+                // right
+                cells[FINALS][i+3] = new BracketCell(row[FINALS][i+1], FINALS, RIGHT);
+                bracket.gridx = 9;
+                bracket.gridy = row[FINALS][i+1];
+                this.add(this.cells[FINALS][i+3], bracket);
+                // winner
+                cells[WINNER][i+1] = new BracketCell(row[WINNER][i+1], WINNER, CENTER);
+                bracket.gridx = 8;
+                bracket.gridy = row[WINNER][i+1];
+                this.add(this.cells[WINNER][i+1], bracket);
+            }
+        }
+        int x = 0;
+        int y;
+        for(BracketCell[] column : cells){
+            y = 0;
+            for(BracketCell cell : column){
+                cell.getTeamName().addActionListener(this);
+                cell.getTeamName().setActionCommand(x+","+y);
+                y++;
+            }
+            x++;
+        }
+        // remainder of method is spacers between cells
 
-        // 8x left
-        out.gridx = 2;
-        out.gridy = 1;
-        knock.add(new BracketCell(), out);
-        out.gridy = 2;
-        knock.add(new BracketCell(), out);
-        out.gridy = 4;
-        knock.add(new BracketCell(), out);
-        out.gridy = 5;
-        knock.add(new BracketCell(), out);
-        out.gridy = 8;
-        knock.add(new BracketCell(), out);
-        out.gridy = 9;
-        knock.add(new BracketCell(), out);
-        out.gridy = 11;
-        knock.add(new BracketCell(), out);
-        out.gridy = 12;
-        knock.add(new BracketCell(), out);
-
-        // 4x left
-        out.gridx = 4;
-        out.gridy = 3;
-        knock.add(new BracketCell(), out);
-        out.gridy = 4;
-        knock.add(new BracketCell(), out);
-        out.gridy = 9;
-        knock.add(new BracketCell(), out);
-        out.gridy = 10;
-        knock.add(new BracketCell(), out);
-
-        // semi left
-        out.gridx = 6;
-        out.gridy = 6;
-        knock.add(new BracketCell(), out);
-        out.gridy = 7;
-        knock.add(new BracketCell(), out);
-
-        // final left
-        out.gridx = 8;
-        out.gridy = 6;
-        knock.add(new BracketCell(), out);
-
-        // winner
-        out.gridwidth = 2;
-        out.gridx = 9;
-        out.gridy = 5;
-        knock.add(new BracketCell(), out);
-        out.gridwidth = 1;
-
-        // final right
-        out.gridx = 11;
-        out.gridy = 6;
-        knock.add(new BracketCell(), out);
-
-        // semi right
-        out.gridx = 13;
-        out.gridy = 6;
-        knock.add(new BracketCell(), out);
-        out.gridy = 7;
-        knock.add(new BracketCell(), out);
-
-        // 4x right
-        out.gridx = 15;
-        out.gridy = 3;
-        knock.add(new BracketCell(), out);
-        out.gridy = 4;
-        knock.add(new BracketCell(), out);
-        out.gridy = 9;
-        knock.add(new BracketCell(), out);
-        out.gridy = 10;
-        knock.add(new BracketCell(), out);
-
-        // 8x right
-        out.gridx = 17;
-        out.gridy = 1;
-        knock.add(new BracketCell(), out);
-        out.gridy = 2;
-        knock.add(new BracketCell(), out);
-        out.gridy = 4;
-        knock.add(new BracketCell(), out);
-        out.gridy = 5;
-        knock.add(new BracketCell(), out);
-        out.gridy = 8;
-        knock.add(new BracketCell(), out);
-        out.gridy = 9;
-        knock.add(new BracketCell(), out);
-        out.gridy = 11;
-        knock.add(new BracketCell(), out);
-        out.gridy = 12;
-        knock.add(new BracketCell(), out);
-
-        return knock;
+        // 17x1 weak spacers, as top & bottom margins of the whole bracket (2x total)
+        addSpacer(0,0,17,1,false, false);
+        addSpacer(0,16,17,1,false, false);
+        // 1x15 horizontal spacers, four each padding the two groups of four outermost columns of cells (8x total)
+        addSpacer(0,1,1,15,false,true);
+        addSpacer(2,1,1,15,false,true);
+        addSpacer(4,1,1,15,false,true);
+        addSpacer(6,1,1,15,false,true);
+        addSpacer(10,1,1,15,false,true);
+        addSpacer(12,1,1,15,false,true);
+        addSpacer(14,1,1,15,false,true);
+        addSpacer(16,1,1,15,false,true);
+        // 1x1 vertical spacers, two each padding the top and bottom of the quarterfinals' columns (4x total)
+        addSpacer(3,1,1,1,true,false);
+        addSpacer(13,1,1,1,true,false);
+        addSpacer(3,15,1,1,true,false);
+        addSpacer(13,15,1,1,true,false);
+        // 1x1 vertical spacers, between all round-of-sixteen rows (14x total)
+        addSpacer(1,2,1,1,true,false);
+        addSpacer(15,2,1,1,true,false);
+        addSpacer(1,4,1,1,true,false);
+        addSpacer(15,4,1,1,true,false);
+        addSpacer(1,6,1,1,true,false);
+        addSpacer(15,6,1,1,true,false);
+        addSpacer(1,8,1,1,true,false);
+        addSpacer(15,8,1,1,true,false);
+        addSpacer(1,10,1,1,true,false);
+        addSpacer(15,10,1,1,true,false);
+        addSpacer(1,12,1,1,true,false);
+        addSpacer(15,12,1,1,true,false);
+        addSpacer(1,14,1,1,true,false);
+        addSpacer(15,14,1,1,true,false);
+        // 1x3 vertical spacers, three each between the four rows of the
+        // quarterfinals' columns, two each padding the top and bottom of
+        // the semifinals' columns, and one each between the finals' rows (10x total)
+        addSpacer(3,3,1,3,true,false);
+        addSpacer(13,3,1,3,true,false);
+        addSpacer(3,7,1,3,true,false);
+        addSpacer(13,7,1,3,true,false);
+        addSpacer(3,11,1,3,true,false);
+        addSpacer(13,11,1,3,true,false);
+        addSpacer(5,1,1,3,true,false);
+        addSpacer(11,1,1,3,true,false);
+        addSpacer(5,13,1,3,true,false);
+        addSpacer(11,13,1,3,true,false);
+        addSpacer(7,7,1,3,true,false);
+        addSpacer(9,7,1,3,true,false);
+        // 1x5 vertical spacers, two each padding the top and bottom of the finals' columns,
+        addSpacer(7,1,1,5,true,false);
+        addSpacer(9,1,1,5,true,false);
+        addSpacer(7,11,1,5,true,false);
+        addSpacer(9,11,1,5,true,false);
+        // 1x7 vertical spacers, one each at the center of the finals' columns (2x total)
+        addSpacer(5,5,1,7,true,false);
+        addSpacer(11,5,1,7,true,false);
+        //1x2 two-way spacers, one each respectively above and below the winners' rows (2x total)
+        addSpacer(8,1,1,2,true,true);
+        addSpacer(8,14,1,2,true,true);
+        // 1x9 two-way spacer, between the winners' rows and between the finals' columns (1x only)
+        addSpacer(8,4,1,9,true,true);
+        revalidate();
+        repaint();
     }
-
     /**
-     * Garbage method full of garbage.
-     **/
+     * Creates an empty, transparent JPanel for use as a spacer.
+     * Intended to simplify repetitive use of GridBagConstraints by accepting only 6 parameters instead of 11
+     *
+     */
+    private void addSpacer(int gX, int gY, int gW, int gH, boolean isVert, boolean isHor){
+        JPanel spacerPanel = new JPanel(true);
+        spacerPanel.setOpaque(false);
+        // uncomment the next line if u wanna see something ~nasty~
+        // spacerPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 1, false));
+        double wX = 0, wY = 0;
+        if(isVert) wY = 1;
+        if(isHor) wX = 1;
+        this.add(spacerPanel, new GridBagConstraints(gX,gY,gW,gH,wX,wY,10,1,(new Insets(0,0,0,0)),0,0));
+    }
+    private void batchSpacers(int[] gX, int[] gY, int gW, int gH, boolean isVert, boolean isHor){
 
+    }
+    private void addMatch(int round, int i){
+
+    }
     public void nextMatch() {
     }
-
     public void nextRound() {
     }
+    private ArrayList<Line2D.Double> createStripes(){
+        ArrayList<Line2D.Double> stripes = new ArrayList<>();
+        double[] X = new double[9];
+        int n = -1;
+        for (BracketCell[] column : cells) {
+            n++;
+            for (BracketCell cell : column) {
+                Rectangle2D box = cell.getBounds().getBounds2D();
+                Point2D origin = new Point2D.Double(box.getCenterX(), box.getCenterY());
+                cell.setOrigin(origin);
+            }
+            X[n] = column[0].getOrigin().getX();
+            if(column[0].getPosition()!=CENTER) {
+                X[X.length-1-n] = column[column.length-1].getOrigin().getX();
+            }
+        }
+        for(int i = 0; i < X.length; i++) System.out.print("x[" + i + "] ");
+        System.out.print("\n");
+        for(int i = 0; i < X.length; i++) System.out.print(" " + (int)(X[i]) + " ");
+        System.out.println("\n");
 
+        boolean even;
+        double xL, xR, y1, y2, axs;
+
+        for (int i = 0; i < 8; i++) {
+            even = i%2==0;
+            // first round
+            xL = (X[0] + X[1]) / 2;
+            xR = (X[7] + X[8]) / 2;
+            y1 = cells[ROUND_OF_SIXTEEN][i].getOrigin().getY();
+            if (even) {
+                // vertical
+                y2 = cells[ROUND_OF_SIXTEEN][i + 1].getOrigin().getY();
+                stripes.add(new Line2D.Double(xL, y1, xL, y2));
+                stripes.add(new Line2D.Double(xR, y1, xR, y2));
+            }
+            stripes.add(new Line2D.Double(X[0], y1, xL, y1));
+            stripes.add(new Line2D.Double(X[8], y1, xR, y1));
+            // second round
+            if (i<4) {
+                //horizontal
+                xL = (X[0] + X[1]) / 2;
+                xR = (X[7] + X[8]) / 2;
+                y1 = cells[QUARTERFINALS][i].getOrigin().getY();
+                stripes.add(new Line2D.Double(X[1], y1, xL, y1));
+                stripes.add(new Line2D.Double(X[7], y1, xR, y1));
+                xL = (X[1] + X[2]) / 2;
+                xR = (X[6] + X[7]) / 2;
+                y1 = cells[QUARTERFINALS][i].getOrigin().getY();
+                y2 = cells[QUARTERFINALS][i + 1].getOrigin().getY();
+                // vertical
+                if(even) {
+                    stripes.add(new Line2D.Double(xL, y1, xL, y2));
+                    stripes.add(new Line2D.Double(xR, y1, xR, y2));
+                }
+                y2 = cells[SEMIFINALS][i].getOrigin().getY();
+                stripes.add(new Line2D.Double(X[1], y1, xL, y1));
+                stripes.add(new Line2D.Double(X[2], y2, xL, y2));
+                stripes.add(new Line2D.Double(X[7], y1, xR, y1));
+                stripes.add(new Line2D.Double(X[6], y2, xR, y2));
+            }
+            // third round
+            if (i<2) {
+                if(even) {
+                    // vertical
+                    xL = (X[2] + X[3]) / 2;
+                    xR = (X[5] + X[6]) / 2;
+                    y1 = cells[SEMIFINALS][i].getOrigin().getY();
+                    y2 = cells[SEMIFINALS][i + 1].getOrigin().getY();
+                    stripes.add(new Line2D.Double(xL, y1, xL, y2));
+                    stripes.add(new Line2D.Double(xR, y1, xR, y2));
+                    // finals - horizontal
+                    y1 = cells[FINALS][i].getOrigin().getY();
+                    stripes.add(new Line2D.Double(xL, y1, xR, y1));
+                    y2 = cells[FINALS][i + 1].getOrigin().getY();
+                    stripes.add(new Line2D.Double(xL, y2, xR, y2));
+                }
+                //winners
+                if(even) {
+                    // vertical
+                    axs = X[4];
+                    y1 = cells[FINALS][i].getOrigin().getY();
+                    y2 = cells[WINNER][i].getOrigin().getY();
+                    stripes.add(new Line2D.Double(axs, y1, axs, y2));
+                    y1 = cells[FINALS][i + 1].getOrigin().getY();
+                    y2 = cells[WINNER][i + 1].getOrigin().getY();
+                    stripes.add(new Line2D.Double(axs, y1, axs, y2));
+                }
+                // horizontal
+                xL = X[2];
+                xR = (X[2] + X[3]) / 2;
+                y1 = cells[SEMIFINALS][i].getOrigin().getY();
+                stripes.add(new Line2D.Double(xR, y1, xL, y1));
+                y2 = cells[SEMIFINALS][i + 1].getOrigin().getY();
+                xL = (X[5] + X[6]) / 2;
+                xR = X[6];
+                stripes.add(new Line2D.Double(xR, y2, xL, y2));
+            }
+        }
+        return stripes;
+    }
     @Override
     public boolean checkIfCompleted() {
         return initialized;
     }
-
     @Override
     public boolean checkIfInitialized() {
         return initialized;
     }
-
     @Override
     public void initPanel() {
-        initialized = true; // last line of method
+        initialized = true;
     }
+    public void initPanel(Match[] m){
+        initialized = true;
+    }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        //System.out.println(e.getActionCommand());
+        String split[] = e.getActionCommand().split(",");
+        System.out.println(Integer.parseInt(split[0])+","+Integer.parseInt(split[1]));
+        BracketCell target = cells[Integer.parseInt(split[0])][Integer.parseInt(split[1])];
+        System.out.println("x = " + (int)(target.getOrigin().getX()));
+        /*if (target.isVisible()) {
+            target.setVisible(false);
+        } else {
+            target.setVisible(true);
+        }*/
+    }
+    @Override
+    public void paintComponent(Graphics g){
+        Graphics2D striper = (Graphics2D) g;
+        super.paintComponent(striper);
+        striper.setColor(stroke);
+        striper.setStroke(new BasicStroke(5, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
+        if(initialized){
+            for(Line2D.Double stripe : createStripes()){
+                striper.draw(stripe);
+        }
+
+        }
+    }
+
+    /**
+     * Creates small JPanels with two JLabels next to each other,
+     * the first of which having an ImageIcon created by scaling
+     * a BufferedImage of a flag with a separate method. Also has
+     * accessor methods so initPanel can change things when called.
+     */
     private class BracketCell extends JPanel {
-        private GridBagConstraints cell;
-        private  Dimension cellSize;
-        private JLabel flagLabel, teamLabel;
-        private final String defaultPath = "Assets\\blank.png";
+        private final String defaultPath = "Assets" + File.separator + "blank.png";
+        private String flagPath;
+        private Dimension cellSize;
+        private GridBagConstraints cellConstraints;
+        private Point2D origin;
+        private JLabel flagLabel;
+        private JButton teamName;
+        private boolean hasInput, hasOrigin;
+        private int row, round, position;
         private int imageWidth;
         private int imageHeight;
         private int flagWidth;
         private int flagHeight;
         private BufferedImage flag;
         private BracketCell() {
-            super(new GridBagLayout());
-            flagWidth = 46;
-            flagHeight = 30;
-            cellSize = new Dimension(80+flagWidth, flagHeight);
-            this.setMinimumSize(cellSize);
+            this(0, 4, 0);
+        }
+        private BracketCell(int row, int round, int position) {
+            this(row, round, position, 70, 46, 46, 30);
+        }
+        private BracketCell(int row, int round, int position, int imageWidth, int imageHeight, int flagWidth, int flagHeight) {
+            super(new GridBagLayout(), true);
+            this.row = row;
+            this.round = round;
+            this.position = position;
+            this.imageWidth = imageWidth;
+            this.imageHeight = imageHeight;
+            this.flagWidth = flagWidth;
+            this.flagHeight = flagHeight;
+            this.hasInput = false;
+            this.hasOrigin = false;
+
+
+            cellSize = new Dimension(40+this.flagWidth, this.flagHeight);
+            //this.setMinimumSize(cellSize);
             this.setMaximumSize(cellSize);
-            imageWidth = 70;
-            imageHeight = 46;
-            flag = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
+            //this.setBackground(new Color(35, 117, 51));
+            this.setBackground(canvas.darker());
+
+            this.flag = new BufferedImage(this.imageWidth, this.imageHeight, BufferedImage.TYPE_INT_ARGB);
             try {
                 flag = ImageIO.read(new File(defaultPath));
             } catch(IOException e){
                 System.out.printf("File not found at \"%s\"\n", defaultPath);
             }
-            this.cell = new GridBagConstraints();
-            flagLabel = new JLabel(scaledFlag(flagHeight), JLabel.LEFT);
-            this.add(flagLabel, cell);
-            teamLabel = new JLabel("Team Text");
-            cell.insets = new Insets(1,5,1,5);
-            this.add(teamLabel, cell);
-            this.validate();
+
+            cellConstraints = new GridBagConstraints();
+
+            // initialize & add teamLabel to mainCell with GridBagConstraints conditional on orientation
+
+            teamName = new JButton("TEAM");
+            teamName.setContentAreaFilled(false);
+            teamName.setBorderPainted(false);
+            teamName.setFocusPainted(false);
+            teamName.setForeground(text);
+            teamName.setFont(new Font ("Arial Black", Font.PLAIN, 14));
+            Font font = new Font("Arial Black", Font.BOLD, 12);
+            Font newFont = font.deriveFont(Font.PLAIN, 18);
+            teamName.setBorder(BorderFactory.createEmptyBorder(0,5,0,5));
+
+            if (this.position == LEFT) {
+                cellConstraints.gridx = 0;
+            } else if (this.position == RIGHT) {
+                cellConstraints.gridx = 1;
+            } else if (this.position == CENTER) {
+                cellConstraints.gridx = 0;
+            }
+            cellConstraints.anchor = GridBagConstraints.CENTER;
+            cellConstraints.weightx = 1;
+            //cellConstraints.gridwidth = 2;
+            cellConstraints.insets = new Insets(0,0,0,0);
+
+            this.add(teamName, cellConstraints);
+
+            // initialize & add flagLabel to mainCell with GridBagConstraints conditional on orientation
+
+            flagLabel = new JLabel(scaledFlag(this.flagHeight));
+            flagLabel.setOpaque(false);
+
+            if (position == LEFT) {
+                cellConstraints.gridx = 1;
+                cellConstraints.anchor = GridBagConstraints.EAST;
+            } else if (position == RIGHT) {
+                cellConstraints.gridx = 0;
+                cellConstraints.anchor = GridBagConstraints.WEST;
+            } else if (position == CENTER) {
+                cellConstraints.gridx = 0;
+                cellConstraints.gridy = 1;
+            }
+            cellConstraints.insets = new Insets(0,0,0,0);
+            cellConstraints.weightx = 0.2;
+            cellConstraints.gridwidth = 1;
+
+            this.add(flagLabel, cellConstraints);
+
+            this.setBorder(BorderFactory.createLineBorder(stroke, 2, true));
         }
-        public ImageIcon getFlagIcon() {
-            return (ImageIcon)(flagLabel.getIcon());
+        private int getRow() {
+            return row;
         }
-        public void setFlagIcon(BufferedImage newFlag) {
-            this.flag = newFlag;
-            this.flagLabel.setIcon(scaledFlag(flagHeight));
+        private int getPosition() {
+            return position;
+        }
+        private int getRound() {
+            return round;
+        }
+        private boolean hasOrigin() {
+            return hasOrigin;
+        }
+        private Point2D getOrigin(){
+            return origin;
+        }
+        private void setOrigin(Point2D point){
+            this.origin = point;
+            this.hasOrigin = true;
+        }
+        private void setFlagIcon(String teamAbbv) {
+            flagPath = "Assets" + File.separator + "Images"  + File.separator + "smallFlags" + File.separator + teamAbbv + ".png";
+            flag = new BufferedImage(this.imageWidth, this.imageHeight, BufferedImage.TYPE_INT_ARGB);
+            try {
+                flag = ImageIO.read(new File(flagPath));
+            } catch(IOException e){
+                System.out.printf("File not found at \"%s\"\n", flagPath);
+            }
+            flagLabel.setIcon(scaledFlag(flagHeight));
             this.revalidate();
-
         }
-        public String getTeamText() {
-            return teamLabel.getText();
+        private JButton getTeamName() {
+            return teamName;
         }
-        public void setTeamLabel(String teamLabel) {this.teamLabel.setText(teamLabel);}
+        private void setTeamName(String teamAbbv) {
+            this.teamName.setText(teamAbbv);
+        }
         private ImageIcon scaledFlag(int targetHeight) {
-            float scaleFactor = (float)(targetHeight) / (float)(this.flag.getHeight());
-            int iconX = (int) (this.flag.getWidth() * scaleFactor);
-            int iconY = (int) (this.flag.getHeight() * scaleFactor);
-
-            Image scaledPreviewImage = this.flag.getScaledInstance(iconX, iconY, Image.SCALE_SMOOTH);
+            float scaleFactor = (float)(targetHeight) / (float)(flag.getHeight());
+            int iconX = (int) (flag.getWidth() * scaleFactor);
+            int iconY = (int) (flag.getHeight() * scaleFactor);
+            Image scaledPreviewImage = flag.getScaledInstance(iconX, iconY, Image.SCALE_SMOOTH);
             BufferedImage image = new BufferedImage(iconX, iconY, BufferedImage.TYPE_INT_ARGB);
-
             image.getGraphics().drawImage(scaledPreviewImage, 0, 0, null);
-
             return new ImageIcon(image);
         }
     }

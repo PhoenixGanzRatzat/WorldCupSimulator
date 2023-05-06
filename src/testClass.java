@@ -1,4 +1,5 @@
 import Backend.*;
+import Backend.stage.GroupStage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,6 @@ import java.util.List;
 public class testClass {
 
     private static ArrayList<Team> teams;
-    private static final DataLoader dataLoader = new DataLoader();
 
     private static void startProgram() {
         teams = new ArrayList<Team>();
@@ -51,10 +51,8 @@ public class testClass {
         GroupStage gTest = new GroupStage(teams);
         gTest.arrangeMatches();
         gTest.calculateMatchResults();
-        int count = 0;
-        for(Match M:gTest.getMatches()){
-            count++;
-            System.out.println(count);
+        for(Team t:gTest.qualified()){
+            System.out.println(t.getRank());
         }
     }
 
