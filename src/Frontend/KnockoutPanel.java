@@ -298,10 +298,10 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
                 X[X.length-1-n] = column[column.length-1].getOrigin().getX();
             }
         }
-        for(int i = 0; i < X.length; i++) System.out.print("x[" + i + "] ");
+        /*for(int i = 0; i < X.length; i++) System.out.print("x[" + i + "] ");
         System.out.print("\n");
         for(int i = 0; i < X.length; i++) System.out.print(" " + (int)(X[i]) + " ");
-        System.out.println("\n");
+        System.out.println("\n");*/
 
         boolean even;
         double xL, xR, y1, y2, axs;
