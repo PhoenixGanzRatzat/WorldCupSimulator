@@ -301,7 +301,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
     @Override
     public void initPanel(Match[] m) {
-
+        //don't need this? Could use it for initMonthPanel but that would be confusing.
     }
 
     ActionListener listener = new ActionListener() {
@@ -346,8 +346,5 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         }
     }
 
-    @Override
-    public void initPanel(Match[] m) {
-        //don't need this? Could use it for initMonthPanel but that would be confusing.
-    }
+
 }
