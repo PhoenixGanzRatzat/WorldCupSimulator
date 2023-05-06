@@ -100,11 +100,11 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
          *        by Naomi                                 4/28/23
          */
 
-        int[][] row = new int[][]{new int[]{1, 3, 5, 7, 9, 11, 13, 15},
-                                  new int[]{2, 6, 10, 14},
-                                  new int[]{4, 12},
-                                  new int[]{6, 10},
-                                  new int[]{3, 13}};
+        int[][] row = new int[][]{new int[]{1, 3, 5, 7, 10, 12, 14, 16},
+                                  new int[]{2, 6, 11, 15},
+                                  new int[]{4, 13},
+                                  new int[]{6, 11},
+                                  new int[]{3, 14}};
 
         for (int i = 0; i < 8; i++) {
 
@@ -184,83 +184,86 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
                 this.add(this.cells[WINNER][i+1], bracket);
             }
         }
-        int x = 0;
-        int y;
         for(BracketCell[] column : cells){
-            y = 0;
             for(BracketCell cell : column){
                 cell.getTeamName().addActionListener(this);
-                cell.getTeamName().setActionCommand(x+","+y);
-                y++;
+                int col = cell.getRound() + 1;
+                if(cell.getPosition() == RIGHT){
+                    col = 10 - col;
+                }
+                cell.getTeamName().setActionCommand(col+","+cell.getRow());
             }
-            x++;
         }
         // remainder of method is spacers between cells
 
-        // 1x17 horizontal spacers, four each padding the two groups of four outermost columns of cells (8x total)
-        addSpacer(0,0,1,17,1,0);
-        addSpacer(2,0,1,17,1,0);
-        addSpacer(4,0,1,17,1,0);
-        addSpacer(6,0,1,17,1,0);
-        addSpacer(10,0,1,17,1,0);
-        addSpacer(12,0,1,17,1,0);
-        addSpacer(14,0,1,17,1,0);
-        addSpacer(16,0,1,17,1,0);
-        // 1x2 vertical, two each padding the top and bottom of QUARTERFINAL columns (4x total)
+        // 1x18 horizontal: four each padding the two groups of four outermost columns of cells (8x total)
+        addSpacer(0,0,1,18,1,0);
+        addSpacer(2,0,1,18,1,0);
+        addSpacer(4,0,1,18,1,0);
+        addSpacer(6,0,1,18,1,0);
+        addSpacer(10,0,1,18,1,0);
+        addSpacer(12,0,1,18,1,0);
+        addSpacer(14,0,1,18,1,0);
+        addSpacer(16,0,1,18,1,0);
+        // 1x2 vertical: two each padding the top and bottom of QUARTERFINAL columns,
+        // and one each in the center of the two ROUND_OF_SIXTEEN columns (4x total)
         addSpacer(3,0,1,2,0,1);
         addSpacer(13,0,1,2,0,1);
-        addSpacer(3,15,1,2,0,1);
-        addSpacer(13,15,1,2,0,1);
-        // 1x1 vertical, padding the rows of both round-of-sixteen columns (18x total)
+        addSpacer(3,16,1,2,0,1);
+        addSpacer(13,16,1,2,0,1);
+        addSpacer(1,8,1,2,0,1);
+        addSpacer(15,8,1,2,0,1);
+        // 1x1 vertical: padding the rows of both ROUND_OF_SIXTEEN columns except the two center rows (16x total)
         addSpacer(1,0,1,1,0,1);
         addSpacer(15,0,1,1,0,1);
-        addSpacer(1,2,1,1,0,0.2);
-        addSpacer(15,2,1,1,0,0.2);
+        addSpacer(1,2,1,1,0,0.1);
+        addSpacer(15,2,1,1,0,0.1);
         addSpacer(1,4,1,1,0,0.1);
         addSpacer(15,4,1,1,0,0.1);
-        addSpacer(1,6,1,1,0,0.2);
-        addSpacer(15,6,1,1,0,0.2);
-        addSpacer(1,8,1,1,0,1);
-        addSpacer(15,8,1,1,0,1);
-        addSpacer(1,10,1,1,0,0.2);
-        addSpacer(15,10,1,1,0,0.2);
-        addSpacer(1,12,1,1,0,0.1);
-        addSpacer(15,12,1,1,0,0.1);
-        addSpacer(1,14,1,1,0,0.2);
-        addSpacer(15,14,1,1,0,0.2);
-        addSpacer(1,16,1,1,0,1);
-        addSpacer(15,16,1,1,0,1);
-        // 1x3 vertical , three each between the four rows of QUARTERFINAL columns (6x total)
+        addSpacer(1,6,1,1,0,0);
+        addSpacer(15,6,1,1,0,0);
+        //addSpacer(1,11,1,1,0,0.1); // Removing specifically these two fixed an issue I was having.
+        //addSpacer(15,11,1,1,0,0.1); // I have learned nothing from this. I want to scream.
+        addSpacer(1,13,1,1,0,0.1);
+        addSpacer(15,13,1,1,0,0.1);
+        addSpacer(1,15,1,1,0,0.1);
+        addSpacer(15,15,1,1,0,0.1);
+        addSpacer(1,17,1,1,0,1);
+        addSpacer(15,17,1,1,0,1);
+        // 1x3 vertical: three each between the four rows of QUARTERFINAL columns (6x total)
         addSpacer(3,3,1,3,0,1);
         addSpacer(13,3,1,3,0,1);
-        addSpacer(3,7,1,3,0,1);
-        addSpacer(13,7,1,3,0,1);
+
         addSpacer(3,11,1,3,0,1);
         addSpacer(13,11,1,3,0,1);
 
-        // 1x3 vertical, one each between finals rows (2x total)
-        addSpacer(7,7,1,3,0,1);
-        addSpacer(9,7,1,3,0,1);
+        // 1x4 vertical: one each between finals and quarterfinals rows (2x total)
+        addSpacer(3,7,1,4,0,1);
+        addSpacer(7,7,1,4,0,1);
+        addSpacer(9,7,1,4,0,1);
+        addSpacer(13,7,1,4,0,1);
 
-        // 1x4 vertical, two each padding the top and bottom of SEMIFINAL columns (4x total)
+
+
+        // 1x4 vertical: two each padding the top and bottom of SEMIFINAL columns (4x total)
         addSpacer(5,0,1,4,0,1);
         addSpacer(11,0,1,4,0,1);
-        addSpacer(5,13,1,4,0,1);
-        addSpacer(11,13,1,4,0,1);
+        addSpacer(5,14,1,4,0,1);
+        addSpacer(11,14,1,4,0,1);
 
-        // 1x6 vertical spacers, two each padding the top and bottom of the finals' columns,
+        // 1x6 vertical: two each padding the top and bottom of the finals' columns,
         addSpacer(7,0,1,6,0,1);
         addSpacer(9,0,1,6,0,1);
-        addSpacer(7,11,1,6,0,1);
-        addSpacer(9,11,1,6,0,1);
-        // 1x7 vertical, one each at the center of the finals' columns (2x total)
-        addSpacer(5,5,1,7,0,1);
-        addSpacer(11,5,1,7,0,1);
-        //1x2 vertical, one each respectively above and below the winners' rows (2x total)
+        addSpacer(7,12,1,6,0,1);
+        addSpacer(9,12,1,6,0,1);
+        // 1x8 vertical: one each at the center of the finals' columns (2x total)
+        addSpacer(5,5,1,8,0,1);
+        addSpacer(11,5,1,8,0,1);
+        //1x2 vertical: one each respectively above and below the winners' rows (2x total)
         addSpacer(8,0,1,3,0,1);
-        addSpacer(8,14,1,3,0,1);
-        // 1x9 vertical, between the winners' rows and between the finals' columns (1x only)
-        addSpacer(8,4,1,9,0,1);
+        addSpacer(8,15,1,3,0,1);
+        // 1x10 vertical: between the winners' rows and between the finals' columns (1x only)
+        addSpacer(8,4,1,10,0,1);
         revalidate();
         repaint();
     }
@@ -419,16 +422,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-        //System.out.println(e.getActionCommand());
-        String split[] = e.getActionCommand().split(",");
-        System.out.println(Integer.parseInt(split[0])+","+Integer.parseInt(split[1]));
-        BracketCell target = cells[Integer.parseInt(split[0])][Integer.parseInt(split[1])];
-        System.out.println("x = " + (int)(target.getOrigin().getX()));
-        /*if (target.isVisible()) {
-            target.setVisible(false);
-        } else {
-            target.setVisible(true);
-        }*/
+        System.out.println(e.getActionCommand());
     }
     @Override
     public void paintComponent(Graphics g){
