@@ -91,11 +91,21 @@ public class QualifyingStage extends Stage {
         Map<LocalDate, Integer> matchesPerDay = new HashMap<>();
         Map<Team, Set<LocalDate>> teamMatchDates = new HashMap<>();
 
+        // List of months to skip
+        List<Integer> monthsToSkip = Arrays.asList(7, 12, 4); // Example: skip July, December and April
+
         // Loop through all matches
         for (Match match : matches) {
             LocalDate matchDate = startDate;
             boolean matchScheduled = false;
             while (!matchScheduled) {
+                // Check if the current month should be skipped
+                if (monthsToSkip.contains(matchDate.getMonthValue())) {
+                    // Move to the next month and starting on the day of the first of the month
+                    matchDate = matchDate.plusMonths(1).withDayOfMonth(1);
+                    continue;
+                }
+
                 int matchesOnDate = matchesPerDay.getOrDefault(matchDate, 0);
 
                 Set<LocalDate> team1MatchDates = teamMatchDates.getOrDefault(match.getTeamOne(), new HashSet<>());
@@ -124,6 +134,7 @@ public class QualifyingStage extends Stage {
             }
         }
     }
+
 
     private RoundResult firstRoundAFC() {
         // Filter the teams for those belonging to the AFC region and ranked 35-46
@@ -160,7 +171,7 @@ public class QualifyingStage extends Stage {
         }
 
         // Assign dates to the first round matches
-        assignDatesToMatches(firstRoundMatches, LocalDate.of(2015, 3, 12), 2, 6);
+        assignDatesToMatches(firstRoundMatches, LocalDate.of(2015, 3, 22), 2, 6);
 
         // Return a RoundResult object containing the winners and the matches
         return new RoundResult(winningTeams, firstRoundMatches);
