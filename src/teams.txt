@@ -13,7 +13,7 @@ Iraq,IRQ,11
 Thailand,THA,12
 Vietnam,VIE,13
 Jordan,JOR,14
-Lebanon,LIB,15
+Lebanon,LBN,15
 Oman,OMA,16
 Palestine,PLE,17
 India,IND,18
@@ -68,7 +68,7 @@ Libya,LBY,17
 Zimbabwe,ZIM,18
 Kenya,KEN,19
 Congo,CGO,20
-Niger,NER,21
+Niger,NIG,21
 Angola,ANG,22
 Cape Verde,CPV,23
 Central African Republic,CTA,24
@@ -135,10 +135,10 @@ Turks and Caicos Islands,TCA,28
 Montserrat,MSR,29
 U.S. Virgin Islands,VIR,30
 Bahamas,BAH,31
-British Virgin Islands,BVI,32
+British Virgin Islands,VGB,32
 Anguilla,AIA,33
-Sint Maarten,SXM,34
-Bonaire,BOE,35
+Sint Maarten,SMA,34
+Bonaire,BES,35
 
 
 CONMEBOL
