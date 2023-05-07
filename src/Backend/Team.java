@@ -24,10 +24,10 @@ public class Team implements Comparable<Team> {
         flag = null;
     }
 
-    public int getMostRecentScore(LocalDate currentDate) {
+    public int getMostRecentScore() {
         LocalDate mostRecentDate = null;
         for (LocalDate date : pointsMap.keySet()) {
-            if (date.isBefore(currentDate) && (mostRecentDate == null || date.isAfter(mostRecentDate))) {
+            if ((mostRecentDate == null || date.isAfter(mostRecentDate))) {
                 mostRecentDate = date;
             }
         }

@@ -3,10 +3,10 @@ package Backend;
 import java.time.LocalDate;
 
 public class Match {
-    private final Team winner;
-    private final Team loser;
-    private int teamOneScore;
-    private int teamTwoScore;
+    private final Team team1;
+    private final Team team2;
+    private int team1Score;
+    private int team2Score;
     private LocalDate matchDate;
 
     /**
@@ -18,29 +18,19 @@ public class Match {
      * @param date
      */
     public Match (Team teamOne, Team teamTwo, int score1, int score2, LocalDate date){
-        this.winner = teamOne;
-        this.loser = teamTwo;
-        teamOneScore = score1;
-        teamTwoScore = score2;
+        this.team1 = teamOne;
+        this.team2 = teamTwo;
+        team1Score = score1;
+        team2Score = score2;
         this.matchDate = date;
     }
     public Match(Team teamOne, Team teamTwo){
         this(teamOne, teamTwo, LocalDate.now());
     }
     public Match (Team teamOne, Team teamTwo, LocalDate date) {
+        this.team1 = teamOne;
+        this.team2 = teamTwo;
         this.matchDate = date;
-        simulateMatchResult();
-
-        if (teamOneScore > teamTwoScore) {
-            this.winner = teamOne;
-            this.loser = teamTwo;
-        }
-        else{
-            this.winner = teamTwo;
-            this.loser = teamOne;
-        }
-
-        assignPointsToTeams();
     }
 
     /**
@@ -49,69 +39,86 @@ public class Match {
      */
     public void simulateMatchResult() {
         // Generate random scores for each team (0-4)
-        this.teamOneScore = (int) (Math.random() * 5);
-        this.teamTwoScore = (int) (Math.random() * 5);
+        this.team1Score = (int) (Math.random() * 5);
+        this.team2Score = (int) (Math.random() * 5);
 
         // Check if match is in knockout stage
         boolean isKnockoutActive = matchDate.getMonthValue() >= 6;
 
         // If match is taking place during the knockout stage and ends in a draw, execute tiebreaker procedure
-        if (isKnockoutActive && teamOneScore == teamTwoScore) {
+        if (isKnockoutActive && team1Score == team2Score) {
             // Simulate extra time being played, generate new scores for each team
             int extraTimeTeam1Score = (int) (Math.random() * 2);
             int extraTimeTeam2Score = (int) (Math.random() * 2);
-            this.teamOneScore += extraTimeTeam1Score;
-            this.teamTwoScore += extraTimeTeam2Score;
-
+            this.team1Score += extraTimeTeam1Score;
+            this.team2Score += extraTimeTeam2Score;
             // If there's still a tie after the extra time added, simulate penalty shootout
-            if (teamOneScore == teamTwoScore) {
+            if (team1Score == team2Score) {
                 int pensTeam1Score = (int) (Math.random() * 5) + 1;
                 int pensTeam2Score = (int) (Math.random() * 5) + 1;
-                this.teamOneScore += pensTeam1Score;
-                this.teamTwoScore += pensTeam2Score;
+                this.team1Score += pensTeam1Score;
+                this.team2Score += pensTeam2Score;
 
                 // If there's still a tie after the penalty shootout, simulate sudden death
-                while (teamOneScore == teamTwoScore) {
-                    this.teamOneScore += (int) (Math.random() * 2);
-                    this.teamTwoScore += (int) (Math.random() * 2);
+                while (team1Score == team2Score) {
+                    this.team1Score += (int) (Math.random() * 2);
+                    this.team2Score += (int) (Math.random() * 2);
                 }
             }
         }
-    }
 
-    private void assignPointsToTeams(){
         // Get the most recent scores for both teams
-        int winnerMostRecentScore = winner.getMostRecentScore(matchDate);
-        int loserMostRecentScore = loser.getMostRecentScore(matchDate);
+        int team1MostRecentScore = team1.getMostRecentScore();
+        int team2MostRecentScore = team2.getMostRecentScore();
 
 
         // Update team points based on match result
-        if (this.teamOneScore != this.teamTwoScore){
-            winner.setPoints(matchDate, winnerMostRecentScore + 3);
-            loser.setPoints(this.matchDate, loserMostRecentScore + 3);
+        if (this.team1Score > this.team2Score){
+            team1.setPoints(matchDate, team1MostRecentScore + 3);
+        }
+        if (this.team1Score < this.team2Score){
+            team1.setPoints(matchDate, team1MostRecentScore + 3);
         }
         else{
-            this.winner.setPoints(this.matchDate, winnerMostRecentScore + 1);
-            this.loser.setPoints(this.matchDate, loserMostRecentScore + 1);
+            this.team1.setPoints(this.matchDate, team1MostRecentScore + 1);
+            this.team2.setPoints(this.matchDate, team2MostRecentScore + 1);
         }
     }
 
     public void setResult(int team1Score, int team2Score) {
-        this.teamOneScore = team1Score;
-        this.teamTwoScore = team2Score;
+        this.team1Score = team1Score;
+        this.team2Score = team2Score;
     }
 
-    public Team getWinner() {
-        return winner;
+    public Team getTeam1(){
+        return team1;
+    }
+    public Team getTeam2(){
+        return team2;
+    }
+    public int getTeam1Score() {
+        return team1Score;
+    }
+    public int getTeam2Score() {
+        return team2Score;
     }
     public Team getLoser() {
-        return loser;
+        if (team1Score > team2Score) {
+            return team2;
+        } else if (team1Score < team2Score) {
+            return team1;
+        } else {
+            return null;
+        }
     }
-    public int getWinningScore() {
-        return (Math.max(teamOneScore, teamTwoScore));
-    }
-    public int getLosingScore() {
-        return (Math.min(teamOneScore, teamTwoScore));
+    public Team getWinner() {
+        if (team1Score > team2Score) {
+            return team1;
+        } else if (team1Score < team2Score) {
+            return team2;
+        } else {
+            return null;
+        }
     }
     public LocalDate getMatchDate(){
         return matchDate;
@@ -123,11 +130,11 @@ public class Match {
     @Override
     public String toString() {
         return "Match{" +
-                "Winner =" + winner +
-                ", Loser =" + loser +
-                ", Winning Score =" + getWinningScore() +
-                ", Losing Score =" + getLosingScore() +
-                ", matchDate =" + matchDate +
+                "team1=" + team1 +
+                ", team2=" + team2 +
+                ", team1Score=" + team1Score +
+                ", team2Score=" + team2Score +
+                ", matchDate=" + matchDate +
                 '}';
     }
 
@@ -140,10 +147,10 @@ public class Match {
             return false;
         }
         Match match = (Match) obj;
-        return  winner.equals(match.winner) &&
-                loser.equals(match.loser) &&
-                teamOneScore == match.teamOneScore &&
-                teamTwoScore == match.teamTwoScore &&
+        return  team1.equals(match.team1) &&
+                team2.equals(match.team2) &&
+                team1Score == match.team1Score &&
+                team2Score == match.team2Score &&
                 matchDate.equals(match.matchDate);
     }
 

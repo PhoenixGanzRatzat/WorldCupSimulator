@@ -108,8 +108,8 @@ public class QualifyingStage extends Stage {
 
                 int matchesOnDate = matchesPerDay.getOrDefault(matchDate, 0);
 
-                Set<LocalDate> team1MatchDates = teamMatchDates.getOrDefault(match.getTeamOne(), new HashSet<>());
-                Set<LocalDate> team2MatchDates = teamMatchDates.getOrDefault(match.getTeamTwo(), new HashSet<>());
+                Set<LocalDate> team1MatchDates = teamMatchDates.getOrDefault(match.getWinner(), new HashSet<>());
+                Set<LocalDate> team2MatchDates = teamMatchDates.getOrDefault(match.getLoser(), new HashSet<>());
 
                 LocalDate finalMatchDate = matchDate;
                 boolean team1HasMatchOnDate = team1MatchDates.stream().anyMatch(date -> date.equals(finalMatchDate));
@@ -123,8 +123,8 @@ public class QualifyingStage extends Stage {
 
                     team1MatchDates.add(matchDate);
                     team2MatchDates.add(matchDate);
-                    teamMatchDates.put(match.getTeamOne(), team1MatchDates);
-                    teamMatchDates.put(match.getTeamTwo(), team2MatchDates);
+                    teamMatchDates.put(match.getWinner(), team1MatchDates);
+                    teamMatchDates.put(match.getLoser(), team2MatchDates);
 
                     matchScheduled = true;
                 } else {
@@ -139,7 +139,7 @@ public class QualifyingStage extends Stage {
     private RoundResult firstRoundAFC() {
         // Filter the teams for those belonging to the AFC region and ranked 35-46
         List<Team> afcTeams = getTeams().stream()
-                .filter(team -> team.getRegion() == Backend.Region.AFC)
+                .filter(team -> team.getRegion() == Region.AFC)
                 .filter(team -> team.getRank() >= 35 && team.getRank() <= 46)
                 .collect(Collectors.toList());
 
@@ -155,13 +155,9 @@ public class QualifyingStage extends Stage {
             Match homeMatch = new Match(team1, team2);
             Match awayMatch = new Match(team2, team1);
 
-            // Simulate home and away matches
-            homeMatch.simulateMatchResult();
-            awayMatch.simulateMatchResult();
-
             // Determine the winner based on the aggregate score
-            int team1Score = homeMatch.getTeamOneScore() + awayMatch.getTeamTwoScore();
-            int team2Score = homeMatch.getTeamTwoScore() + awayMatch.getTeamTwoScore();
+            int team1Score = homeMatch.getTeam1Score() + awayMatch.getTeam2Score();
+            int team2Score = homeMatch.getTeam2Score() + awayMatch.getTeam2Score();
             Team winner = (team1Score > team2Score) ? team1 : team2;
 
             // Add the matches and the winner
@@ -180,7 +176,7 @@ public class QualifyingStage extends Stage {
     private RoundResult secondRoundAFC() {
         // Get the top 34 teams and the 6 first round winners
         List<Team> secondRoundTeams = getTeams().stream()
-                .filter(team -> team.getRegion() == Backend.Region.AFC)
+                .filter(team -> team.getRegion() == Region.AFC)
                 .sorted(Comparator.comparing(Team::getRank))
                 .limit(34)
                 .collect(Collectors.toList());
@@ -211,7 +207,7 @@ public class QualifyingStage extends Stage {
             allGroupMatches.addAll(secondRoundMatches);
 
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getQualifierPoints(), t1.getQualifierPoints()));
+            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
             // Add the group winner and runner-up to the respective lists
             groupWinners.add(group.get(0));
@@ -219,7 +215,7 @@ public class QualifyingStage extends Stage {
         }
 
         // Sort the runners-up by their qualifier points in descending order
-        groupRunnersUp.sort((t1, t2) -> Integer.compare(t2.getQualifierPoints(), t1.getQualifierPoints()));
+        groupRunnersUp.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
         // Get the four best group runners-up
         List<Team> bestGroupRunnersUp = groupRunnersUp.subList(0, 4);
@@ -249,7 +245,7 @@ public class QualifyingStage extends Stage {
             allGroupMatches.addAll(groupMatches);
 
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getQualifierPoints(), t1.getQualifierPoints()));
+            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
             // Add the top two teams from each group to the qualified teams
             qualifiedTeams.add(group.get(0));
@@ -314,8 +310,8 @@ public class QualifyingStage extends Stage {
             awayMatch.simulateMatchResult();
 
             // Determine the winner based on the aggregate score
-            int team1Score = homeMatch.getTeamOneScore() + awayMatch.getTeamTwoScore();
-            int team2Score = homeMatch.getTeamTwoScore() + awayMatch.getTeamTwoScore();
+            int team1Score = homeMatch.getTeam1Score() + awayMatch.getTeam2Score();
+            int team2Score = homeMatch.getTeam2Score() + awayMatch.getTeam1Score();
             Team winner = (team1Score > team2Score) ? team1 : team2;
 
             // Add the matches and the winner
@@ -332,7 +328,7 @@ public class QualifyingStage extends Stage {
 
     public RoundResult secondRoundCAF() {
         List<Team> cafTeams = getTeams().stream()
-                .filter(team -> team.getRegion() == Backend.Region.CAF)
+                .filter(team -> team.getRegion() == Region.CAF)
                 .sorted(Comparator.comparing(Team::getRank))
                 .limit(27)
                 .collect(Collectors.toList());
@@ -356,8 +352,8 @@ public class QualifyingStage extends Stage {
             awayMatch.simulateMatchResult();
 
             // Determine the winner based on the aggregate score
-            int team1Score = homeMatch.getTeamOneScore() + awayMatch.getTeamTwoScore();
-            int team2Score = homeMatch.getTeamTwoScore() + awayMatch.getTeamTwoScore();
+            int team1Score = homeMatch.getTeam1Score() + awayMatch.getTeam1Score();
+            int team2Score = homeMatch.getTeam2Score() + awayMatch.getTeam2Score();
             Team winner = (team1Score > team2Score) ? team1 : team2;
 
             // Add the matches and the winner
@@ -387,7 +383,7 @@ public class QualifyingStage extends Stage {
             allGroupMatches.addAll(thirdRoundMatches);
 
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getQualifierPoints(), t1.getQualifierPoints()));
+            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
             // Add the group winner and runner-up to the respective lists
             groupWinners.add(group.get(0));
@@ -429,8 +425,8 @@ public class QualifyingStage extends Stage {
             firstRoundMatches.addAll(pairMatches);
 
             // Determine the winner based on the aggregate score
-            int team1Score = pairMatches.get(0).getTeamOneScore() + pairMatches.get(1).getTeamTwoScore();
-            int team2Score = pairMatches.get(0).getTeamTwoScore() + pairMatches.get(1).getTeamOneScore();
+            int team1Score = pairMatches.get(0).getTeam1Score() + pairMatches.get(1).getTeam2Score();
+            int team2Score = pairMatches.get(0).getTeam2Score() + pairMatches.get(1).getTeam1Score();
             Team winner = (team1Score > team2Score) ? pair.get(0) : pair.get(1);
 
             // Add the winner to the winningTeams list
@@ -472,8 +468,8 @@ public class QualifyingStage extends Stage {
             secondRoundMatches.addAll(pairMatches);
 
             // Determine the winner based on the aggregate score
-            int team1Score = pairMatches.get(0).getTeamOneScore() + pairMatches.get(1).getTeamTwoScore();
-            int team2Score = pairMatches.get(0).getTeamTwoScore() + pairMatches.get(1).getTeamOneScore();
+            int team1Score = pairMatches.get(0).getTeam1Score() + pairMatches.get(1).getTeam2Score();
+            int team2Score = pairMatches.get(0).getTeam2Score() + pairMatches.get(1).getTeam1Score();
             Team winner = (team1Score > team2Score) ? pair.get(0) : pair.get(1);
 
             // Add the winner to the winningTeams list
@@ -515,8 +511,8 @@ public class QualifyingStage extends Stage {
             thirdRoundMatches.addAll(pairMatches);
 
             // Determine the winner based on the aggregate score
-            int team1Score = pairMatches.get(0).getTeamOneScore() + pairMatches.get(1).getTeamTwoScore();
-            int team2Score = pairMatches.get(0).getTeamTwoScore() + pairMatches.get(1).getTeamOneScore();
+            int team1Score = pairMatches.get(0).getTeam1Score() + pairMatches.get(1).getTeam2Score();
+            int team2Score = pairMatches.get(0).getTeam2Score() + pairMatches.get(1).getTeam1Score();
             Team winner = (team1Score > team2Score) ? pair.get(0) : pair.get(1);
 
             // Add the winner to the winningTeams list
@@ -554,7 +550,7 @@ public class QualifyingStage extends Stage {
             allGroupMatches.addAll(fourthRoundMatches);
 
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getQualifierPoints(), t1.getQualifierPoints()));
+            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
             // Add the top two teams from each group to the qualified teams
             qualifiedTeams.add(group.get(0));
@@ -588,7 +584,7 @@ public class QualifyingStage extends Stage {
             allGroupMatches.addAll(fifthRoundMatches);
 
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getQualifierPoints(), t1.getQualifierPoints()));
+            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
             // Add the top two teams from each group to the qualified teams
             qualifiedTeams.add(group.get(0));
@@ -627,7 +623,7 @@ public class QualifyingStage extends Stage {
             allGroupMatches.addAll(fifthRoundMatches);
 
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getQualifierPoints(), t1.getQualifierPoints()));
+            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
             // Add the top two teams from each group to the qualified teams
             qualifiedTeams.add(group.get(0));
@@ -662,7 +658,7 @@ public class QualifyingStage extends Stage {
         }
 
         // Sort the teams by their qualifier points in descending order
-        ofcTeams.sort((t1, t2) -> Integer.compare(t2.getQualifierPoints(), t1.getQualifierPoints()));
+        ofcTeams.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
         // The winner is the team with the highest qualifier points
         Team winner = ofcTeams.get(0);
@@ -697,7 +693,7 @@ public class QualifyingStage extends Stage {
             allGroupMatches.addAll(secondRoundMatches);
 
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getQualifierPoints(), t1.getQualifierPoints()));
+            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
             // Add the top two teams from each group to the qualified teams
             qualifiedTeams.add(group.get(0));
@@ -734,7 +730,7 @@ public class QualifyingStage extends Stage {
             thirdRoundMatches.addAll(groupMatches);
 
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getQualifierPoints(), t1.getQualifierPoints()));
+            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
             // Add the group winner to the groupWinners list
             groupWinners.add(group.get(0));
@@ -788,7 +784,7 @@ public class QualifyingStage extends Stage {
             }
 
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getQualifierPoints(), t1.getQualifierPoints()));
+            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
             // Add the group winner and runner-up to the respective lists
             groupWinners.add(group.get(0));
@@ -796,7 +792,7 @@ public class QualifyingStage extends Stage {
         }
 
         // Sort the runners-up by their qualifier points in descending order
-        groupRunnersUp.sort((t1, t2) -> Integer.compare(t2.getQualifierPoints(), t1.getQualifierPoints()));
+        groupRunnersUp.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
         // Get the eight best group runners-up
         List<Team> bestGroupRunnersUp = groupRunnersUp.subList(0, 8);
@@ -830,8 +826,8 @@ public class QualifyingStage extends Stage {
             secondRoundMatches.addAll(pairMatches);
 
             // Determine the winner based on the aggregate score
-            int team1Score = pairMatches.get(0).getTeamOneScore() + pairMatches.get(1).getTeamTwoScore();
-            int team2Score = pairMatches.get(0).getTeamTwoScore() + pairMatches.get(1).getTeamOneScore();
+            int team1Score = pairMatches.get(0).getTeam1Score() + pairMatches.get(1).getTeam2Score();
+            int team2Score = pairMatches.get(0).getTeam2Score() + pairMatches.get(1).getTeam1Score();
             Team winner = (team1Score > team2Score) ? pair.get(0) : pair.get(1);
 
             // Add the winner to the winningTeams list
@@ -893,12 +889,12 @@ public class QualifyingStage extends Stage {
 
 
     private Team determinePlayOffWinner(List<Match> playOffMatches) {
-        int homeTeamGoals = playOffMatches.get(0).getTeam1Score() + playOffMatches.get(1).getTeamTwoScore();
-        int awayTeamGoals = playOffMatches.get(0).getTeamTwoScore() + playOffMatches.get(1).getTeam1Score();
+        int homeTeamGoals = playOffMatches.get(0).getTeam1Score() + playOffMatches.get(1).getTeam2Score();
+        int awayTeamGoals = playOffMatches.get(0).getTeam2Score() + playOffMatches.get(1).getTeam1Score();
 
         // Get the home and away teams
-        Team homeTeam = playOffMatches.get(0).getTeamOne();
-        Team awayTeam = playOffMatches.get(0).getTeamTwo();
+        Team homeTeam = playOffMatches.get(0).getTeam1();
+        Team awayTeam = playOffMatches.get(0).getTeam2();
 
         // If one team scored more goals, they are the winner
         if (homeTeamGoals > awayTeamGoals) {
@@ -908,8 +904,8 @@ public class QualifyingStage extends Stage {
         }
 
         // If both teams scored the same number of goals, use the away goals rule
-        int homeTeamAwayGoals = playOffMatches.get(1).getTeamTwoScore();
-        int awayTeamAwayGoals = playOffMatches.get(0).getTeamTwoScore();
+        int homeTeamAwayGoals = playOffMatches.get(1).getTeam2Score();
+        int awayTeamAwayGoals = playOffMatches.get(0).getTeam2Score();
 
         if (homeTeamAwayGoals > awayTeamAwayGoals) {
             return homeTeam;
