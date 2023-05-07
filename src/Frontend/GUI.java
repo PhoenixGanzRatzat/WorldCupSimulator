@@ -1,7 +1,5 @@
 package Frontend;
 
-import Backend.Match;
-import Backend.Team;
 import Backend.WorldCupSimulator;
 
 import javax.imageio.ImageIO;
@@ -11,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * Main class containing the base graphical elements for the program as well as the entry point for the program.
@@ -31,6 +28,7 @@ public class GUI extends JFrame implements ActionListener {
     private JButton qualifyingButton;
     private JButton groupButton;
     private JButton knockoutButton;
+    private JButton nextRoundButton;
 
     private final static Color text = new Color(213, 226, 216);
     private final static Color fifaBG = new Color(50, 98, 149);
@@ -46,19 +44,20 @@ public class GUI extends JFrame implements ActionListener {
         buttonPanel = new JPanel(new FlowLayout());
 
         startPanel = new JPanel(new GridBagLayout());
-        gameSim.stageMatches(1); // TODO: return statement of method is ignored
+        gameSim.stageMatches(1); // TODO: return statement(List<Match>) of method is not used
         qualifyingPanel = new QualifyingPanel(gameSim.getTeams());
 
-        // TODO: give group panel the matches/teams
+        // qualifying stage is completed at startup so teams and matches for group panel are available on startup
         groupPanel = new GroupPanel(gameSim.stageMatches(2), gameSim.getTeams());
 
-        // TODO: give knockoutpanel the matches/teams
+        // gets updated after group stage
         knockoutPanel = new KnockoutPanel();
 
         startButton = new JButton();
         qualifyingButton = new JButton();
         groupButton = new JButton();
         knockoutButton = new JButton();
+        nextRoundButton = new JButton();
 
         initGUI();
     }
@@ -86,11 +85,13 @@ public class GUI extends JFrame implements ActionListener {
         qualifyingButton.setText("Qualifying Panel");
         groupButton.setText("Group Panel");
         knockoutButton.setText("Knockout Panel");
+        nextRoundButton.setText("Next Round");
 
         startButton.addActionListener(this);
         qualifyingButton.addActionListener(this);
         groupButton.addActionListener(this);
         knockoutButton.addActionListener(this);
+        nextRoundButton.addActionListener(this);
 
         qualifyingButton.setVisible(false);
         groupButton.setVisible(false);
@@ -102,6 +103,7 @@ public class GUI extends JFrame implements ActionListener {
         buttonPanel.add(qualifyingButton);
         buttonPanel.add(groupButton);
         buttonPanel.add(knockoutButton);
+        buttonPanel.add(nextRoundButton);
 
         layoutConstraints.insets = new Insets(10,10,10,10);
         layoutConstraints.weightx = 1;
@@ -139,9 +141,9 @@ public class GUI extends JFrame implements ActionListener {
         cardPanel.add(knockoutPanel, "knock");
 
         setTitle("World Cup Simulator");
-        //setSize(1600,900);
-        setLocation((Toolkit.getDefaultToolkit().getScreenSize().width-1600)/2, (Toolkit.getDefaultToolkit().getScreenSize().height-900)/2);
-        //setMinimumSize(new Dimension(1600,900));
+        // setSize(1600,900);
+        // setLocation((Toolkit.getDefaultToolkit().getScreenSize().width-1600)/2, (Toolkit.getDefaultToolkit().getScreenSize().height-900)/2);
+        // setMinimumSize(new Dimension(1600,900));
         setExtendedState(MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
@@ -153,8 +155,8 @@ public class GUI extends JFrame implements ActionListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        JPanel panel;
-        String panelString;
+        JPanel panel = null;
+        String panelString = null;
 
         if (e.getSource() == startButton) {
             panel = qualifyingPanel;
@@ -171,23 +173,35 @@ public class GUI extends JFrame implements ActionListener {
         } else if (e.getSource() == knockoutButton) {
             panel = knockoutPanel;
             panelString = "knock";
+        } else if (e.getSource() == nextRoundButton) {
+            if(panel != null) {
+                if (panel.equals(groupPanel)) {
+                    ((GroupPanel) panel).simulateRound();
+                } else if (panel.equals(knockoutPanel)) {
+                    ((KnockoutPanel) panel).nextRound();
+                }
+            }
         } else {
             panel = null;
             panelString = "";
         }
-        checkIfPanelNeedsInit(panel);
-        changeCard(cardPanel, panelString);
+
+        if(panel != null) {
+            checkIfPanelNeedsInit(panel);
+            changeCard(cardPanel, panelString);
+        }
     }
 
     private void checkIfPanelNeedsInit(JPanel panel) {
-        if (panel instanceof StagePanel) {
-            StagePanel stage = (StagePanel) panel;
-            if (!stage.checkIfInitialized()) {
-                if(stage instanceof KnockoutPanel) {
-                    stage.initPanel(gameSim.stageMatches(3)); // TODO: hardcoded knockout stgae
-                }
-                stage.initPanel();
-            }
+        // initialize new panels
+        if( ! (((StagePanel) panel).checkIfInitialized()) ) {
+            ((StagePanel) panel).initPanel();
+        }
+
+        // when group panel is complete then load teams and matches into knockout panel
+        if(((GroupPanel) groupPanel).checkIfCompleted()) {
+            gameSim.stageMatches(3);
+            ((KnockoutPanel) knockoutPanel).setStage(gameSim.getBrackets());
         }
     }
 

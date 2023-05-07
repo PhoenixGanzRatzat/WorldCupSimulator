@@ -651,7 +651,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     /**
      * Handles method calls to simulate one round for all groups. Updates UI.
      */
-    private void simulateRound() {
+    public void simulateRound() {
         for(int i = 0; i < this.groupTeams.size(); i++) {
             simulateGroupRound(i+1);
         }

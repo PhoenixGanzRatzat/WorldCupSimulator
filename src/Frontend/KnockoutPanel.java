@@ -3,6 +3,7 @@ package Frontend;
 import Backend.Match;
 
 
+import Backend.stage.KnockoutStage;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -40,6 +41,10 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     private boolean initialized;
     private BracketCell[][] cells;
 
+    private int currentRound;
+    private KnockoutStage knockoutStage;
+
+
     /**
      * Default constructor; initializes JPanel with BorderLayout, sets size,
      * initializes matches, initializes init boolean, & calls createWindow()
@@ -49,7 +54,38 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         this.cells = new BracketCell[][]{new BracketCell[16], new BracketCell[8], new BracketCell[4], new BracketCell[4], new BracketCell[2]};
         this.setBackground(canvas);
         this.initialized = false;
-        createWindow();
+        currentRound = 0;
+        initPanel();
+    }
+
+    public void displayRoundOfSixteen() {
+        List<Match> matches16 = knockoutStage.getMatchesForRoundOfSixteen();
+        //this.cells[0][x] = cells for round of sixeteen
+        // setFlagIcon(String teamAbbv) in BracketCell and setTeamName;
+        int index = 0;
+        for(Match m : matches16) {
+            this.cells[0][index].setFlagIcon(m.getTeamOne().getAbbv());
+            this.cells[0][index].setTeamName(m.getTeamOne().getName());
+            this.cells[0][index + 1].setFlagIcon(m.getTeamTwo().getAbbv());
+            this.cells[0][index + 1].setTeamName(m.getTeamTwo().getName());
+            index = index + 2;
+        }
+
+    }
+
+    public void displayQuarterFinals(KnockoutStage knockoutStage) {
+        List<Match> matches8 = knockoutStage.getMatchesForQuarterfinals();
+        //this.cells[0][x] = cells for round of sixeteen
+        // setFlagIcon(String teamAbbv) in BracketCell and setTeamName;
+        int index = 0;
+        for(Match m : matches8) {
+            this.cells[1][index].setFlagIcon(m.getTeamOne().getAbbv());
+            //this.cells[1][index].setTeamName(m.getTeamOne().getName());
+            this.cells[1][index + 1].setFlagIcon(m.getTeamTwo().getAbbv());
+            //this.cells[1][index + 1].setTeamName(m.getTeamTwo().getName());
+            index = index + 2;
+        }
+
     }
     /*TODO:
      * Implement initPanel(), nextMatch(), & nextRound()
@@ -58,9 +94,170 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
      * Bracket layout changes: either turn Matches into two BracketCells stacked or make BracketCell "double up" by default
      */
     /**
-     * Assembles a GridBagLayout-based bracket of BracketCell objects and buttons for the teams competing in each match
+     * Creates an empty, transparent JPanel for use as a spacer.
+     * Intended to simplify repetitive use of GridBagConstraints by accepting only 6 parameters instead of 11
+     *
      */
-    private void createWindow() {
+    private void addSpacer(int gX, int gY, int gW, int gH, double wX, double wY){
+        //JPanel spacer = new JPanel(true);
+        JComponent spacer = (JComponent) Box.createVerticalStrut(1);
+
+        if(wX!=0) {
+            spacer = (JComponent) Box.createHorizontalStrut(1);
+        }
+
+        /*//Makes things really ugly, but good for visual troubleshooting
+        spacer.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1,0,0,1),BorderFactory.createLineBorder(Color.RED, 1, false)));
+        spacer.setToolTipText("<html>" + "(" + gX + "," + gY + ")" + "<br>" + ""+ gW + "x" + gH + "</html>");*/
+
+        this.add(spacer, new GridBagConstraints(gX,gY,gW,gH,wX,wY,10,1,(new Insets(0,0,0,0)),0,0));
+    }
+    private void batchSpacers(int[] gX, int[] gY, int gW, int gH, boolean isVert){
+        if(gY.length<gX.length){
+            for(int i = 0; i < gY.length; i++){
+                //for(){
+                    //addSpacer(gX[])
+                //}
+            }
+        }
+    }
+    private void addMatch(int round, int i){
+
+    }
+    public void nextMatch() {
+    }
+    public void nextRound() {
+        if(currentRound == ROUND_OF_SIXTEEN) {
+
+        } else if (currentRound == QUARTERFINAL) {
+
+        } else if (currentRound == SEMIFINAL) {
+
+        } else if (currentRound == FINAL) {
+
+        }
+    }
+    private ArrayList<Line2D.Double> createStripes(){
+        ArrayList<Line2D.Double> stripes = new ArrayList<>();
+        double[] X = new double[9];
+        int n = -1;
+        for (BracketCell[] column : cells) {
+            n++;
+            for (BracketCell cell : column) {
+                Rectangle2D box = cell.getBounds().getBounds2D();
+                Point2D origin = new Point2D.Double(box.getCenterX(), box.getCenterY());
+                cell.setOrigin(origin);
+            }
+            X[n] = column[0].getOrigin().getX();
+            if(column[0].getPosition()!=CENTER) {
+                X[X.length-1-n] = column[column.length-1].getOrigin().getX();
+            }
+        }
+        /*for(int i = 0; i < X.length; i++) System.out.print("x[" + i + "] ");
+        System.out.print("\n");
+        for(int i = 0; i < X.length; i++) System.out.print(" " + (int)(X[i]) + " ");
+        System.out.println("\n");*/
+
+        boolean even;
+        double xL, xR, y1, y2, axs;
+
+        for (int i = 0; i < 8; i++) {
+            even = i%2==0;
+            // first round
+            xL = (X[0] + X[1]) / 2;
+            xR = (X[7] + X[8]) / 2;
+            y1 = cells[ROUND_OF_SIXTEEN][i].getOrigin().getY();
+            if (even) {
+                // vertical
+                y2 = cells[ROUND_OF_SIXTEEN][i + 1].getOrigin().getY();
+                stripes.add(new Line2D.Double(xL, y1, xL, y2));
+                stripes.add(new Line2D.Double(xR, y1, xR, y2));
+            }
+            stripes.add(new Line2D.Double(X[0], y1, xL, y1));
+            stripes.add(new Line2D.Double(X[8], y1, xR, y1));
+            // second round
+            if (i<4) {
+                //horizontal
+                xL = (X[0] + X[1]) / 2;
+                xR = (X[7] + X[8]) / 2;
+                y1 = cells[QUARTERFINAL][i].getOrigin().getY();
+                stripes.add(new Line2D.Double(X[1], y1, xL, y1));
+                stripes.add(new Line2D.Double(X[7], y1, xR, y1));
+                xL = (X[1] + X[2]) / 2;
+                xR = (X[6] + X[7]) / 2;
+                y1 = cells[QUARTERFINAL][i].getOrigin().getY();
+                y2 = cells[QUARTERFINAL][i + 1].getOrigin().getY();
+                // vertical
+                if(even) {
+                    stripes.add(new Line2D.Double(xL, y1, xL, y2));
+                    stripes.add(new Line2D.Double(xR, y1, xR, y2));
+                }
+                y2 = cells[SEMIFINAL][i].getOrigin().getY();
+                stripes.add(new Line2D.Double(X[1], y1, xL, y1));
+                stripes.add(new Line2D.Double(X[2], y2, xL, y2));
+                stripes.add(new Line2D.Double(X[7], y1, xR, y1));
+                stripes.add(new Line2D.Double(X[6], y2, xR, y2));
+            }
+            // third round
+            if (i<2) {
+                if(even) {
+                    // vertical
+                    xL = (X[2] + X[3]) / 2;
+                    xR = (X[5] + X[6]) / 2;
+                    y1 = cells[SEMIFINAL][i].getOrigin().getY();
+                    y2 = cells[SEMIFINAL][i + 1].getOrigin().getY();
+                    stripes.add(new Line2D.Double(xL, y1, xL, y2));
+                    stripes.add(new Line2D.Double(xR, y1, xR, y2));
+                    // finals - horizontal
+                    y1 = cells[FINAL][i].getOrigin().getY();
+                    stripes.add(new Line2D.Double(xL, y1, xR, y1));
+                    y2 = cells[FINAL][i + 1].getOrigin().getY();
+                    stripes.add(new Line2D.Double(xL, y2, xR, y2));
+                }
+                //winners
+                if(even) {
+                    // vertical
+                    axs = X[4];
+                    y1 = cells[FINAL][i].getOrigin().getY();
+                    y2 = cells[WINNER][i].getOrigin().getY();
+                    stripes.add(new Line2D.Double(axs, y1, axs, y2));
+                    y1 = cells[FINAL][i + 1].getOrigin().getY();
+                    y2 = cells[WINNER][i + 1].getOrigin().getY();
+                    stripes.add(new Line2D.Double(axs, y1, axs, y2));
+                }
+                // horizontal
+                xL = X[2];
+                xR = (X[2] + X[3]) / 2;
+                y1 = cells[SEMIFINAL][i].getOrigin().getY();
+                stripes.add(new Line2D.Double(xR, y1, xL, y1));
+                y2 = cells[SEMIFINAL][i + 1].getOrigin().getY();
+                xL = (X[5] + X[6]) / 2;
+                xR = X[6];
+                stripes.add(new Line2D.Double(xR, y2, xL, y2));
+            }
+        }
+        return stripes;
+    }
+
+    /**
+     * unnecessary, the simulations over if this is true
+     * @return
+     */
+    @Override
+    public boolean checkIfCompleted() {
+        return false;
+    }
+    @Override
+    public boolean checkIfInitialized() {
+        return initialized;
+    }
+
+    /**
+     * move code from createWindow() into this method
+     */
+    @Override
+    public void initPanel() {
+
         /*Insets insCenter = new Insets(20,20,40,20);
         Insets insLeft = new Insets(10, 30, 10, 10);
         Insets insRight = new Insets(10, 10, 10, 30);*/
@@ -102,10 +299,10 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
          */
 
         int[][] row = new int[][]{new int[]{1, 3, 5, 7, 10, 12, 14, 16},
-                                  new int[]{2, 6, 11, 15},
-                                  new int[]{4, 13},
-                                  new int[]{6, 11},
-                                  new int[]{3, 14}};
+                new int[]{2, 6, 11, 15},
+                new int[]{4, 13},
+                new int[]{6, 11},
+                new int[]{3, 14}};
 
         for (int i = 0; i < 8; i++) {
 
@@ -113,7 +310,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             //if (i == 7) bracket.anchor = GridBagConstraints.NORTH;
             //if (i%2==0) {
             //    bracket.anchor = GridBagConstraints.SOUTH;
-           // } else bracket.anchor = GridBagConstraints.NORTH;
+            // } else bracket.anchor = GridBagConstraints.NORTH;
             // first round
             bracket.gridy = row[ROUND_OF_SIXTEEN][i];
             // left
@@ -267,155 +464,13 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         addSpacer(8,4,1,10,0,1);
         revalidate();
         repaint();
-    }
-    /**
-     * Creates an empty, transparent JPanel for use as a spacer.
-     * Intended to simplify repetitive use of GridBagConstraints by accepting only 6 parameters instead of 11
-     *
-     */
-    private void addSpacer(int gX, int gY, int gW, int gH, double wX, double wY){
-        //JPanel spacer = new JPanel(true);
-        JComponent spacer = (JComponent) Box.createVerticalStrut(1);
-
-        if(wX!=0) {
-            spacer = (JComponent) Box.createHorizontalStrut(1);
-        }
-
-        /*//Makes things really ugly, but good for visual troubleshooting
-        spacer.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1,0,0,1),BorderFactory.createLineBorder(Color.RED, 1, false)));
-        spacer.setToolTipText("<html>" + "(" + gX + "," + gY + ")" + "<br>" + ""+ gW + "x" + gH + "</html>");*/
-
-        this.add(spacer, new GridBagConstraints(gX,gY,gW,gH,wX,wY,10,1,(new Insets(0,0,0,0)),0,0));
-    }
-    private void batchSpacers(int[] gX, int[] gY, int gW, int gH, boolean isVert){
-        if(gY.length<gX.length){
-            for(int i = 0; i < gY.length; i++){
-                //for(){
-                    //addSpacer(gX[])
-                //}
-            }
-        }
-    }
-    private void addMatch(int round, int i){
-
-    }
-    public void nextMatch() {
-    }
-    public void nextRound() {
-    }
-    private ArrayList<Line2D.Double> createStripes(){
-        ArrayList<Line2D.Double> stripes = new ArrayList<>();
-        double[] X = new double[9];
-        int n = -1;
-        for (BracketCell[] column : cells) {
-            n++;
-            for (BracketCell cell : column) {
-                Rectangle2D box = cell.getBounds().getBounds2D();
-                Point2D origin = new Point2D.Double(box.getCenterX(), box.getCenterY());
-                cell.setOrigin(origin);
-            }
-            X[n] = column[0].getOrigin().getX();
-            if(column[0].getPosition()!=CENTER) {
-                X[X.length-1-n] = column[column.length-1].getOrigin().getX();
-            }
-        }
-        /*for(int i = 0; i < X.length; i++) System.out.print("x[" + i + "] ");
-        System.out.print("\n");
-        for(int i = 0; i < X.length; i++) System.out.print(" " + (int)(X[i]) + " ");
-        System.out.println("\n");*/
-
-        boolean even;
-        double xL, xR, y1, y2, axs;
-
-        for (int i = 0; i < 8; i++) {
-            even = i%2==0;
-            // first round
-            xL = (X[0] + X[1]) / 2;
-            xR = (X[7] + X[8]) / 2;
-            y1 = cells[ROUND_OF_SIXTEEN][i].getOrigin().getY();
-            if (even) {
-                // vertical
-                y2 = cells[ROUND_OF_SIXTEEN][i + 1].getOrigin().getY();
-                stripes.add(new Line2D.Double(xL, y1, xL, y2));
-                stripes.add(new Line2D.Double(xR, y1, xR, y2));
-            }
-            stripes.add(new Line2D.Double(X[0], y1, xL, y1));
-            stripes.add(new Line2D.Double(X[8], y1, xR, y1));
-            // second round
-            if (i<4) {
-                //horizontal
-                xL = (X[0] + X[1]) / 2;
-                xR = (X[7] + X[8]) / 2;
-                y1 = cells[QUARTERFINAL][i].getOrigin().getY();
-                stripes.add(new Line2D.Double(X[1], y1, xL, y1));
-                stripes.add(new Line2D.Double(X[7], y1, xR, y1));
-                xL = (X[1] + X[2]) / 2;
-                xR = (X[6] + X[7]) / 2;
-                y1 = cells[QUARTERFINAL][i].getOrigin().getY();
-                y2 = cells[QUARTERFINAL][i + 1].getOrigin().getY();
-                // vertical
-                if(even) {
-                    stripes.add(new Line2D.Double(xL, y1, xL, y2));
-                    stripes.add(new Line2D.Double(xR, y1, xR, y2));
-                }
-                y2 = cells[SEMIFINAL][i].getOrigin().getY();
-                stripes.add(new Line2D.Double(X[1], y1, xL, y1));
-                stripes.add(new Line2D.Double(X[2], y2, xL, y2));
-                stripes.add(new Line2D.Double(X[7], y1, xR, y1));
-                stripes.add(new Line2D.Double(X[6], y2, xR, y2));
-            }
-            // third round
-            if (i<2) {
-                if(even) {
-                    // vertical
-                    xL = (X[2] + X[3]) / 2;
-                    xR = (X[5] + X[6]) / 2;
-                    y1 = cells[SEMIFINAL][i].getOrigin().getY();
-                    y2 = cells[SEMIFINAL][i + 1].getOrigin().getY();
-                    stripes.add(new Line2D.Double(xL, y1, xL, y2));
-                    stripes.add(new Line2D.Double(xR, y1, xR, y2));
-                    // finals - horizontal
-                    y1 = cells[FINAL][i].getOrigin().getY();
-                    stripes.add(new Line2D.Double(xL, y1, xR, y1));
-                    y2 = cells[FINAL][i + 1].getOrigin().getY();
-                    stripes.add(new Line2D.Double(xL, y2, xR, y2));
-                }
-                //winners
-                if(even) {
-                    // vertical
-                    axs = X[4];
-                    y1 = cells[FINAL][i].getOrigin().getY();
-                    y2 = cells[WINNER][i].getOrigin().getY();
-                    stripes.add(new Line2D.Double(axs, y1, axs, y2));
-                    y1 = cells[FINAL][i + 1].getOrigin().getY();
-                    y2 = cells[WINNER][i + 1].getOrigin().getY();
-                    stripes.add(new Line2D.Double(axs, y1, axs, y2));
-                }
-                // horizontal
-                xL = X[2];
-                xR = (X[2] + X[3]) / 2;
-                y1 = cells[SEMIFINAL][i].getOrigin().getY();
-                stripes.add(new Line2D.Double(xR, y1, xL, y1));
-                y2 = cells[SEMIFINAL][i + 1].getOrigin().getY();
-                xL = (X[5] + X[6]) / 2;
-                xR = X[6];
-                stripes.add(new Line2D.Double(xR, y2, xL, y2));
-            }
-        }
-        return stripes;
-    }
-    @Override
-    public boolean checkIfCompleted() {
-        return initialized;
-    }
-    @Override
-    public boolean checkIfInitialized() {
-        return initialized;
-    }
-    @Override
-    public void initPanel() {
         initialized = true;
     }
+
+    /**
+     * Unused
+     * @param matches
+     */
     public void initPanel(List<Match> matches){
         initialized = true;
     }
@@ -435,6 +490,11 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         }
 
         }
+    }
+
+    public void setStage(KnockoutStage brackets) {
+        this.knockoutStage = brackets;
+        displayRoundOfSixteen();
     }
 
     /**
@@ -499,7 +559,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
 
             // initialize & add teamLabel to mainCell with GridBagConstraints conditional on orientation
 
-            teamName = new JButton("TEAM");
+            teamName = new JButton("");
             teamName.setContentAreaFilled(false);
             teamName.setBorderPainted(false);
             teamName.setFocusPainted(false);

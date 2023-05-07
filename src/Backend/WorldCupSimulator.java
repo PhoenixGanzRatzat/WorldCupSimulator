@@ -45,4 +45,8 @@ public class WorldCupSimulator {
         }
         return null;
     }
+
+    public KnockoutStage getBrackets() {
+        return brackets;
+    }
 }
