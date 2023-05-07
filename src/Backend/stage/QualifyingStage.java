@@ -194,7 +194,7 @@ public class QualifyingStage extends Stage {
 
             // Determine the winner based on the aggregate score
             int team1Score = homeMatch.getTeam1Score() + awayMatch.getTeam2Score();
-            int team2Score = homeMatch.getTeam2Score() + awayMatch.getTeam2Score();
+            int team2Score = homeMatch.getTeam2Score() + awayMatch.getTeam1Score();
             Team winner = (team1Score > team2Score) ? team1 : team2;
 
             // Add the matches and the winner
@@ -387,8 +387,8 @@ public class QualifyingStage extends Stage {
             awayMatch.simulateMatchResult();
 
             // Determine the winner based on the aggregate score
-            int team1Score = homeMatch.getTeam1Score() + awayMatch.getTeam1Score();
-            int team2Score = homeMatch.getTeam2Score() + awayMatch.getTeam2Score();
+            int team1Score = homeMatch.getTeam1Score() + awayMatch.getTeam2Score();
+            int team2Score = homeMatch.getTeam2Score() + awayMatch.getTeam1Score();
             Team winner = (team1Score > team2Score) ? team1 : team2;
 
             // Add the matches and the winner
