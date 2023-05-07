@@ -37,7 +37,7 @@ public class WorldCupSimulator {
                 roundRobin.calculateMatchResults();
                 return roundRobin.getMatches();
             case 3:
-                teams = roundRobin.qualified();
+                teams = roundRobin.getNextStageTeams();
                 brackets = new KnockoutStage(teams);
                 brackets.arrangeMatches();
                 brackets.calculateMatchResults();

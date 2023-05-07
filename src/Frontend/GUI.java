@@ -46,13 +46,14 @@ public class GUI extends JFrame implements ActionListener {
         buttonPanel = new JPanel(new FlowLayout());
 
         startPanel = new JPanel(new GridBagLayout());
-        gameSim.stageMatches(1);
+        gameSim.stageMatches(1); // TODO: return statement of method is ignored
         qualifyingPanel = new QualifyingPanel(gameSim.getTeams());
-        gameSim.stageMatches(2);
-        groupPanel = new GroupPanel();
 
+        // TODO: give group panel the matches/teams
+        groupPanel = new GroupPanel(gameSim.stageMatches(2), gameSim.getTeams());
+
+        // TODO: give knockoutpanel the matches/teams
         knockoutPanel = new KnockoutPanel();
-
 
         startButton = new JButton();
         qualifyingButton = new JButton();
@@ -138,9 +139,10 @@ public class GUI extends JFrame implements ActionListener {
         cardPanel.add(knockoutPanel, "knock");
 
         setTitle("World Cup Simulator");
-        setSize(1600,900);
+        //setSize(1600,900);
         setLocation((Toolkit.getDefaultToolkit().getScreenSize().width-1600)/2, (Toolkit.getDefaultToolkit().getScreenSize().height-900)/2);
-        setMinimumSize(new Dimension(1600,900));
+        //setMinimumSize(new Dimension(1600,900));
+        setExtendedState(MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
     }
@@ -182,7 +184,7 @@ public class GUI extends JFrame implements ActionListener {
             StagePanel stage = (StagePanel) panel;
             if (!stage.checkIfInitialized()) {
                 if(stage instanceof KnockoutPanel) {
-                    stage.initPanel(gameSim.stageMatches(3));
+                    stage.initPanel(gameSim.stageMatches(3)); // TODO: hardcoded knockout stgae
                 }
                 stage.initPanel();
             }
