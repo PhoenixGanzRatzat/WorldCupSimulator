@@ -113,11 +113,11 @@ public class KnockoutStage extends Stage {
         lastMatchWinners = getWinningTeamsOfMatchResults(semifinalsMatches);
         List<Team> lastMatchLosers = getLosingTeamsOfMatches(semifinalsMatches);
         thirdPlaceMatch = simulateThirdPlacePlayoffMatch(lastMatchLosers.get(0), lastMatchLosers.get(1));
-        thirdPlaceTeam = thirdPlaceMatch.getWinningTeam();
+        thirdPlaceTeam = thirdPlaceMatch.getWinner();
 
         finalsMatch = simulateFinalsMatch(lastMatchWinners.get(0), lastMatchWinners.get(1));
-        firstPlaceTeam = finalsMatch.getWinningTeam();
-        secondPlaceTeam = finalsMatch.getLosingTeam();
+        firstPlaceTeam = finalsMatch.getWinner();
+        secondPlaceTeam = finalsMatch.getLoser();
     }
 
     private void simulateRoundOfSixteen() {
@@ -149,11 +149,11 @@ public class KnockoutStage extends Stage {
     }
 
     private List<Team> getWinningTeamsOfMatchResults(List<Match> match) {
-        return match.stream().map(Match::getWinningTeam).collect(Collectors.toList());
+        return match.stream().map(Match::getWinner).collect(Collectors.toList());
     }
 
     private List<Team> getLosingTeamsOfMatches(List<Match> matches) {
-        return matches.stream().map(Match::getLosingTeam).collect(Collectors.toList());
+        return matches.stream().map(Match::getLoser).collect(Collectors.toList());
     }
 
     public List<Match> getMatchesForRoundOfSixteen() {
