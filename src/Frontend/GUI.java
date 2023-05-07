@@ -1,7 +1,5 @@
 package Frontend;
 
-import Backend.Match;
-import Backend.Team;
 import Backend.WorldCupSimulator;
 
 import javax.imageio.ImageIO;
@@ -11,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * Main class containing the base graphical elements for the program as well as the entry point for the program.
@@ -32,7 +29,7 @@ public class GUI extends JFrame implements ActionListener {
     private JButton groupButton;
     private JButton knockoutButton;
 
-    private final static Color text = new Color(213, 226, 216);
+    private final static Color buttonTextColor = new Color(213, 226, 216);
     private final static Color fifaBG = new Color(50, 98, 149);
 
 
@@ -79,7 +76,7 @@ public class GUI extends JFrame implements ActionListener {
     private void initGUI() throws IOException {
         GridBagConstraints layoutConstraints = new GridBagConstraints();
         JLabel fifaLogoLabel = new JLabel(new ImageIcon(ImageIO.read(new File("Assets\\Images\\FIFA_logo.png"))));
-        JLabel subHeaderLabel = new JLabel();
+        JLabel subHeaderLabel;
 
         startButton.setText("Start Simulation");
         qualifyingButton.setText("Qualifying Panel");
@@ -90,6 +87,10 @@ public class GUI extends JFrame implements ActionListener {
         qualifyingButton.addActionListener(this);
         groupButton.addActionListener(this);
         knockoutButton.addActionListener(this);
+
+        setButtonLook(qualifyingButton);
+        setButtonLook(groupButton);
+        setButtonLook(knockoutButton);
 
         qualifyingButton.setVisible(false);
         groupButton.setVisible(false);
@@ -118,17 +119,15 @@ public class GUI extends JFrame implements ActionListener {
 
         subHeaderLabel = new JLabel("World Cup 2018 Simulator");
         subHeaderLabel.setFont(new Font ("Arial Black", Font.PLAIN, 48));
-        subHeaderLabel.setForeground(text);
+        subHeaderLabel.setForeground(buttonTextColor);
         startPanel.add(subHeaderLabel, layoutConstraints);
 
 
         layoutConstraints.gridx = 0;
         layoutConstraints.gridy = 3;
 
-        startButton.setFocusPainted(false);
-        startButton.setForeground(text);
+        setButtonLook(startButton);
         startButton.setBackground(fifaBG);
-        startButton.setFont(new Font ("Arial Black", Font.PLAIN, 14));
 
         startPanel.add(startButton, layoutConstraints);
 
@@ -145,6 +144,12 @@ public class GUI extends JFrame implements ActionListener {
         setVisible(true);
     }
 
+    private void setButtonLook(JButton button) {
+        button.setFocusPainted(false);
+        button.setForeground(buttonTextColor);
+        button.setFont(new Font ("Arial Black", Font.PLAIN, 14));
+    }
+
     /**
      * Sets actions to perform when each of the navigational buttons in the top panel of the GUI is pressed.
      * @param e
@@ -153,6 +158,7 @@ public class GUI extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         JPanel panel;
         String panelString;
+        Color background;
 
         if (e.getSource() == startButton) {
             panel = qualifyingPanel;
@@ -171,10 +177,21 @@ public class GUI extends JFrame implements ActionListener {
             panelString = "knock";
         } else {
             panel = null;
-            panelString = "";
+            panelString = null;
         }
-        checkIfPanelNeedsInit(panel);
-        changeCard(cardPanel, panelString);
+        if (panel instanceof StagePanel) {
+            checkIfPanelNeedsInit(panel);
+            background = ((StagePanel)panel).getThemeColor();
+            changeButtonPanelColor(background);
+            changeCard(cardPanel, panelString);
+        }
+    }
+
+    private void changeButtonPanelColor(Color background) {
+        buttonPanel.setBackground(background);
+        qualifyingButton.setBackground(background);
+        groupButton.setBackground(background);
+        knockoutButton.setBackground(background);
     }
 
     private void checkIfPanelNeedsInit(JPanel panel) {

@@ -28,6 +28,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     private String[] regions = new String[6];
     private JTabbedPane tabPane;
     private boolean initialized;
+    private Color themeColor;
 
     /**
     An in progress constructor that is subject to change.
@@ -290,6 +291,11 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         return initialized;
     }
 
+    @Override
+    public Color getThemeColor() {
+        return themeColor;
+    }
+
 
     /**
      * Initiates the JTabbedPane before the simulation has started, with a blank calandar
@@ -321,6 +327,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         this.add(tabPane);
         tabPane.setBackground(new Color(140, 177, 217));
         this.setSize(new Dimension(1600, 900));
+        themeColor = tabPane.getBackground();
         initialized = true;
 
     }
