@@ -290,11 +290,6 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         return initialized;
     }
 
-    @Override
-    public Color getBGColor() {
-        return null;
-    }
-
 
     /**
      * Initiates the JTabbedPane before the simulation has started, with a blank calandar

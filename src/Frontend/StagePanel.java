@@ -2,7 +2,6 @@ package Frontend;
 
 import Backend.Match;
 
-import java.awt.*;
 import java.util.List;
 
 /**
@@ -23,6 +22,4 @@ public interface StagePanel {
     public boolean checkIfCompleted();
 
     public boolean checkIfInitialized();
-
-    public Color getBGColor();
 }

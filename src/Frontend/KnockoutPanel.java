@@ -412,12 +412,6 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     public boolean checkIfInitialized() {
         return initialized;
     }
-
-    @Override
-    public Color getBGColor() {
-        return null;
-    }
-
     @Override
     public void initPanel() {
         initialized = true;
