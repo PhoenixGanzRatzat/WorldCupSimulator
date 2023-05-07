@@ -70,6 +70,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     /* Tracker for groups that have completed displaying all of their matches*/
     private boolean[] groupsThatAreComplete;
     private boolean initialized;
+    private Color themeColor;
 
     /* TODO:
         >>> who moves on? top points in each group? what if multiple teams have the same final points?
@@ -778,6 +779,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         displayPanel.setBorder(new LineBorder(Color.BLACK));
         GridBagConstraints constraints = new GridBagConstraints();
         displayPanel.setBackground(new Color(0, 0, 75));
+        themeColor = displayPanel.getBackground();
         /* Bottom bar across window for housing functions */
         JPanel functionPanel = new JPanel();
 
@@ -846,8 +848,8 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     }
 
     @Override
-    public Color getBGColor() {
-        return null;
+    public Color getThemeColor() {
+        return themeColor;
     }
 
     /**

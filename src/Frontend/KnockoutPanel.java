@@ -39,6 +39,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
 
     private boolean initialized;
     private BracketCell[][] cells;
+    private Color themeColor;
 
     /**
      * Default constructor; initializes JPanel with BorderLayout, sets size,
@@ -49,6 +50,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         this.cells = new BracketCell[][]{new BracketCell[16], new BracketCell[8], new BracketCell[4], new BracketCell[4], new BracketCell[2]};
         this.setBackground(canvas);
         this.initialized = false;
+        themeColor = canvas;
         createWindow();
     }
     /*TODO:
@@ -414,8 +416,8 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     }
 
     @Override
-    public Color getBGColor() {
-        return null;
+    public Color getThemeColor() {
+        return themeColor;
     }
 
     @Override
