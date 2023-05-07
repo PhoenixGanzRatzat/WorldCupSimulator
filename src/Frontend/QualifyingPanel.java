@@ -195,7 +195,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
                         for(int j = 0; j < sortedArr.size(); j++) {
 
-                            if(team.getPoints() >= sortedArr.get(j).getPoints()) {
+                            if(team.getMostRecentScore() >= sortedArr.get(j).getMostRecentScore()) {
                                 sortedArr.add(j, team);
                                 j = sortedArr.size();
 
@@ -212,7 +212,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             for(Team team : sortedArr) {
                 JPanel tempPanel = new JPanel();
                 JLabel teamName = new JLabel(team.getName());
-                JLabel teamPoints = new JLabel("" + team.getPoints());
+                JLabel teamPoints = new JLabel("" + team.getMostRecentScore());
                 JLabel teamRank = new JLabel("" + (sortedArr.indexOf(team) + 1));
                 ImageIcon teamFlag = new ImageIcon(flags.get(team.getAbbv()).getScaledInstance(40, 24, 1));
                 JLabel flagLabel = new JLabel();

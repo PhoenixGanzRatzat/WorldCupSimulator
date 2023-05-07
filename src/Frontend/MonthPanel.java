@@ -2,6 +2,7 @@ package Frontend;
 
 import Backend.Match;
 
+import Backend.Team;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -255,15 +256,15 @@ public class MonthPanel extends JPanel {
         private void addMatch(Match match) {
             this.matches.add(match);
 
-            JLabel leftFlag = loadFlagLabel(match.getTeamOne().getAbbv());
-            leftFlag.setToolTipText(match.getTeamOne().getName());
-            JLabel rightFlag = loadFlagLabel(match.getTeamTwo().getAbbv());
-            rightFlag.setToolTipText(match.getTeamTwo().getName());
+            JLabel leftFlag = loadFlagLabel(match.getTeam1().getAbbv());
+            leftFlag.setToolTipText(match.getTeam1().getName());
+            JLabel rightFlag = loadFlagLabel(match.getTeam2().getAbbv());
+            rightFlag.setToolTipText(match.getTeam2().getName());
 
 
             //add a mouseover to display JPopupMenu
             JLabel matchLabel = new JLabel();
-            matchLabel.setText(String.format("%s v. %s", match.getTeamOne().getAbbv(), match.getTeamTwo().getAbbv()));
+            matchLabel.setText(String.format("%s v. %s", match.getTeam1().getAbbv(), match.getTeam2().getAbbv()));
             matchLabel.setToolTipText(formatMatchToolTip(match));
 
 
@@ -273,10 +274,19 @@ public class MonthPanel extends JPanel {
         }
 
         private String formatMatchToolTip(Match match) {
-            String winnerScore = String.valueOf(match.getWinnerScore());
-            String loserScore = String.valueOf(match.getLoserScore());
+            String winnerScore;
+            String loserScore;
+            if(match.getTeam1Score() > match.getTeam2Score()) {
+                winnerScore = String.valueOf(match.getTeam1Score());
+                loserScore = String.valueOf(match.getTeam2Score());
+            } else if(match.getTeam1Score() < match.getTeam2Score()){
+                winnerScore = String.valueOf(match.getTeam2Score());
+                loserScore = String.valueOf(match.getTeam1Score());
+            } else {
+                winnerScore = String.valueOf(match.getTeam2Score()); // scores are the same for draws
+                loserScore = String.valueOf(match.getTeam1Score());
+            }
             if(match.getWinner() == null) {
-                winnerScore = String.valueOf(match.getTeamOneScore());
                 return String.format(
                         "<html>" +
                                 "<p><u><b>" +
@@ -287,7 +297,7 @@ public class MonthPanel extends JPanel {
                                 "<br>" +
                                 "Score: %s - %s" +
                                 "</p></html>",
-                        match.getTeamOne().getName(), match.getTeamTwo().getName(), winnerScore, winnerScore);
+                        match.getTeam1().getName(), match.getTeam2().getName(), winnerScore, winnerScore);
 
 
             } else {
@@ -302,7 +312,7 @@ public class MonthPanel extends JPanel {
                                 "<br>" +
                                 "Score: %s - %s" +
                                 "</p></html>",
-                        match.getTeamOne().getName(), match.getTeamTwo().getName(), winnerDisplayName, winnerScore, loserScore);
+                        match.getTeam1().getName(), match.getTeam2().getName(), winnerDisplayName, winnerScore, loserScore);
 
             }
         }
