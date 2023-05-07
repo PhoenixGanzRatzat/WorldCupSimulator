@@ -1,6 +1,10 @@
 package Frontend;
 
 import Backend.Match;
+import com.sun.istack.internal.NotNull;
+
+import java.awt.*;
+import java.util.List;
 
 /**
  * Interface to ensure the various stage panels have necessary functions for GUi to be able to ensure the next stage
@@ -16,8 +20,10 @@ public interface StagePanel {
      * Checks StagePanel state to see if the next stage can be moved onto
      * @return
      */
-    public void initPanel(Match[] m);
+    public void initPanel(List<Match> matches);
     public boolean checkIfCompleted();
 
     public boolean checkIfInitialized();
+    @NotNull
+    public Color getThemeColor();
 }
