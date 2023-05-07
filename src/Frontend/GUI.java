@@ -88,10 +88,6 @@ public class GUI extends JFrame implements ActionListener {
         groupButton.addActionListener(this);
         knockoutButton.addActionListener(this);
 
-        setButtonLook(qualifyingButton);
-        setButtonLook(groupButton);
-        setButtonLook(knockoutButton);
-
         qualifyingButton.setVisible(false);
         groupButton.setVisible(false);
         knockoutButton.setVisible(false);
@@ -126,8 +122,7 @@ public class GUI extends JFrame implements ActionListener {
         layoutConstraints.gridx = 0;
         layoutConstraints.gridy = 3;
 
-        setButtonLook(startButton);
-        startButton.setBackground(fifaBG);
+        setButtonLook(startButton, buttonTextColor, fifaBG);
 
         startPanel.add(startButton, layoutConstraints);
 
@@ -144,10 +139,12 @@ public class GUI extends JFrame implements ActionListener {
         setVisible(true);
     }
 
-    private void setButtonLook(JButton button) {
+    private void setButtonLook(JButton button, Color foreground, Color background) {
         button.setFocusPainted(false);
-        button.setForeground(buttonTextColor);
+        button.setForeground(foreground);
+        button.setBackground(background);
         button.setFont(new Font ("Arial Black", Font.PLAIN, 14));
+
     }
 
     /**
@@ -158,31 +155,46 @@ public class GUI extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         JPanel panel;
         String panelString;
-        Color background;
+        Color panelBackground;
+        Color buttonBackground;
+        boolean makeBGBrighter;
 
         if (e.getSource() == startButton) {
             panel = qualifyingPanel;
             panelString = "qual";
+            makeBGBrighter = false;
             qualifyingButton.setVisible(true);
             groupButton.setVisible(true);
             knockoutButton.setVisible(true);
         } else if (e.getSource() == qualifyingButton) {
             panel = qualifyingPanel;
             panelString = "qual";
+            makeBGBrighter = false;
         } else if (e.getSource() == groupButton) {
             panel = groupPanel;
             panelString = "group";
+            makeBGBrighter = true;
         } else if (e.getSource() == knockoutButton) {
             panel = knockoutPanel;
             panelString = "knock";
+            makeBGBrighter = false;
         } else {
             panel = null;
             panelString = null;
+            makeBGBrighter = false;
         }
         if (panel instanceof StagePanel) {
             checkIfPanelNeedsInit(panel);
-            background = ((StagePanel)panel).getThemeColor();
-            changeButtonPanelColor(background);
+            panelBackground = ((StagePanel)panel).getThemeColor();
+            if  (makeBGBrighter) {
+                buttonBackground = panelBackground.brighter();
+            } else {
+                buttonBackground = panelBackground.darker();
+            }
+            buttonPanel.setBackground(panelBackground);
+            setButtonLook(qualifyingButton, buttonTextColor, buttonBackground);
+            setButtonLook(groupButton, buttonTextColor, buttonBackground);
+            setButtonLook(knockoutButton, buttonTextColor, buttonBackground);
             changeCard(cardPanel, panelString);
         }
     }
