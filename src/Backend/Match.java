@@ -30,6 +30,8 @@ public class Match {
     public Match (Team teamOne, Team teamTwo, LocalDate date) {
         this.team1 = teamOne;
         this.team2 = teamTwo;
+        this.team1Score = 0;
+        this.team2Score = 0;
         this.matchDate = date;
     }
 
