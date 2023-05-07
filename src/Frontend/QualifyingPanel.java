@@ -18,6 +18,11 @@ import java.util.HashMap;
 
 public class QualifyingPanel extends JPanel implements StagePanel {
 
+    protected static final Color BG_COLOR = new Color(140, 177, 217);
+    protected static final Color ROW1_COLOR = new Color(179, 201, 230);
+    protected static final Color ROW2_COLOR = new Color(198, 215, 236);
+    protected static final Color SCROLLPANE_COLOR = new Color(198, 215, 236);
+
     //ARIAL BLACK BOLD
     private int curMonth;
     private HashMap<String, BufferedImage> flags;
@@ -125,7 +130,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         genPanel.add(forward, BorderLayout.EAST);
         genPanel.add(backward, BorderLayout.WEST);
         genPanel.add(month, BorderLayout.CENTER);
-        genPanel.setBackground(new Color(140, 177, 217));
+        genPanel.setBackground(BG_COLOR);
         genPanel.setOpaque(true);
 
 
@@ -226,10 +231,10 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
                 tempPanel.setPreferredSize(new Dimension(1600, 30));
                 if(sortedArr.indexOf(team) % 2 == 0) {
-                    tempPanel.setBackground(new Color(179, 201, 230));
+                    tempPanel.setBackground(ROW1_COLOR);
                 }
                 else {
-                    tempPanel.setBackground(new Color(198, 215, 236));
+                    tempPanel.setBackground(ROW2_COLOR);
                 }
                 tempPanel.setOpaque(true);
 
@@ -257,7 +262,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             }
 
             JScrollPane scroll = new JScrollPane(newTab);
-            newTab.setBackground(new Color(198, 215, 236));
+            newTab.setBackground(SCROLLPANE_COLOR);
             scroll.setOpaque(false);
             newTab.setPreferredSize(new Dimension(1600, 1000));
             scroll.setPreferredSize(new Dimension(800, 600));
@@ -292,7 +297,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
     @Override
     public Color getBGColor() {
-        return null;
+        return BG_COLOR;
     }
 
 
@@ -324,7 +329,8 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         fillResults();
 
         this.add(tabPane);
-        tabPane.setBackground(new Color(140, 177, 217));
+        tabPane.setBackground(BG_COLOR);
+        month.setBackground(BG_COLOR);
         this.setSize(new Dimension(1600, 900));
         initialized = true;
 

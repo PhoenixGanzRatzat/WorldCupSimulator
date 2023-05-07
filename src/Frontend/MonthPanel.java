@@ -16,6 +16,8 @@ import java.util.List;
 
 public class MonthPanel extends JPanel {
 
+    protected static final Color BG_COLOR = QualifyingPanel.BG_COLOR;
+    protected static final Color FG_COLOR = QualifyingPanel.ROW2_COLOR;
 
     private static final GridLayout LAYOUT_FIVE_ROW = new GridLayout(5, 7, 10, 10);
     private static final GridLayout LAYOUT_SIX_ROW = new GridLayout(6, 7, 10, 10);
@@ -55,6 +57,7 @@ public class MonthPanel extends JPanel {
         this.monthLabel = new JLabel();
         monthLabel.setFont(new Font("Default",  Font.PLAIN, 24));
         monthLabel.setVerticalAlignment(SwingConstants.CENTER);
+        monthLabelPanel.setBackground(FG_COLOR);
         monthLabelPanel.add(monthLabel);
         monthLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.calendarPanel = new JPanel();
@@ -94,6 +97,7 @@ public class MonthPanel extends JPanel {
         }
 
         calendarPanel.removeAll(); // make sure MonthPanel has no child components
+        dayPanels = new ArrayList<>(); //reset daypanels to be empty
         for (int i = 0; i < daysInMonth + dayOffset; i++) {
             //when the first day of the month is not a sunday, there will be empty space in the calendar
             if (i < dayOffset) {
@@ -126,8 +130,19 @@ public class MonthPanel extends JPanel {
             DayPanel dayPanel = dayPanels.get(match.getMatchDate().getDayOfMonth() - 1);
             if (dayPanel != null) {
                 dayPanel.addMatch(match);
+
+                //reset color on panels
+                dayPanel.setBackground(FG_COLOR);
             }
         });
+    }
+
+    @Override
+    public void setBackground(Color bg) {
+        super.setBackground(bg);
+        if (calendarPanel != null) {
+            calendarPanel.setBackground(bg);
+        }
     }
 
     @Override
@@ -152,6 +167,7 @@ public class MonthPanel extends JPanel {
             //MAX OF 7 MATCHES PER DAY
             this.setLayout(new GridBagLayout()); //TODO: use gridbaglayout
             this.setSize(new Dimension(100, 100));
+            this.setBackground(MonthPanel.FG_COLOR);
             matches = new ArrayList<>();
             this.date = LocalDate.from(date);
 
@@ -294,8 +310,6 @@ public class MonthPanel extends JPanel {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            g.setColor(Color.lightGray);
-            g.fillRect(0, 0, this.getWidth(), this.getHeight());
         }
 
     }
