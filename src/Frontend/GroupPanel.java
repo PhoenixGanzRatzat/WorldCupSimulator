@@ -844,6 +844,12 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     public boolean checkIfInitialized() {
         return initialized;
     }
+
+    @Override
+    public Color getBGColor() {
+        return null;
+    }
+
     /**
      * Event handler for button clicks
      * @param e - clicked button
