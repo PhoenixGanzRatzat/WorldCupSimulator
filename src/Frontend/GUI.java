@@ -155,40 +155,28 @@ public class GUI extends JFrame implements ActionListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        JPanel panel = null;
-        String panelString = null;
-
         if (e.getSource() == startButton) {
-            panel = qualifyingPanel;
-            panelString = "qual";
+            checkIfPanelNeedsInit(qualifyingPanel);
             qualifyingButton.setVisible(true);
             groupButton.setVisible(true);
             knockoutButton.setVisible(true);
+            changeCard(cardPanel, "qual");
         } else if (e.getSource() == qualifyingButton) {
-            panel = qualifyingPanel;
-            panelString = "qual";
+            checkIfPanelNeedsInit(qualifyingPanel);
+            changeCard(cardPanel, "qual");
         } else if (e.getSource() == groupButton) {
-            panel = groupPanel;
-            panelString = "group";
+            checkIfPanelNeedsInit(groupPanel);
+            changeCard(cardPanel, "group");
         } else if (e.getSource() == knockoutButton) {
-            panel = knockoutPanel;
-            panelString = "knock";
+            checkIfPanelNeedsInit(knockoutPanel);
+            changeCard(cardPanel, "knock");
         } else if (e.getSource() == nextRoundButton) {
-            if(panel != null) {
-                if (panel.equals(groupPanel)) {
-                    ((GroupPanel) panel).simulateRound();
-                } else if (panel.equals(knockoutPanel)) {
-                    ((KnockoutPanel) panel).nextRound();
-                }
+            if (cardPanel.getComponent(2).isVisible()) {
+                ((GroupPanel) groupPanel).simulateRound();
+            } else if (cardPanel.getComponent(3).isVisible()) {
+                ((KnockoutPanel) knockoutPanel).nextRound();
             }
-        } else {
-            panel = null;
-            panelString = "";
-        }
 
-        if(panel != null) {
-            checkIfPanelNeedsInit(panel);
-            changeCard(cardPanel, panelString);
         }
     }
 

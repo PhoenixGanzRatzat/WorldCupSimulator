@@ -60,8 +60,6 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
 
     public void displayRoundOfSixteen() {
         List<Match> matches16 = knockoutStage.getMatchesForRoundOfSixteen();
-        //this.cells[0][x] = cells for round of sixeteen
-        // setFlagIcon(String teamAbbv) in BracketCell and setTeamName;
         int index = 0;
         for(Match m : matches16) {
             this.cells[0][index].setFlagIcon(m.getTeamOne().getAbbv());
@@ -70,22 +68,37 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             this.cells[0][index + 1].setTeamName(m.getTeamTwo().getName());
             index = index + 2;
         }
-
     }
 
-    public void displayQuarterFinals(KnockoutStage knockoutStage) {
+    public void displayQuarterFinals() {
         List<Match> matches8 = knockoutStage.getMatchesForQuarterfinals();
-        //this.cells[0][x] = cells for round of sixeteen
-        // setFlagIcon(String teamAbbv) in BracketCell and setTeamName;
         int index = 0;
         for(Match m : matches8) {
             this.cells[1][index].setFlagIcon(m.getTeamOne().getAbbv());
-            //this.cells[1][index].setTeamName(m.getTeamOne().getName());
+            this.cells[1][index].setTeamName(m.getTeamOne().getAbbv());
             this.cells[1][index + 1].setFlagIcon(m.getTeamTwo().getAbbv());
-            //this.cells[1][index + 1].setTeamName(m.getTeamTwo().getName());
+            this.cells[1][index + 1].setTeamName(m.getTeamTwo().getAbbv());
             index = index + 2;
         }
+    }
 
+    public void displaySemiFinals() {
+        List<Match> matches4 = knockoutStage.getMatchesForSemifinals();
+        int index = 0;
+        for(Match m : matches4) {
+            this.cells[2][index].setFlagIcon(m.getTeamOne().getAbbv());
+            this.cells[2][index].setTeamName(m.getTeamOne().getAbbv());
+            this.cells[2][index + 1].setFlagIcon(m.getTeamTwo().getAbbv());
+            this.cells[2][index + 1].setTeamName(m.getTeamTwo().getAbbv());
+            index = index + 2;
+        }
+    }
+
+    public void displayFinals() {
+        Match lastMatch = knockoutStage.getFinalMatch();
+        // TODO: look into the structure of which cells to fill
+        this.cells[3][0].setFlagIcon(lastMatch.getTeamOne().getAbbv());
+        this.cells[3][1].setFlagIcon(lastMatch.getTeamTwo().getAbbv());
     }
     /*TODO:
      * Implement initPanel(), nextMatch(), & nextRound()
@@ -128,13 +141,15 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     }
     public void nextRound() {
         if(currentRound == ROUND_OF_SIXTEEN) {
-
+            displayQuarterFinals();
+            currentRound++;
         } else if (currentRound == QUARTERFINAL) {
-
+            displaySemiFinals();
+            currentRound++;
         } else if (currentRound == SEMIFINAL) {
-
+            displayFinals();
+            currentRound++;
         } else if (currentRound == FINAL) {
-
         }
     }
     private ArrayList<Line2D.Double> createStripes(){
