@@ -36,7 +36,7 @@ public class GUI extends JFrame implements ActionListener {
     /**
      * Default constructor for GUI.  Calls initGUI to initialize instantiated objects.
      */
-    public GUI() throws IOException {
+    public GUI() {
         gameSim = new WorldCupSimulator();
 
         cardPanel = new JPanel(new CardLayout());
@@ -73,9 +73,9 @@ public class GUI extends JFrame implements ActionListener {
      * GUI elements for use of the GUI.  Binds actionListener to buttons and sets card key values for each of the
      * display panels.  Finally, sets JFrame parameters to make the window visible and close properly.
      */
-    private void initGUI() throws IOException {
+    private void initGUI() {
         GridBagConstraints layoutConstraints = new GridBagConstraints();
-        JLabel fifaLogoLabel = new JLabel(new ImageIcon(ImageIO.read(new File("Assets\\Images\\FIFA_logo.png"))));
+        JLabel fifaLogoLabel;
         JLabel subHeaderLabel;
 
         startButton.setText("Start Simulation");
@@ -103,12 +103,18 @@ public class GUI extends JFrame implements ActionListener {
         layoutConstraints.weightx = 1;
         layoutConstraints.weighty = 1;
 
+        try {
+            fifaLogoLabel = new JLabel(new ImageIcon(ImageIO.read(new File("Assets\\Images\\FIFA_logo.png"))));
+        } catch (IOException e) {
+            fifaLogoLabel = new JLabel("FIFA");
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+
         layoutConstraints.gridx = 0;
         layoutConstraints.gridy = 0;
         startPanel.add(fifaLogoLabel, layoutConstraints);
 
         startPanel.setBackground(fifaBG);
-
 
         layoutConstraints.gridx = 0;
         layoutConstraints.gridy = 1;
@@ -197,13 +203,6 @@ public class GUI extends JFrame implements ActionListener {
             setButtonLook(knockoutButton, buttonTextColor, buttonBackground);
             changeCard(cardPanel, panelString);
         }
-    }
-
-    private void changeButtonPanelColor(Color background) {
-        buttonPanel.setBackground(background);
-        qualifyingButton.setBackground(background);
-        groupButton.setBackground(background);
-        knockoutButton.setBackground(background);
     }
 
     private void checkIfPanelNeedsInit(JPanel panel) {
