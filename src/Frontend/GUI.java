@@ -71,7 +71,7 @@ public class GUI extends JFrame implements ActionListener {
      * Initializes member fields with values and sets up their parameters to display desired text.  Also adds subpanels
      * to the JFrame's content panel and adds additional components to each of the subpanels to display necessary
      * GUI elements for use of the GUI.  Binds actionListener to buttons and sets card key values for each of the
-     * display panels.  Finally sets JFrame parameters to make the window visible and close properly.
+     * display panels.  Finally, sets JFrame parameters to make the window visible and close properly.
      */
     private void initGUI() throws IOException {
         GridBagConstraints layoutConstraints = new GridBagConstraints();
@@ -79,9 +79,9 @@ public class GUI extends JFrame implements ActionListener {
         JLabel subHeaderLabel;
 
         startButton.setText("Start Simulation");
-        qualifyingButton.setText("Qualifying Panel");
-        groupButton.setText("Group Panel");
-        knockoutButton.setText("Knockout Panel");
+        qualifyingButton.setText("Qualifying Stage");
+        groupButton.setText("Group Stage");
+        knockoutButton.setText("Knockout Stage");
 
         startButton.addActionListener(this);
         qualifyingButton.addActionListener(this);
