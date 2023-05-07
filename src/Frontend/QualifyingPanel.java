@@ -296,7 +296,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     }
 
     @Override
-    public Color getBGColor() {
+    public Color getThemeColor() {
         return BG_COLOR;
     }
 

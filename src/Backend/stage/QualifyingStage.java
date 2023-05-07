@@ -62,6 +62,7 @@ public class QualifyingStage extends Stage {
         for (RoundResult roundResult : roundResults) {
             QualifierMatches.addAll(roundResult.getRoundMatches());
         }
+         rearrangeMatchDates(QualifierMatches,  6);
     }
 
     // Get the list of all qualifier matches
@@ -85,24 +86,34 @@ public class QualifyingStage extends Stage {
         return qualifiedTeams;
     }
 
-    // Assign dates to the matches ensuring no team has more than one match per day
-    public void assignDatesToMatches(List<Match> matches, LocalDate startDate, int interval, int maxMatchesPerDay) {
+    public void assignDatesToRoundMatches(List<Match> matches, LocalDate startDate, int interval, int maxMatchesPerDay) {
         // Maps to store matches per day and team match dates
         Map<LocalDate, Integer> matchesPerDay = new HashMap<>();
         Map<Team, Set<LocalDate>> teamMatchDates = new HashMap<>();
 
-        // List of months to skip
-        List<Integer> monthsToSkip = Arrays.asList(7, 12, 4); // Example: skip July, December and April
+        // List of allowed months
+        List<Integer> allowedMonths = Arrays.asList(3, 6, 9, 10, 11);
 
         // Loop through all matches
         for (Match match : matches) {
             LocalDate matchDate = startDate;
             boolean matchScheduled = false;
             while (!matchScheduled) {
-                // Check if the current month should be skipped
-                if (monthsToSkip.contains(matchDate.getMonthValue())) {
-                    // Move to the next month and starting on the day of the first of the month
-                    matchDate = matchDate.plusMonths(1).withDayOfMonth(1);
+                // Check if the current month is not allowed
+                if (!allowedMonths.contains(matchDate.getMonthValue())) {
+                    // Find the next allowed month within the same year or in the next year
+                    int currentMonth = matchDate.getMonthValue();
+                    int nextAllowedMonth = allowedMonths.stream()
+                            .filter(allowedMonth -> allowedMonth > currentMonth)
+                            .findFirst()
+                            .orElse(allowedMonths.get(0));
+
+                    // Update the match date accordingly
+                    if (nextAllowedMonth > currentMonth) {
+                        matchDate = matchDate.withMonth(nextAllowedMonth).withDayOfMonth(1);
+                    } else {
+                        matchDate = matchDate.plusYears(1).withMonth(nextAllowedMonth).withDayOfMonth(1);
+                    }
                     continue;
                 }
 
@@ -132,6 +143,32 @@ public class QualifyingStage extends Stage {
                     matchDate = matchDate.plusDays(interval);
                 }
             }
+        }
+    }
+
+    public void rearrangeMatchDates(List<Match> matches, int maxMatchesPerDay) {
+        // Maps to store matches per day
+        Map<LocalDate, Integer> matchesPerDay = new HashMap<>();
+
+        // Loop through all matches
+        for (Match match : matches) {
+            LocalDate matchDate = match.getMatchDate();
+            boolean matchScheduled = false;
+            while (!matchScheduled) {
+                int matchesOnDate = matchesPerDay.getOrDefault(matchDate, 0);
+
+                // Check if there is room for another match on the current date
+                if (matchesOnDate < maxMatchesPerDay) {
+                    // Update the maps
+                    matchesPerDay.put(matchDate, matchesOnDate + 1);
+                    matchScheduled = true;
+                } else {
+                    // Move to the next date
+                    matchDate = matchDate.plusDays(1);
+                }
+            }
+            // Set the match date
+            match.setMatchDate(matchDate);
         }
     }
 
@@ -167,7 +204,7 @@ public class QualifyingStage extends Stage {
         }
 
         // Assign dates to the first round matches
-        assignDatesToMatches(firstRoundMatches, LocalDate.of(2015, 3, 22), 2, 6);
+        assignDatesToRoundMatches(firstRoundMatches, LocalDate.of(2015, 3, 12), 5, 6);
 
         // Return a RoundResult object containing the winners and the matches
         return new RoundResult(winningTeams, firstRoundMatches);
@@ -197,9 +234,6 @@ public class QualifyingStage extends Stage {
             // Arrange home and away matches for the group
             List<Match> secondRoundMatches = arrangeHomeAndAwayMatches(group, true);
 
-            // Assign dates to the second round matches
-            assignDatesToMatches(secondRoundMatches, LocalDate.of(2015, 3, 12), 2, 6);
-
             // Simulate the matches and add their results
             for (Match match : secondRoundMatches) {
                 match.simulateMatchResult();
@@ -224,7 +258,8 @@ public class QualifyingStage extends Stage {
         List<Team> qualifiedTeams = new ArrayList<>(groupWinners);
         qualifiedTeams.addAll(bestGroupRunnersUp);
 
-
+        // Assign dates to the second round matches
+        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2015, 6, 11), 3, 4);
 
         return new RoundResult(qualifiedTeams, allGroupMatches);
     }
@@ -238,7 +273,7 @@ public class QualifyingStage extends Stage {
         for (List<Team> group : thirdRoundGroups) {
             List<Match> groupMatches = arrangeHomeAndAwayMatches(group, true);
             // Assign dates to the matches with a 2-day interval and 6 matches per day
-            assignDatesToMatches(groupMatches, LocalDate.of(2015, 3, 12), 2, 6);
+            assignDatesToRoundMatches(groupMatches, LocalDate.of(2016, 9, 1), 11, 2);
             for (Match match : groupMatches) {
                 match.simulateMatchResult();
             }
@@ -281,7 +316,7 @@ public class QualifyingStage extends Stage {
         // Determine the winner of the play-off
         Team playOffWinner = determinePlayOffWinner(fourthRoundMatches);
 
-        assignDatesToMatches(fourthRoundMatches, LocalDate.of(2015, 3, 12), 2, 6);
+        assignDatesToRoundMatches(fourthRoundMatches, LocalDate.of(2017, 10, 5), 5, 1);
 
         return new RoundResult(Collections.singletonList(playOffWinner), fourthRoundMatches);
     }
@@ -320,7 +355,7 @@ public class QualifyingStage extends Stage {
             winningTeams.add(winner);
         }
 
-        assignDatesToMatches(firstRoundMatches, LocalDate.of(2015, 3, 12), 2, 6);
+        assignDatesToRoundMatches(firstRoundMatches, LocalDate.of(2015, 10, 7), 1, 6);
 
         // Return a RoundResult object containing the winners and the matches
         return new RoundResult(winningTeams, firstRoundMatches);
@@ -362,7 +397,7 @@ public class QualifyingStage extends Stage {
             winningTeams.add(winner);
         }
 
-        assignDatesToMatches(secondRoundMatches, LocalDate.of(2015, 3, 12), 2, 6);
+        assignDatesToRoundMatches(secondRoundMatches, LocalDate.of(2015, 11, 9), 1, 6);
 
         // Return a RoundResult object containing the winners and the matches
         return new RoundResult(winningTeams, secondRoundMatches);
@@ -377,6 +412,7 @@ public class QualifyingStage extends Stage {
 
         for (List<Team> group : groups) {
             List<Match> thirdRoundMatches = arrangeHomeAndAwayMatches(group, true);
+
             for (Match match : thirdRoundMatches) {
                 match.simulateMatchResult();
             }
@@ -389,6 +425,7 @@ public class QualifyingStage extends Stage {
             groupWinners.add(group.get(0));
 
         }
+        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2016, 10, 7), 9, 3);
 
         // Combine the winners and the best runners-up
         List<Team> qualifiedTeams = new ArrayList<>(groupWinners);
@@ -433,7 +470,7 @@ public class QualifyingStage extends Stage {
             winningTeams.add(winner);
         }
 
-        assignDatesToMatches(firstRoundMatches, LocalDate.of(2015, 3, 12), 2, 6);
+        assignDatesToRoundMatches(firstRoundMatches, LocalDate.of(2015, 3, 1), 4, 2);
 
         // Return a RoundResult object containing the winners and the matches
         return new RoundResult(winningTeams, firstRoundMatches);
@@ -476,7 +513,7 @@ public class QualifyingStage extends Stage {
             winningTeams.add(winner);
         }
 
-        assignDatesToMatches(secondRoundMatches, LocalDate.of(2015, 3, 12), 2, 6);
+        assignDatesToRoundMatches(secondRoundMatches, LocalDate.of(2015, 6, 1), 3, 2);
 
         // Return a RoundResult object containing the winners and the matches
         return new RoundResult(winningTeams, secondRoundMatches);
@@ -519,7 +556,7 @@ public class QualifyingStage extends Stage {
             winningTeams.add(winner);
         }
 
-        assignDatesToMatches(thirdRoundMatches, LocalDate.of(2015, 3, 12), 2, 6);
+        assignDatesToRoundMatches(thirdRoundMatches, LocalDate.of(2015, 9, 1), 5, 2);
 
         // Return a RoundResult object containing the winners and the matches
         return new RoundResult(winningTeams, thirdRoundMatches);
@@ -559,7 +596,7 @@ public class QualifyingStage extends Stage {
 
         }
 
-        assignDatesToMatches(allGroupMatches, LocalDate.of(2015, 3, 12), 2, 6);
+        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2015, 11, 1), 3, 2);
 
         // return a FourthRoundResult object with the third round matches
         return new RoundResult(qualifiedTeams, allGroupMatches);
@@ -596,7 +633,7 @@ public class QualifyingStage extends Stage {
 
         }
 
-        assignDatesToMatches(allGroupMatches, LocalDate.of(2015, 3, 12), 2, 6);
+        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2016, 11, 2), 10, 2);
 
         // return a FourthRoundResult object with the third round matches and the third-placed teams
         return new RoundResult(qualifiedTeams,fourthPlacedTeams, allGroupMatches);
@@ -636,7 +673,7 @@ public class QualifyingStage extends Stage {
 
         }
 
-        assignDatesToMatches(allGroupMatches, LocalDate.of(2015, 3, 12), 2, 6);
+        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2015, 10, 8), 10, 3);
 
         // return a FourthRoundResult object with the third round matches and the third-placed teams
         return new RoundResult(qualifiedTeams,fifthPlacedTeams, allGroupMatches);
@@ -663,7 +700,7 @@ public class QualifyingStage extends Stage {
         // The winner is the team with the highest qualifier points
         Team winner = ofcTeams.get(0);
 
-        assignDatesToMatches(firstRoundMatches, LocalDate.of(2015, 3, 12), 2, 6);
+        assignDatesToRoundMatches(firstRoundMatches, LocalDate.of(2015, 9, 1), 2, 2);
 
         // Return a RoundResult object containing the winner and the matches
         return new RoundResult(Collections.singletonList(winner), firstRoundMatches);
@@ -704,7 +741,7 @@ public class QualifyingStage extends Stage {
 
         }
 
-        assignDatesToMatches(allGroupMatches, LocalDate.of(2015, 3, 12), 2, 6);
+        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2016, 6, 1), 2, 3);
 
         // return a FourthRoundResult object with the third round matches and the third-placed teams
         return new RoundResult(qualifiedTeams, allGroupMatches);
@@ -755,7 +792,7 @@ public class QualifyingStage extends Stage {
         List<Match> allMatches = new ArrayList<>(thirdRoundMatches);
         allMatches.addAll(playOffMatches);
 
-        assignDatesToMatches(allMatches, LocalDate.of(2015, 3, 12), 2, 6);
+        assignDatesToRoundMatches(allMatches, LocalDate.of(2016, 11, 7), 23, 2);
 
         // Return a RoundResult object containing the play-off winner and all matches
         return new RoundResult(Collections.singletonList(playOffWinner), allMatches);
@@ -797,7 +834,7 @@ public class QualifyingStage extends Stage {
         // Get the eight best group runners-up
         List<Team> bestGroupRunnersUp = groupRunnersUp.subList(0, 8);
 
-        assignDatesToMatches(firstRoundMatches, LocalDate.of(2015, 3, 12), 2, 6);
+        assignDatesToRoundMatches(firstRoundMatches, LocalDate.of(2016, 9, 4), 2, 3);
 
         return new RoundResult(groupWinners, bestGroupRunnersUp, firstRoundMatches);
     }
@@ -834,7 +871,7 @@ public class QualifyingStage extends Stage {
             winningTeams.add(winner);
         }
 
-        assignDatesToMatches(secondRoundMatches, LocalDate.of(2015, 3, 12), 2, 6);
+        assignDatesToRoundMatches(secondRoundMatches, LocalDate.of(2017, 11, 9), 2, 2);
 
         // Return a RoundResult object containing the winners and the matches
         return new RoundResult(winningTeams, secondRoundMatches);
@@ -868,7 +905,7 @@ public class QualifyingStage extends Stage {
             match.simulateMatchResult();
         }
 
-        assignDatesToMatches(playOffMatches, LocalDate.of(2015, 3, 12), 2, 6);
+        assignDatesToRoundMatches(playOffMatches, LocalDate.of(2017, 11, 10), 2, 1);
 
         return new RoundResult(worldCupQualifiers, playOffMatches);
     }
