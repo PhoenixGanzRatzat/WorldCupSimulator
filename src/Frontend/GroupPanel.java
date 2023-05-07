@@ -70,6 +70,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     /* Tracker for groups that have completed displaying all of their matches*/
     private boolean[] groupsThatAreComplete;
     private boolean initialized;
+    private Color themeColor;
 
     /* TODO:
         >>> results panel is not setup to handle > 4 teams
@@ -395,10 +396,10 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     private void updateGroupPanelInfo(int groupNumber, Match match) {
         JPanel groupPanel = (JPanel) groupDisplayPanel.getComponent(groupNumber - 1);
 
-        Team team1 = match.getTeamOne();
-        Team team2 = match.getTeamTwo();
-        int t1Score = match.getTeamOneScore();
-        int t2Score = match.getTeamTwoScore();
+        Team team1 = match.getTeam1();
+        Team team2 = match.getTeam2();
+        int t1Score = match.getTeam1Score();
+        int t2Score = match.getTeam2Score();
         JPanel country1 = getCountriesGroupRowPanel(groupPanel, team1.getName());
         JPanel country2 = getCountriesGroupRowPanel(groupPanel, team2.getName());
         // TODO: country1 and country2 blank because row panels never updated with team info
@@ -539,10 +540,10 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         Component[] labels = roundRowPanel.getComponents();
 
         // Initialize
-        String name1 = match.getTeamOne().getAbbv();
-        String name2 = match.getTeamTwo().getAbbv();
-        int score1 = match.getTeamOneScore();
-        int score2 = match.getTeamTwoScore();
+        String name1 = match.getTeam1().getAbbv();
+        String name2 = match.getTeam2().getAbbv();
+        int score1 = match.getTeam1Score();
+        int score2 = match.getTeam2Score();
         String result1;
         String result2;
         if (score1 > score2) {
@@ -711,8 +712,8 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         /* put teams into groups */
         for (Match match : matches) {
             // get teams
-            Team team1 = match.getTeamOne();
-            Team team2 = match.getTeamTwo();
+            Team team1 = match.getTeam1();
+            Team team2 = match.getTeam2();
             int groupNumber;
 
             /* Build match, group, and team, associations */
@@ -813,6 +814,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         displayPanel.setBorder(new LineBorder(Color.BLACK));
         GridBagConstraints constraints = new GridBagConstraints();
         displayPanel.setBackground(new Color(0, 0, 75));
+        themeColor = displayPanel.getBackground();
         /* Bottom bar across window for housing functions */
         JPanel functionPanel = new JPanel();
 
@@ -879,6 +881,12 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     public boolean checkIfInitialized() {
         return initialized;
     }
+
+    @Override
+    public Color getThemeColor() {
+        return themeColor;
+    }
+
     /**
      * Event handler for button clicks
      * @param e - clicked button

@@ -1,26 +1,42 @@
 package Backend;
 
 import java.awt.image.BufferedImage;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Team implements Comparable<Team>{
+public class Team implements Comparable<Team> {
     private String name;
     private String abbv;
     private Region region;
     private BufferedImage flag;
     private int rank;
-    private int points;
-    private int qualifierPoints;
+    private Map<LocalDate, Integer> pointsMap;
     private boolean isFavorite;
-    public Team(String name, String abreviation, Region region, int rank){
+
+    public Team(String name, String abbreviation, Region region, int rank) {
         this.name = name;
-        this.abbv = abreviation;
+        this.abbv = abbreviation;
         this.region = region;
         this.rank = rank;
-        qualifierPoints = 0;
+        pointsMap = new HashMap<>();
         isFavorite = false;
         flag = null;
     }
 
+    public int getMostRecentScore() {
+        LocalDate mostRecentDate = null;
+        for (LocalDate date : pointsMap.keySet()) {
+            if ((mostRecentDate == null || date.isAfter(mostRecentDate))) {
+                mostRecentDate = date;
+            }
+        }
+        if (mostRecentDate == null) {
+            return 0; // No previous matches found
+        } else {
+            return pointsMap.get(mostRecentDate);
+        }
+    }
 
     public String getName() {
         return name;
@@ -38,22 +54,13 @@ public class Team implements Comparable<Team>{
         return rank;
     }
 
-    public int getPoints() {
-        return points;
+    public int getPoints(LocalDate date) {
+        return pointsMap.get(date);
     }
 
-    public void setPoints(int points) {
-        this.points = points;
+    public void setPoints(LocalDate date, int points) {
+        this.pointsMap.put(date, points);
     }
-
-    public int getQualifierPoints() {
-        return qualifierPoints;
-    }
-
-    public void setQualifierPoints(int qualifierPoints) {
-        this.qualifierPoints = qualifierPoints;
-    }
-
     public boolean getIsFavorite() {
         return isFavorite;
     }
@@ -68,12 +75,12 @@ public class Team implements Comparable<Team>{
 
     @Override
     public int compareTo(Team o) {
-        Team t = (Team)o;
-        if (this.getPoints() > t.getPoints()){
+        Team t = (Team) o;
+        if (this.getRank() > t.getRank()) {
             return 1;
-        } else if (this.getPoints() == t.getPoints()) {
+        } else if (this.getRank() == t.getRank()) {
             return 0;
-        } else if (this.getPoints() < t.getPoints()) {
+        } else if (this.getRank() < t.getRank()) {
             return -1;
         }
         return 0;
@@ -87,8 +94,7 @@ public class Team implements Comparable<Team>{
                 ", abbv='" + abbv + '\'' +
                 ", region=" + region +
                 ", rank=" + rank +
-                ", points=" + points +
-                ", qualifierPoints=" + qualifierPoints +
+                ", pointsMap=" + pointsMap +
                 ", isFavorite=" + isFavorite +
                 '}';
     }
