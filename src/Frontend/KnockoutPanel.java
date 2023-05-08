@@ -78,7 +78,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
          *   1 |   ■■                           |
          *   2 |         ■■                     |
          *   3 |   ■■                           |
-         *   4 |                                 |
+         *   4 |                                |
          *   5 |   ■■          ■■          ■■   |
          *   6 |         ■■          ■■         |
          *   7 |   ■■                           |
