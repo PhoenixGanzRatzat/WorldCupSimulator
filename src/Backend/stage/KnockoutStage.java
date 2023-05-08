@@ -30,7 +30,6 @@ public class KnockoutStage extends Stage {
         roundOfSixteenMatches = new ArrayList<>();
         quarterfinalsMatches = new ArrayList<>();
         semifinalsMatches = new ArrayList<>();
-        arrangeMatches();
     }
 
     @Override
@@ -113,11 +112,11 @@ public class KnockoutStage extends Stage {
         lastMatchWinners = getWinningTeamsOfMatchResults(semifinalsMatches);
         List<Team> lastMatchLosers = getLosingTeamsOfMatches(semifinalsMatches);
         thirdPlaceMatch = simulateThirdPlacePlayoffMatch(lastMatchLosers.get(0), lastMatchLosers.get(1));
-        thirdPlaceTeam = thirdPlaceMatch.getWinningTeam();
+        thirdPlaceTeam = thirdPlaceMatch.getWinner();
 
         finalsMatch = simulateFinalsMatch(lastMatchWinners.get(0), lastMatchWinners.get(1));
-        firstPlaceTeam = finalsMatch.getWinningTeam();
-        secondPlaceTeam = finalsMatch.getLosingTeam();
+        firstPlaceTeam = finalsMatch.getWinner();
+        secondPlaceTeam = finalsMatch.getLoser();
     }
 
     private void simulateRoundOfSixteen() {
@@ -149,11 +148,11 @@ public class KnockoutStage extends Stage {
     }
 
     private List<Team> getWinningTeamsOfMatchResults(List<Match> match) {
-        return match.stream().map(Match::getWinningTeam).collect(Collectors.toList());
+        return match.stream().map(Match::getWinner).collect(Collectors.toList());
     }
 
     private List<Team> getLosingTeamsOfMatches(List<Match> matches) {
-        return matches.stream().map(Match::getLosingTeam).collect(Collectors.toList());
+        return matches.stream().map(Match::getLoser).collect(Collectors.toList());
     }
 
     public List<Match> getMatchesForRoundOfSixteen() {
@@ -168,17 +167,19 @@ public class KnockoutStage extends Stage {
         return semifinalsMatches;
     }
 
-    public Match getFinalsMatch() {
+    public Match getFinalMatch() {
         return finalsMatch;
     }
 
     @Override
     public List<Match> getMatches() {
-        super.getMatches().addAll(quarterfinalsMatches);
-        super.getMatches().addAll(semifinalsMatches);
-        super.getMatches().add(finalsMatch);
-        super.getMatches().add(thirdPlaceMatch);
-        return Collections.unmodifiableList(super.getMatches());
+        List<Match> allMatches = new ArrayList<>();
+        allMatches.addAll(roundOfSixteenMatches);
+        allMatches.addAll(quarterfinalsMatches);
+        allMatches.addAll(semifinalsMatches);
+        allMatches.add(finalsMatch);
+        allMatches.add(thirdPlaceMatch);
+        return Collections.unmodifiableList(allMatches);
     }
 
     public Team getFirstPlaceTeam() {

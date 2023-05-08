@@ -1,6 +1,5 @@
 package Frontend;
 
-import Backend.Team;
 import Backend.WorldCupSimulator;
 
 import javax.imageio.ImageIO;
@@ -30,23 +29,26 @@ public class GUI extends JFrame implements ActionListener {
     private JButton groupButton;
     private JButton knockoutButton;
 
-    private final static Color text = new Color(213, 226, 216);
+    private final static Color buttonTextColor = new Color(213, 226, 216);
     private final static Color fifaBG = new Color(50, 98, 149);
 
 
     /**
      * Default constructor for GUI.  Calls initGUI to initialize instantiated objects.
      */
-    public GUI() throws IOException {
-        //gameSim = new WorldCupSimulator();  WorldCupSimulator doesn't construct right yet
+    public GUI() {
+        gameSim = new WorldCupSimulator();
 
         cardPanel = new JPanel(new CardLayout());
         buttonPanel = new JPanel(new FlowLayout());
 
         startPanel = new JPanel(new GridBagLayout());
-        //qualifyingPanel = new QualifyingPanel((gameSim.getTeams().toArray(new Team[0])));  // change once we get actual Teams
-        qualifyingPanel = new QualifyingPanel(new Team[0]);
-        groupPanel = new GroupPanel();
+        qualifyingPanel = new QualifyingPanel(gameSim.stageMatches(1), gameSim.getTeams());
+
+        // TODO: give group panel the matches/teams
+        groupPanel = new GroupPanel(gameSim.stageMatches(2), gameSim.getTeams());
+
+        // TODO: give knockoutpanel the matches/teams
         knockoutPanel = new KnockoutPanel();
 
         startButton = new JButton();
@@ -61,7 +63,7 @@ public class GUI extends JFrame implements ActionListener {
      * Entry point for code; creates a new GUI object with default constructor.
      * @param args
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         GUI mainGUI = new GUI();
     }
 
@@ -69,17 +71,17 @@ public class GUI extends JFrame implements ActionListener {
      * Initializes member fields with values and sets up their parameters to display desired text.  Also adds subpanels
      * to the JFrame's content panel and adds additional components to each of the subpanels to display necessary
      * GUI elements for use of the GUI.  Binds actionListener to buttons and sets card key values for each of the
-     * display panels.  Finally sets JFrame parameters to make the window visible and close properly.
+     * display panels.  Finally, sets JFrame parameters to make the window visible and close properly.
      */
-    private void initGUI() throws IOException {
+    private void initGUI() {
         GridBagConstraints layoutConstraints = new GridBagConstraints();
-        JLabel fifaLogoLabel = new JLabel(new ImageIcon(ImageIO.read(new File("Assets\\Images\\FIFA_logo.png"))));
-        JLabel subHeaderLabel = new JLabel();
+        JLabel fifaLogoLabel;
+        JLabel subHeaderLabel;
 
         startButton.setText("Start Simulation");
-        qualifyingButton.setText("Qualifying Panel");
-        groupButton.setText("Group Panel");
-        knockoutButton.setText("Knockout Panel");
+        qualifyingButton.setText("Qualifying Stage");
+        groupButton.setText("Group Stage");
+        knockoutButton.setText("Knockout Stage");
 
         startButton.addActionListener(this);
         qualifyingButton.addActionListener(this);
@@ -101,35 +103,33 @@ public class GUI extends JFrame implements ActionListener {
         layoutConstraints.weightx = 1;
         layoutConstraints.weighty = 1;
 
+        try {
+            fifaLogoLabel = new JLabel(new ImageIcon(ImageIO.read(new File("Assets\\Images\\FIFA_logo.png"))));
+        } catch (IOException e) {
+            fifaLogoLabel = new JLabel("FIFA");
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+
         layoutConstraints.gridx = 0;
         layoutConstraints.gridy = 0;
         startPanel.add(fifaLogoLabel, layoutConstraints);
 
         startPanel.setBackground(fifaBG);
 
-
         layoutConstraints.gridx = 0;
         layoutConstraints.gridy = 1;
 
         subHeaderLabel = new JLabel("World Cup 2018 Simulator");
         subHeaderLabel.setFont(new Font ("Arial Black", Font.PLAIN, 48));
-        subHeaderLabel.setForeground(text);
+        subHeaderLabel.setForeground(buttonTextColor);
         startPanel.add(subHeaderLabel, layoutConstraints);
 
 
         layoutConstraints.gridx = 0;
         layoutConstraints.gridy = 3;
 
-        //startButton.setContentAreaFilled(false);
-//        startButton.setBorderPainted(false);
-        //startButton.setFocusPainted(false);
-        startButton.setForeground(text);
-        startButton.setBackground(fifaBG);
-        startButton.setFont(new Font ("Arial Black", Font.PLAIN, 14));
+        setButtonLook(startButton, buttonTextColor, fifaBG);
 
-        //Font font = new Font("Arial Black", Font.BOLD, 12);
-        //Font newFont = font.deriveFont(Font.PLAIN, 18);
-        //startButton.setBorder(BorderFactory.createEmptyBorder(0,5,0,5));
         startPanel.add(startButton, layoutConstraints);
 
         cardPanel.add(startPanel, "start");
@@ -141,8 +141,17 @@ public class GUI extends JFrame implements ActionListener {
         setSize(1600,900);
         setLocation((Toolkit.getDefaultToolkit().getScreenSize().width-1600)/2, (Toolkit.getDefaultToolkit().getScreenSize().height-900)/2);
         setMinimumSize(new Dimension(1600,900));
+        setExtendedState(MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+    }
+
+    private void setButtonLook(JButton button, Color foreground, Color background) {
+        button.setFocusPainted(false);
+        button.setForeground(foreground);
+        button.setBackground(background);
+        button.setFont(new Font ("Arial Black", Font.PLAIN, 14));
+
     }
 
     /**
@@ -153,37 +162,58 @@ public class GUI extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         JPanel panel;
         String panelString;
+        Color panelBackground;
+        Color buttonBackground;
+        boolean makeBGBrighter;
 
         if (e.getSource() == startButton) {
             panel = qualifyingPanel;
             panelString = "qual";
+            makeBGBrighter = false;
             qualifyingButton.setVisible(true);
             groupButton.setVisible(true);
             knockoutButton.setVisible(true);
         } else if (e.getSource() == qualifyingButton) {
             panel = qualifyingPanel;
             panelString = "qual";
+            makeBGBrighter = false;
         } else if (e.getSource() == groupButton) {
             panel = groupPanel;
             panelString = "group";
+            makeBGBrighter = true;
         } else if (e.getSource() == knockoutButton) {
             panel = knockoutPanel;
             panelString = "knock";
+            makeBGBrighter = false;
         } else {
             panel = null;
-            panelString = "";
+            panelString = null;
+            makeBGBrighter = false;
         }
-        checkIfPanelNeedsInit(panel);
-        changeCard(cardPanel, panelString);
+        if (panel instanceof StagePanel) {
+            checkIfPanelNeedsInit(panel);
+            panelBackground = ((StagePanel)panel).getThemeColor();
+            if  (makeBGBrighter) {
+                buttonBackground = panelBackground.brighter();
+            } else {
+                buttonBackground = panelBackground.darker();
+            }
+            buttonPanel.setBackground(panelBackground);
+            setButtonLook(qualifyingButton, buttonTextColor, buttonBackground);
+            setButtonLook(groupButton, buttonTextColor, buttonBackground);
+            setButtonLook(knockoutButton, buttonTextColor, buttonBackground);
+            changeCard(cardPanel, panelString);
+        }
     }
 
     private void checkIfPanelNeedsInit(JPanel panel) {
-        StagePanel objectSP;
-
         if (panel instanceof StagePanel) {
-            objectSP = (StagePanel) panel;
-            if (!objectSP.checkIfInitialized()) {
-                objectSP.initPanel();
+            StagePanel stage = (StagePanel) panel;
+            if (!stage.checkIfInitialized()) {
+                if(stage instanceof KnockoutPanel) {
+                    stage.initPanel(gameSim.stageMatches(3)); // TODO: hardcoded knockout stgae
+                }
+                stage.initPanel();
             }
         }
     }

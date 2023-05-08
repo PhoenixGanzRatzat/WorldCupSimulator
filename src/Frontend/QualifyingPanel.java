@@ -11,20 +11,27 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.time.Month;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 
 public class QualifyingPanel extends JPanel implements StagePanel {
 
-    //ARIAL BLACK BOLD
+    protected static final Color BG_COLOR = new Color(140, 177, 217);
+    protected static final Color ROW1_COLOR = new Color(179, 201, 230);
+    protected static final Color ROW2_COLOR = new Color(198, 215, 236);
+    protected static final Color SCROLLPANE_COLOR = new Color(198, 215, 236);
 
-    private Match[] matches;
+    //ARIAL BLACK BOLD
     private int curMonth;
     private HashMap<String, BufferedImage> flags;
     private int curYear;
-    private Team[] teams;
+    private List<Match> matches;
+    private LocalDate earliestMatchDate;
+    private LocalDate latestMatchDate;
+    private List<Team> teams;
     private MonthPanel month;
     private JPanel[] cards;
     private String[] regions = new String[6];
@@ -35,10 +42,21 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     An in progress constructor that is subject to change.
     @param teamIn an array of all teams participating.
      */
-    public QualifyingPanel (Team[] teamIn) {
-        //matches = matchIn;
-        teams = teamIn;
+    public QualifyingPanel (List<Match> matchesIn, List<Team> teamIn) {
 
+        LocalDate earliest = matchesIn.get(0).getMatchDate();
+        LocalDate latest = matchesIn.get(0).getMatchDate();
+
+        for (Match match : matchesIn) {
+            if (match.getMatchDate().isBefore(earliest)) earliest = match.getMatchDate();
+            if (match.getMatchDate().isAfter(latest)) latest = match.getMatchDate();
+        }
+
+        earliestMatchDate = earliest;
+        latestMatchDate = latest;
+
+        matches = matchesIn;
+        teams = teamIn;
         month = new MonthPanel();
 
         regions[0] = "AFC";
@@ -52,7 +70,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             initFlags();
         }
         catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
 
         initialized = false;
@@ -64,8 +82,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      */
     public QualifyingPanel () {
 
-        teams = new Team[0];
-
+        teams = new ArrayList<Team>();
         month = new MonthPanel();
 
         regions[0] = "AFC";
@@ -79,7 +96,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             initFlags();
         }
         catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
 
         initialized = false;
@@ -101,15 +118,19 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      *
      * @param matches
      */
-    public void initMonthPanel(ArrayList<Match> matches) {
+    public void initMonthPanel(List<Match> matches) {
 
         month.setToMonth(curYear, curMonth);
         month.setMatchesOnDayPanels(matches);
         month.setPreferredSize(new Dimension(800, 600));
 
-
         JButton forward = new JButton(">");
         JButton backward = new JButton("<");
+
+        forward.setBackground(tabPane.getBackground().darker());
+        backward.setBackground(tabPane.getBackground().darker());
+        forward.setOpaque(true);
+        backward.setOpaque(true);
 
         forward.addActionListener(listener);
         backward.addActionListener(listener);
@@ -125,6 +146,8 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         genPanel.add(forward, BorderLayout.EAST);
         genPanel.add(backward, BorderLayout.WEST);
         genPanel.add(month, BorderLayout.CENTER);
+        genPanel.setBackground(BG_COLOR);
+        genPanel.setOpaque(true);
 
 
         tabPane.insertTab("Matches by Month", null, genPanel, null, 0);
@@ -148,6 +171,10 @@ public class QualifyingPanel extends JPanel implements StagePanel {
           JLabel header2 = new JLabel ("TEAM:");
           JLabel header3 = new JLabel("TOTAL POINTS:");
 
+          header1.setFont(new Font("Arial Black", Font.BOLD, 16));
+          header2.setFont(new Font("Arial Black", Font.BOLD, 16));
+          header3.setFont(new Font("Arial Black", Font.BOLD, 16));
+
             tabPane.removeTabAt(i);
 
             JPanel newTab = new JPanel();
@@ -170,6 +197,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             SpringLayout.Constraints con3 = layout.getConstraints(header3);
             con3.setX(Spring.sum(Spring.constant(200), con2.getConstraint(SpringLayout.EAST)));
 
+
             ArrayList<Team> sortedArr = new ArrayList<Team>();
 
             for(Team team : teams) {
@@ -183,7 +211,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
                         for(int j = 0; j < sortedArr.size(); j++) {
 
-                            if(team.getQualifierPoints() >= sortedArr.get(j).getQualifierPoints()) {
+                            if(team.getMostRecentScore() >= sortedArr.get(j).getMostRecentScore()) {
                                 sortedArr.add(j, team);
                                 j = sortedArr.size();
 
@@ -198,49 +226,65 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             }
 
             for(Team team : sortedArr) {
+                JPanel tempPanel = new JPanel();
                 JLabel teamName = new JLabel(team.getName());
-                JLabel teamPoints = new JLabel("" + team.getQualifierPoints());
+                JLabel teamPoints = new JLabel("" + team.getMostRecentScore());
                 JLabel teamRank = new JLabel("" + (sortedArr.indexOf(team) + 1));
                 ImageIcon teamFlag = new ImageIcon(flags.get(team.getAbbv()).getScaledInstance(40, 24, 1));
                 JLabel flagLabel = new JLabel();
                 flagLabel.setIcon(teamFlag);
+                tempPanel.setLayout(layout);
 
-                newTab.add(flagLabel);
-                newTab.add(teamName);
-                newTab.add(teamPoints);
-                newTab.add(teamRank);
+                teamName.setFont(new Font("Arial Black", Font.PLAIN, 12));
+                teamPoints.setFont(new Font("Arial Black", Font.PLAIN, 12));
+                teamRank.setFont(new Font("Arial Black", Font.PLAIN, 12));
+
+                tempPanel.add(flagLabel);
+                tempPanel.add(teamName);
+                tempPanel.add(teamPoints);
+                tempPanel.add(teamRank);
+                newTab.add(tempPanel);
+
+                tempPanel.setPreferredSize(new Dimension(1600, 30));
+                if(sortedArr.indexOf(team) % 2 == 0) {
+                    tempPanel.setBackground(ROW1_COLOR);
+                }
+                else {
+                    tempPanel.setBackground(ROW2_COLOR);
+                }
+                tempPanel.setOpaque(true);
+
+                SpringLayout.Constraints cTemp = layout.getConstraints(tempPanel);
+                cTemp.setY(Spring.sum(Spring.constant(30 * (sortedArr.indexOf(team) + 1)),
+                                con1.getConstraint(SpringLayout.SOUTH)));
 
                 SpringLayout.Constraints cRank = layout.getConstraints(teamRank);
                 cRank.setX(Spring.constant(10));
-                //sets top of label to 30 (which is less than arbitrary) * its place in the array + 1,
-                // which is how far down in the column it is, and all that goes below
-                //the appropriate label.
-                cRank.setY(Spring.sum(Spring.constant(30 * (sortedArr.indexOf(team) + 1)),
-                        con1.getConstraint(SpringLayout.SOUTH)));
+
 
                 SpringLayout.Constraints cFlag = layout.getConstraints(flagLabel);
                 //sets right edge to align with right edge of the TEAMS: label
                 cFlag.setX(con2.getConstraint(SpringLayout.WEST));
-                cFlag.setY(Spring.sum(Spring.constant(30 * (sortedArr.indexOf(team) + 1)),
-                        con2.getConstraint(SpringLayout.SOUTH)));
 
                 SpringLayout.Constraints cName = layout.getConstraints(teamName);
                 //sets x to have a 5 pixel buffer between team name and flag
                 cName.setX(Spring.sum(Spring.constant(5), cFlag.getConstraint(SpringLayout.EAST)));
-                cName.setY(Spring.sum(Spring.constant(30 * (sortedArr.indexOf(team) + 1)),
-                        con2.getConstraint(SpringLayout.SOUTH)));
 
                 SpringLayout.Constraints cPoints = layout.getConstraints(teamPoints);
                 cPoints.setX(con3.getConstraint(SpringLayout.WEST));
-                cPoints.setY(Spring.sum(Spring.constant(30 * (sortedArr.indexOf(team) + 1)),
-                        con3.getConstraint(SpringLayout.SOUTH)));
+
 
 
             }
 
+            JScrollPane scroll = new JScrollPane(newTab);
+            newTab.setBackground(SCROLLPANE_COLOR);
+            scroll.setOpaque(false);
+            newTab.setPreferredSize(new Dimension(1600, 1000));
+            scroll.setPreferredSize(new Dimension(800, 600));
+            scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-
-            tabPane.insertTab(newTab.getName(), null, newTab, null, i);
+            tabPane.insertTab(newTab.getName(), null, scroll, null, i);
             //tabPane.revalidate();
 
 
@@ -267,6 +311,11 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         return initialized;
     }
 
+    @Override
+    public Color getThemeColor() {
+        return BG_COLOR;
+    }
+
 
     /**
      * Initiates the JTabbedPane before the simulation has started, with a blank calandar
@@ -275,12 +324,14 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      */
     @Override
     public void initPanel()  {
-        curMonth = 1;
-        curYear = 2018;
+        curMonth = earliestMatchDate.getMonthValue();
+        curYear = earliestMatchDate.getYear();
         tabPane =  new JTabbedPane();
+        tabPane.setOpaque(true);
         cards = new JPanel[6];
+        this.setLayout(new BorderLayout());
 
-        initMonthPanel(new ArrayList<Match>());
+        initMonthPanel(matches);
 
         for(int i = 0; i < 6; i++) {
             JPanel subPanel = new JPanel();
@@ -294,13 +345,15 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         fillResults();
 
         this.add(tabPane);
-        this.setSize(1600, 900);
+        tabPane.setBackground(BG_COLOR);
+        month.setBackground(BG_COLOR);
+        this.setSize(new Dimension(1600, 900));
         initialized = true;
 
     }
 
     @Override
-    public void initPanel(Match[] m) {
+    public void initPanel(List<Match> matches) {
         //don't need this? Could use it for initMonthPanel but that would be confusing.
     }
 
@@ -322,12 +375,24 @@ public class QualifyingPanel extends JPanel implements StagePanel {
                 curMonth = 1;
                 curYear++;
             }
-            if(curMonth < 1) {
+            if(curMonth < 1 || curYear > 2018) {
                 curMonth = 12;
                 curYear--;
             }
+            if(curYear < 2015) {
+                curMonth = 1;
+                curYear++;
+            }
+            if(curYear == earliestMatchDate.getYear() && curMonth < earliestMatchDate.getMonthValue()) {
+                curMonth = 3; //earliest match is March 2015
+            }
+
+            if(curYear == latestMatchDate.getYear() && curMonth > latestMatchDate.getMonthValue()) {
+                curMonth = 6; //latest match is June 2018
+            }
+
             month.setToMonth(curYear, curMonth);
-            month.setMatchesOnDayPanels(new ArrayList<Match>()); //backend.getMatchesForYearMonth(
+            month.setMatchesOnDayPanels(matches); //backend.getMatchesForYearMonth(
         }
     };
 
@@ -341,10 +406,16 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         flags = new HashMap<String, BufferedImage>();
         for(Team team : this.teams) {
             String abbv = team.getAbbv();
-            BufferedImage flag = ImageIO.read(new File("Assets" + File.separator + "Images" + File.separator + "smallFlags" + File.separator +  abbv + ".png"));
+            BufferedImage flag = null;
+            try {
+                flag = ImageIO.read(new File("Assets" + File.separator + "Images" + File.separator + "smallFlags" + File.separator +  abbv + ".png"));
+            } catch (IOException e) {
+                throw new IOException("Couldn't load flag for team " + abbv + " (" + team.getName() + ")", e);
+            }
             flags.put(abbv, flag);
         }
     }
+
 
 
 }
