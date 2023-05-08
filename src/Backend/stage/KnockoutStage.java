@@ -9,6 +9,7 @@ import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
 public class KnockoutStage extends Stage {
 
     private static final int WORLD_CUP_YEAR = 2018;
@@ -50,7 +51,7 @@ public class KnockoutStage extends Stage {
     private List<Match> createMatchesFromTeams(List<Team> teams) {
         List<Match> matches = new ArrayList<>();
         List<LocalDate> matchDates = getMatchDatesFromNumberOfTeams(teams.size());
-        populateMatchList(matches, teams, matchDates);
+        createMatchesAndPopulateMatchList(matches, teams, matchDates);
         return matches;
     }
 
@@ -68,7 +69,7 @@ public class KnockoutStage extends Stage {
         return Collections.emptyList();
     }
 
-    private void populateMatchList(List<Match> matches, List<Team> teams, List<LocalDate> matchDates) {
+    private void createMatchesAndPopulateMatchList(List<Match> matches, List<Team> teams, List<LocalDate> matchDates) {
         for (int i = 0; i < teams.size(); i += 2) {
             LocalDate matchDate = teams.size() <= NUM_TEAMS_IN_SEMIFINALS ? matchDates.get(i / 2) : matchDates.get(i / 4);
             Match match = new Match(teams.get(i), teams.get(i + 1), matchDate);
