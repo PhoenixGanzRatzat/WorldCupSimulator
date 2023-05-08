@@ -30,6 +30,4 @@ public interface StagePanel {
      * @return
      */
     public boolean checkIfCompleted();
-    @NotNull
-    Color getThemeColor();
 }
