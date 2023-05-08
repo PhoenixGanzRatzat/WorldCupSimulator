@@ -128,8 +128,8 @@ public class QualifyingStage extends Stage {
                 Set<LocalDate> team2MatchDates = teamMatchDates.getOrDefault(match.getTeam2(), new HashSet<>());
 
                 LocalDate finalMatchDate = matchDate;
-                boolean team1HasMatchOnDate = team1MatchDates.stream().anyMatch(date -> date.equals(finalMatchDate));
-                boolean team2HasMatchOnDate = team2MatchDates.stream().anyMatch(date -> date.equals(finalMatchDate));
+                boolean team1HasMatchOnDate = team1MatchDates.stream().anyMatch(date -> date.isEqual(finalMatchDate));
+                boolean team2HasMatchOnDate = team2MatchDates.stream().anyMatch(date -> date.isEqual(finalMatchDate));
 
                 /// Check if both teams don't have matches on the current date
                 if (matchesOnDate < maxMatchesPerDay && !team1HasMatchOnDate && !team2HasMatchOnDate) {
@@ -260,27 +260,17 @@ public class QualifyingStage extends Stage {
         }
 
         for (List<Team> group : groups) {
-            // Get the matches for the current group
-            List<Match> secondRoundMatches = allGroupMatches.stream()
-                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
-                    .collect(Collectors.toList());
-
-            // Get the last match date in the group
-            LocalDate lastMatchDate = secondRoundMatches.get(secondRoundMatches.size() - 1).getMatchDate();
 
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getPoints(lastMatchDate), t1.getPoints(lastMatchDate)));
+            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
             // Add the group winner and runner-up to the respective lists
             groupWinners.add(group.get(0));
             groupRunnersUp.add(group.get(1));
         }
 
-        // Get the last match date in the group
-        LocalDate lastMatchDate = allGroupMatches.get(allGroupMatches.size() - 1).getMatchDate();
-
         // Sort the runners-up by their qualifier points in descending order
-        groupRunnersUp.sort((t1, t2) -> Integer.compare(t2.getPoints(lastMatchDate), t1.getPoints(lastMatchDate)));
+        groupRunnersUp.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
         // Get the four best group runners-up
         List<Team> bestGroupRunnersUp = groupRunnersUp.subList(0, 4);
@@ -317,14 +307,8 @@ public class QualifyingStage extends Stage {
         }
 
         for (List<Team> group : thirdRoundGroups) {
-            // Get the matches for the current group
-            List<Match> thirdRoundMatches = allGroupMatches.stream()
-                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
-                    .collect(Collectors.toList());
-            // Get the last match date in the group
-            LocalDate lastMatchDate = thirdRoundMatches.get(thirdRoundMatches.size() - 1).getMatchDate();
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getPoints(lastMatchDate), t1.getPoints(lastMatchDate)));
+            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
             // Add the top two teams from each group to the qualified teams
             qualifiedTeams.add(group.get(0));
@@ -466,16 +450,8 @@ public class QualifyingStage extends Stage {
         }
 
         for (List<Team> group : groups) {
-            // Get the matches for the current group
-            List<Match> secondRoundMatches = allGroupMatches.stream()
-                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
-                    .collect(Collectors.toList());
-
-            // Get the last match date in the group
-            LocalDate lastMatchDate = secondRoundMatches.get(secondRoundMatches.size() - 1).getMatchDate();
-
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getPoints(lastMatchDate), t1.getPoints(lastMatchDate)));
+            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
             // Add the group winner and runner-up to the respective lists
             groupWinners.add(group.get(0));
@@ -661,16 +637,8 @@ public class QualifyingStage extends Stage {
         }
 
         for (List<Team> group : groups) {
-            // Get the matches for the current group
-            List<Match> secondRoundMatches = allGroupMatches.stream()
-                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
-                    .collect(Collectors.toList());
-
-            // Get the last match date in the group
-            LocalDate lastMatchDate = secondRoundMatches.get(secondRoundMatches.size() - 1).getMatchDate();
-
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getPoints(lastMatchDate), t1.getPoints(lastMatchDate)));
+            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
             // Add the group winner and runner-up to the respective lists
             qualifiedTeams.add(group.get(0));
@@ -706,16 +674,8 @@ public class QualifyingStage extends Stage {
         }
 
         for (List<Team> group : groups) {
-            // Get the matches for the current group
-            List<Match> secondRoundMatches = allGroupMatches.stream()
-                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
-                    .collect(Collectors.toList());
-
-            // Get the last match date in the group
-            LocalDate lastMatchDate = secondRoundMatches.get(secondRoundMatches.size() - 1).getMatchDate();
-
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getPoints(lastMatchDate), t1.getPoints(lastMatchDate)));
+            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
             // Add the group winner and runner-up to the respective lists
             qualifiedTeams.add(group.get(0));
@@ -759,16 +719,8 @@ public class QualifyingStage extends Stage {
 
 
         for (List<Team> group : groups) {
-            // Get the matches for the current group
-            List<Match> secondRoundMatches = allGroupMatches.stream()
-                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
-                    .collect(Collectors.toList());
-
-            // Get the last match date in the group
-            LocalDate lastMatchDate = secondRoundMatches.get(secondRoundMatches.size() - 1).getMatchDate();
-
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getPoints(lastMatchDate), t1.getPoints(lastMatchDate)));
+            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
             // Add the group winner and runner-up to the respective lists
             qualifiedTeams.add(group.get(0));
@@ -858,16 +810,9 @@ public class QualifyingStage extends Stage {
 
 
         for (List<Team> group : groups) {
-            // Get the matches for the current group
-            List<Match> secondRoundMatches = allGroupMatches.stream()
-                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
-                    .collect(Collectors.toList());
-
-            // Get the last match date in the group
-            LocalDate lastMatchDate = secondRoundMatches.get(secondRoundMatches.size() - 1).getMatchDate();
 
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getPoints(lastMatchDate), t1.getPoints(lastMatchDate)));
+            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
             // Add the top two teams from each group to the qualified teams
             qualifiedTeams.add(group.get(0));
@@ -902,16 +847,8 @@ public class QualifyingStage extends Stage {
         }
 
         for (List<Team> group : groups) {
-            // Get the matches for the current group
-            List<Match> secondRoundMatches = allGroupMatches.stream()
-                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
-                    .collect(Collectors.toList());
-
-            // Get the last match date in the group
-            LocalDate lastMatchDate = secondRoundMatches.get(secondRoundMatches.size() - 1).getMatchDate();
-
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getPoints(lastMatchDate), t1.getPoints(lastMatchDate)));
+            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
             // Add the group winner and runner-up to the respective lists
             groupWinners.add(group.get(0));
@@ -980,16 +917,9 @@ public class QualifyingStage extends Stage {
 
 
         for (List<Team> group : groups) {
-            // Get the matches for the current group
-            List<Match> secondRoundMatches = allGroupMatches.stream()
-                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
-                    .collect(Collectors.toList());
-
-            // Get the last match date in the group
-            LocalDate lastMatchDate = secondRoundMatches.get(secondRoundMatches.size() - 1).getMatchDate();
 
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getPoints(lastMatchDate), t1.getPoints(lastMatchDate)));
+            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
             // Add the group winner and runner-up to the respective lists
             groupWinners.add(group.get(0));
