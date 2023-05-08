@@ -11,6 +11,12 @@ import java.util.List;
  * is ready to be displayed before switching to it visually
  */
 public interface StagePanel {
+
+    public final static Color fifaBlue = new Color(50, 98, 149);
+    public final static Color fifaLite = fifaBlue.brighter();
+    public final static Color fifaDark = fifaBlue.darker();
+    public final static Color buttonText = new Color(213, 226, 216);
+
     /**
      * prepares the panel for display
      */
