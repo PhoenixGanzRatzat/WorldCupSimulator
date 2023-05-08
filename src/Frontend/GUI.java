@@ -201,24 +201,31 @@ public class GUI extends JFrame implements ActionListener {
     }
 
     private void moveToStage(JPanel panel, String panelString, int stage) {
-        Color panelBackground;
-        Color buttonBackground;
 
         if (panel instanceof StagePanel) {
             if ((currentPanel == qualifyingPanel)) {
                 if (stage == 2) {
-                    if (((StagePanel) currentPanel).checkIfCompleted()) {
+                    if (((StagePanel) qualifyingPanel).checkIfCompleted()) {
                         checkIfPanelNeedsInit(groupPanel, stage);
                     }
                 } else if (stage == 3) {
                     if (((StagePanel) groupPanel).checkIfCompleted()) {
                         checkIfPanelNeedsInit(knockoutPanel, stage);
                     }
-                    changeCard(cardPanel, panelString);
+                }
+                if ((currentPanel == groupPanel)) {
+                    if (stage == 3) {
+                        if (((StagePanel) groupPanel).checkIfCompleted()) {
+                            checkIfPanelNeedsInit(knockoutPanel, stage);
+                        }
+                    }
                 }
             }
+            changeCard(cardPanel, panelString);
         }
     }
+
+
 
     private void checkIfPanelNeedsInit(JPanel panel, int stage) {
         if (panel instanceof StagePanel) {
