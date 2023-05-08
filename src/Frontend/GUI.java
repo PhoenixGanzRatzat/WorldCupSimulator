@@ -30,7 +30,6 @@ public class GUI extends JFrame implements ActionListener {
     private JButton qualifyingButton;
     private JButton groupButton;
     private JButton knockoutButton;
-    private JPanel currentPanel;
 
     /**
      * Default constructor for GUI.  Calls initGUI to initialize instantiated objects.
@@ -144,8 +143,6 @@ public class GUI extends JFrame implements ActionListener {
         cardPanel.add(groupPanel, "group");
         cardPanel.add(knockoutPanel, "knock");
 
-        currentPanel = startPanel;
-
         setTitle("World Cup Simulator");
         setSize(1600, 900);
         setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - 1600) / 2, (Toolkit.getDefaultToolkit().getScreenSize().height - 900) / 2);
@@ -173,7 +170,6 @@ public class GUI extends JFrame implements ActionListener {
         int stage;
 
         if (e.getSource() == startButton) {
-            panel = qualifyingPanel;
             panelString = "qual";
             //makeBGBrighter = false;
             qualifyingButton.setVisible(true);
@@ -181,56 +177,34 @@ public class GUI extends JFrame implements ActionListener {
             knockoutButton.setVisible(true);
             stage = 1;
         } else if (e.getSource() == qualifyingButton) {
-            panel = qualifyingPanel;
             panelString = "qual";
             stage = 1;
         } else if (e.getSource() == groupButton) {
-            panel = groupPanel;
             panelString = "group";
             stage = 2;
         } else if (e.getSource() == knockoutButton) {
-            panel = knockoutPanel;
             panelString = "knock";
             stage = 3;
         } else {
-            panel = null;
             panelString = null;
             stage = 0;
         }
-        moveToStage(panel, panelString, stage);
+        moveToStage(panelString, stage);
     }
 
-    private void moveToStage(JPanel panel, String panelString, int stage) {
+    private void moveToStage(String panelString, int stage) {
 
-        if ((currentPanel) == startPanel) {
+        if (stage == 1) {
             checkIfPanelNeedsInit(qualifyingPanel, stage);
-        }
-
-        if (panel instanceof StagePanel) {
-            if ((currentPanel == qualifyingPanel)) {
-                if (stage == 2) {
-                    if (((StagePanel) qualifyingPanel).checkIfCompleted()) {
-                        checkIfPanelNeedsInit(groupPanel, stage);
-                    }
-                } else if (stage == 3) {
-                    if (((StagePanel) groupPanel).checkIfCompleted()) {
-                        checkIfPanelNeedsInit(knockoutPanel, stage);
-                    }
-                }
-                if ((currentPanel == groupPanel)) {
-                    if (stage == 3) {
-                        if (((StagePanel) groupPanel).checkIfCompleted()) {
-                            checkIfPanelNeedsInit(knockoutPanel, stage);
-                        }
-                    }
-                }
-            }
-
+        } else if (stage == 2) {
+            ((StagePanel) qualifyingPanel).checkIfCompleted();
+            checkIfPanelNeedsInit(groupPanel, stage);
+        } else if (stage == 3) {
+            ((StagePanel) groupPanel).checkIfCompleted();
+            checkIfPanelNeedsInit(knockoutPanel, stage);
         }
         changeCard(cardPanel, panelString);
     }
-
-
 
     private void checkIfPanelNeedsInit(JPanel panel, int stage) {
         if (panel instanceof StagePanel) {
