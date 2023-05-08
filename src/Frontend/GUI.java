@@ -151,7 +151,6 @@ public class GUI extends JFrame implements ActionListener {
         button.setForeground(foreground);
         button.setBackground(background);
         button.setFont(new Font ("Arial Black", Font.PLAIN, 14));
-
     }
 
     /**
@@ -180,7 +179,7 @@ public class GUI extends JFrame implements ActionListener {
         } else if (e.getSource() == groupButton) {
             panel = groupPanel;
             panelString = "group";
-            makeBGBrighter = true;
+            makeBGBrighter = false;
         } else if (e.getSource() == knockoutButton) {
             panel = knockoutPanel;
             panelString = "knock";

@@ -290,15 +290,15 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     private JPanel createGroupPanel(int groupNumber) {
         // panel that is returned is 'base'
         JPanel base = new JPanel();
-        base.setLayout(new GridLayout(6,1,1,1));
-        base.setPreferredSize(new Dimension(500, 125));
-        base.setBorder(new LineBorder(Color.BLACK));
+        base.setLayout(new GridLayout(6,1));
+        //base.setPreferredSize(new Dimension(500, 125));
+        //base.setBorder(new LineBorder(Color.BLACK));
 
         // top button used to select this group
         JPanel groupSelectBTNPanel = new JPanel(new BorderLayout());
         String groupLetter = String.valueOf((char) (groupNumber + 65)); // '65' = 'A' // TODO: maybe a String
         JButton groupSelectBTN = new JButton(groupLetter); // top of each group panel has a 'Select this group' button
-        groupSelectBTN.setPreferredSize(new Dimension(base.getWidth(), 25));
+        //groupSelectBTN.setPreferredSize(new Dimension(base.getWidth(), 35));
         groupSelectBTN.addActionListener(this);
 
         // The top row of the group panel is a button with the group letter
@@ -308,7 +308,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         // Title's that go above each column of data in group panel
         JPanel titlePane = new JPanel();
         titlePane.setLayout(new GridLayout(1, 7, 2, 2));
-        titlePane.setPreferredSize(new Dimension(base.getWidth(), 25));
+        //titlePane.setPreferredSize(new Dimension(base.getWidth(), 25));
         titlePane.setBorder(new LineBorder(Color.BLACK));
 
         /*
@@ -806,32 +806,45 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
      */
     @Override
     public void initPanel() {
+        themeColor = new Color(21, 21, 240);
+        Font font = new Font("Arial", Font.BOLD, 30);
         /* Top bar across window for displaying current round */
-        JPanel infoPanel = new JPanel();
+        JPanel infoPanel = new JPanel(new GridLayout(1,4));
+        infoPanel.setBackground(themeColor);
         /* Center container for group results and group teams */
         JPanel displayPanel = new JPanel();
         displayPanel.setLayout(new GridBagLayout());
-        displayPanel.setBorder(new LineBorder(Color.BLACK));
         GridBagConstraints constraints = new GridBagConstraints();
-        displayPanel.setBackground(new Color(0, 0, 75));
-        themeColor = displayPanel.getBackground();
+        displayPanel.setBackground(themeColor);
         /* Bottom bar across window for housing functions */
         JPanel functionPanel = new JPanel();
 
         /* Information Panel */
-        JLabel titleLabel = new JLabel("Group Stage!");
-        infoPanel.add(titleLabel);
         JLabel groupLabel = new JLabel("Group: ");
+        groupLabel.setFont(font);
+        groupLabel.setForeground(Color.white);
+        groupLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         infoPanel.add(groupLabel);
+
+        infoPanelGroupLabel.setFont(font);
+        infoPanelGroupLabel.setForeground(Color.white);
+        infoPanelGroupLabel.setHorizontalAlignment(SwingConstants.CENTER);
         infoPanel.add(infoPanelGroupLabel);
+
         JLabel roundLabel = new JLabel("Round: ");
+        roundLabel.setFont(font);
+        roundLabel.setForeground(Color.white);
         infoPanel.add(roundLabel);
+
+        infoPanelRoundNumberLabel.setFont(font);
+        infoPanelRoundNumberLabel.setForeground(Color.white);
         infoPanel.add(infoPanelRoundNumberLabel);
 
         /* __ Display Panel */
         // Container for all group panes - displays each teams w/d/l record and points
-        groupDisplayPanel.setLayout(new GridLayout(4, 2, 2, 2));
+        groupDisplayPanel.setLayout(new GridLayout(4, 2,5,5));
         groupDisplayPanel.setOpaque(false);
+        groupDisplayPanel.setPreferredSize(new Dimension(975, 550));
         for (int i = 0; i < 8; i++) {
             groupDisplayPanel.add(createGroupPanel(i));
         }
