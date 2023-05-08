@@ -30,7 +30,7 @@ public class GUI extends JFrame implements ActionListener {
     private JButton knockoutButton;
 
     private final static Color buttonTextColor = new Color(213, 226, 216);
-    private final static Color fifaBG = new Color(50, 98, 149);
+    private final static Color fifaBGColor = new Color(50, 98, 149);
 
 
     /**
@@ -114,7 +114,7 @@ public class GUI extends JFrame implements ActionListener {
         layoutConstraints.gridy = 0;
         startPanel.add(fifaLogoLabel, layoutConstraints);
 
-        startPanel.setBackground(fifaBG);
+        startPanel.setBackground(fifaBGColor);
 
         layoutConstraints.gridx = 0;
         layoutConstraints.gridy = 1;
@@ -128,7 +128,7 @@ public class GUI extends JFrame implements ActionListener {
         layoutConstraints.gridx = 0;
         layoutConstraints.gridy = 3;
 
-        setButtonLook(startButton, buttonTextColor, fifaBG);
+        setButtonLook(startButton, buttonTextColor, fifaBGColor);
 
         startPanel.add(startButton, layoutConstraints);
 
