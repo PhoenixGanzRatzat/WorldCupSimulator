@@ -51,8 +51,7 @@ public class GroupStage extends Stage{
     }
 
     /**
-     * Sort all teams into 8 groups
-     *
+     * Sort all teams into 8 groups and create Matches for round-robin tournaments
      */
     @Override
     public void arrangeMatches() {
