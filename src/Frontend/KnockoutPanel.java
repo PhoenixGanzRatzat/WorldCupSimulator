@@ -72,25 +72,25 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
          *
          *    << Bracket Column Legend with GridBagConstraints coordinates >>
          *
-         *       0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16
-         *      _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L
-         *   0 |                                                  |
-         *   1 |   ■■                                        ■■   |
-         *   2 |         ■■                            ■■         |
-         *   3 |   ■■                   ■■                   ■■   |
-         *   4 |               ■■                ■■               |
-         *   5 |   ■■                                        ■■   |
-         *   6 |         ■■          ■■    ■■          ■■         |
-         *   7 |   ■■                                        ■■   |
-         *   8 |                                                  |
-         *   9 |   ■■                                        ■■   |
-         *  10 |         ■■          ■■    ■■          ■■         |
-         *  11 |   ■■                                        ■■   |
-         *  12 |               ■■                ■■               |
-         *  13 |   ■■                   ■■                   ■■   |
-         *  14 |         ■■                            ■■         |
-         *  15 |   ■■                                        ■■   |
-         *  16 |_L _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L _L|
+         *       0  1  2  3  4  5  6  7  8  9 10
+         *      _L _L _L _L _L _L _L _L _L _L _L
+         *   0 |                                |
+         *   1 |   ■■                           |
+         *   2 |         ■■                     |
+         *   3 |   ■■                           |
+         *   4 |                                 |
+         *   5 |   ■■          ■■          ■■   |
+         *   6 |         ■■          ■■         |
+         *   7 |   ■■                           |
+         *   8 |                                |
+         *   9 |   ■■                      ■■   |
+         *  10 |         ■■          ■■         |
+         *  11 |   ■■          ■■               |
+         *  12 |                                |
+         *  13 |   ■■                           |
+         *  14 |         ■■                     |
+         *  15 |   ■■                           |
+         *  16 |_L _L _L _L _L _L _L _L _L _L _L|
          *
          *        by Naomi                                 4/28/23
          */
@@ -353,7 +353,8 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
      * accessor methods so initPanel can change things when called.
      */
     private class MatchCell extends JPanel {
-        private String[] flagPath, teamName, scoreValue;
+        private String[] flagPath, teamName;
+        private int[] scoreValue;
         private Match match;
         private Team[] team;
         private JLabel champ;
@@ -374,7 +375,10 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         private MatchCell() {
             this(0, 0);
         }
-        /** Secondary BracketCell constructor taking only two parameters, calls main constructor with preset height/width for images and flags. Is the main constructor in use by KnockoutPanel. */
+        /** Secondary BracketCell constructor taking only two parameters, calls
+         * main constructor with preset height/width for images and flags.
+         * Is the main constructor in use by KnockoutPanel.
+         * */
         private MatchCell(int row, int round) {
             this(row, round, 70, 46, 40, 26);
         }
@@ -392,7 +396,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             this.cellText = text;
             this.champ = new JLabel();
             this.flagPath = new String[isMatch()? 2:1];
-            this.scoreValue = new String[isMatch()? 2:1];
+            this.scoreValue = new int[isMatch()? 2:1];
             this.teamName = new String[isMatch()? 2:1];
             this.flag = new JLabel[isMatch()? 2:1];
             this.scoreLabel =  new JLabel[isMatch()? 2:1];
@@ -440,8 +444,8 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
                 cellConstraints.weightx = 0;
                 if(isMatch()) this.add(verticalSeparator, cellConstraints);
                 // initialize & add default score
-                scoreValue[i] = "?";
-                scoreLabel[i] = new JLabel(scoreValue[i]);
+                scoreValue[i] = 0;
+                scoreLabel[i] = new JLabel(String.valueOf(scoreValue[i]));
                 scoreLabel[i].setOpaque(false);
                 scoreLabel[i].setFont(cellFont);
                 scoreLabel[i].setForeground(cellText);
@@ -510,7 +514,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             this.match = newMatch;
             this.team = isMatch()? new Team[]{match.getTeam1(), match.getTeam2()} : new Team[]{match.getWinner()};
             this.setTeamName(isMatch()? new String[]{team[0].getAbbv(), team[1].getAbbv()} : new String[]{team[0].getAbbv()} );
-            this.setScoreValue(isMatch()? new String[]{String.valueOf(match.getTeam1Score()), String.valueOf(match.getTeam2Score())} : new String[]{String.valueOf((team[0].equals(match.getTeam1())) ? match.getTeam1Score() : match.getTeam2Score())});
+            this.setScoreValue(isMatch()? new int[]{match.getTeam1Score(), match.getTeam2Score()} : new int[]{team[0].equals(match.getTeam1())? match.getTeam1Score() : match.getTeam2Score()});
             updateLabels();
             //if(round == ROUND_OF_SIXTEEN && row == 1){
                 setCellRevealed(true);
@@ -519,7 +523,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         private void setTeamName(String[] teamAbbv) {
             this.teamName = teamAbbv;
         }
-        private void setScoreValue(String[] score){
+        private void setScoreValue(int[] score){
             this.scoreValue = score;
         }
         private void updateLabels() {
@@ -529,7 +533,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
                 flagPath[i] = "Assets" + File.separator + "Images"  + File.separator + "smallFlags" + File.separator + ((teamName[i].equals("???") || !isCellRevealed())? ("BLANK.png") : (teamName[i] + ".png"));
                 flag[i].setIcon(createScaledFlagIcon(i));
                 teamLabel[i].setText(teamName[i]);
-                scoreLabel[i].setText(scoreValue[i]);
+                scoreLabel[i].setText(String.valueOf(scoreValue[i]));
                 teamLabel[i].setForeground(cellText);
                 scoreLabel[i].setForeground(cellText);
             }
