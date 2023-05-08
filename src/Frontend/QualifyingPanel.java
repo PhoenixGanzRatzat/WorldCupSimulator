@@ -44,49 +44,11 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     private boolean initialized;
 
     /**
-    A constructor for QualifyingPanel
-    @param teamIn a List of all teams participating.
-     @param matchesIn a List of all matches played
-     */
-    public QualifyingPanel (List<Match> matchesIn, List<Team> teamIn) {
-
-        LocalDate earliest = matchesIn.get(0).getMatchDate();
-        LocalDate latest = matchesIn.get(0).getMatchDate();
-
-        for (Match match : matchesIn) {
-            if (match.getMatchDate().isBefore(earliest)) earliest = match.getMatchDate();
-            if (match.getMatchDate().isAfter(latest)) latest = match.getMatchDate();
-        }
-
-        earliestMatchDate = earliest;
-        latestMatchDate = latest;
-
-        month = new MonthPanel();
-
-        regions[0] = "AFC";
-        regions[1] = "CAF";
-        regions[2] = "CONCACAF";
-        regions[3] = "CONMEBOL";
-        regions[4] = "OFC";
-        regions[5] = "UEFA";
-
-        try {
-            initFlags();
-        }
-        catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
-
-        initialized = false;
-    }
-
-    /**
     The default constructor for QualifyingPanel.
     Initializes the regions array with strings.
      */
     public QualifyingPanel () {
 
-        teams = new ArrayList<Team>();
         month = new MonthPanel();
 
         regions[0] = "AFC";
@@ -95,13 +57,6 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         regions[3] = "CONMEBOL";
         regions[4] = "OFC";
         regions[5] = "UEFA";
-
-        try {
-            initFlags();
-        }
-        catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
 
         initialized = false;
 
@@ -337,6 +292,17 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
     @Override
     public void initPanel(List<Match> matches, List<Team> teamList) {
+        LocalDate earliest = matches.get(0).getMatchDate();
+        LocalDate latest = matches.get(0).getMatchDate();
+
+        for (Match match : matches) {
+            if (match.getMatchDate().isBefore(earliest)) earliest = match.getMatchDate();
+            if (match.getMatchDate().isAfter(latest)) latest = match.getMatchDate();
+        }
+
+        earliestMatchDate = earliest;
+        latestMatchDate = latest;
+
         this.matches = matches;
         this.teams = teamList;
         curMonth = earliestMatchDate.getMonthValue();
@@ -345,6 +311,13 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         tabPane.setOpaque(true);
         cards = new JPanel[6];
         this.setLayout(new BorderLayout());
+
+        try {
+            initFlags();
+        }
+        catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
 
         initMonthPanel(matches);
 
