@@ -111,12 +111,12 @@ public class Match {
 
         // Update team points based on match result
         if (this.team1Score > this.team2Score){
-            this.team1.setPoints(this.matchDate, team1MostRecentScore + 3);
+            this.team1.setPointsOnDate(this.matchDate, team1MostRecentScore + 3);
         } else if (this.team1Score < this.team2Score){
-            this.team2.setPoints(this.matchDate, team2MostRecentScore + 3);
+            this.team2.setPointsOnDate(this.matchDate, team2MostRecentScore + 3);
         } else {
-            this.team1.setPoints(this.matchDate, team1MostRecentScore + 1);
-            this.team2.setPoints(this.matchDate, team2MostRecentScore + 1);
+            this.team1.setPointsOnDate(this.matchDate, team1MostRecentScore + 1);
+            this.team2.setPointsOnDate(this.matchDate, team2MostRecentScore + 1);
         }
     }
 

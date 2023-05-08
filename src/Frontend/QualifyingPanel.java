@@ -239,7 +239,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
                 JLabel teamName = new JLabel(team.getName());
                 JLabel teamPoints = new JLabel("" + team.getPoints(getPointsFrom));
                 JLabel teamRank = new JLabel("" + (sortedArr.indexOf(team) + 1));
-                ImageIcon teamFlag = new ImageIcon(flags.get(team.getAbbv()).getScaledInstance(40, 24, 1));
+                ImageIcon teamFlag = new ImageIcon(flags.get(team.getAbbreviation()).getScaledInstance(40, 24, 1));
                 JLabel flagLabel = new JLabel();
                 flagLabel.setIcon(teamFlag);
                 tempPanel.setLayout(layout);
@@ -434,7 +434,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     private void initFlags() throws IOException {
         flags = new HashMap<String, BufferedImage>();
         for(Team team : this.teams) {
-            String abbv = team.getAbbv();
+            String abbv = team.getAbbreviation();
             BufferedImage flag = null;
             try {
                 flag = ImageIO.read(new File("Assets" + File.separator + "Images" + File.separator + "smallFlags" + File.separator +  abbv + ".png"));
