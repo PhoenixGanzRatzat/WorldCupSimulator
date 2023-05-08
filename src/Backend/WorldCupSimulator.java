@@ -8,7 +8,6 @@ import java.util.List;
 public class WorldCupSimulator {
 
     private List<Team> teams;
-    private final DataLoader dataLoader = new DataLoader();
     private QualifyingStage qualifiers;
     private GroupStage roundRobbin;
     private KnockoutStage brackets;
@@ -19,7 +18,7 @@ public class WorldCupSimulator {
         brackets = null;
     }
     private void startProgram() {
-        teams = dataLoader.loadTeamData();
+        teams = DataLoader.loadTeamData();
     }
 
     public List<Team> getTeams() {
