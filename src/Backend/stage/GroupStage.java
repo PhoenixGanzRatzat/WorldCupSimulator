@@ -66,16 +66,18 @@ public class GroupStage extends Stage{
                 teamIndex++;
             }
         }
-
-        // Match date algorithm - each match is played on separate consecutive days
-        LocalDate seed = LocalDate.of(2020, 1, 1);
-        // create all matches in each group, each team vs each team once.
+        // TODO: start/seed date for group stage
+        LocalDate seed = LocalDate.of(2018, 5, 14);
         // for each group
         for (Integer groupNumber : groups.keySet()) {
+
+            // create all matches in each group, each team vs each team once.
             // team (a) plays each team indexed after (a)
             for(int a = 0; a < groups.get(groupNumber).size() - 1; a++) { // [g.size()-1] > all matches are created before last team becomes team (a)
                 // team (b) starts at the index after team (a)
                 for(int b = (a + 1); b < groups.get(groupNumber).size(); b++) {
+                    // match
+                    // TODO: match date algorithm - assume every Match in the GroupStage is played on separate consecutive days
                     Match nextMatch = new Match(groups.get(groupNumber).get(a), // team a
                             groups.get(groupNumber).get(b), // team b
                             seed.plusDays(1));
@@ -90,20 +92,16 @@ public class GroupStage extends Stage{
     }
 
     /**
-     * Determine which teams from each group are moving on to the knockout stage
+     * Determine which teams from each group that are moving on to the knockout stage
      */
     public void determineGroupWinners() {
-        // for each group
         for(Integer groupNumber : groups.keySet()) {
-            // Associates each team in group with a tally of their points earned
             HashMap<Team, Integer> teamPoints = new HashMap<Team, Integer>();
-            // Add each team in group to points tracker
-            for(Team t : groups.get(groupNumber)) {
-                teamPoints.put(t, 0);
-            }
-            // for each match in group
-            for (Match match : groupMatches.get(groupNumber)) {
-                Team team1 = match.getTeam1();
+
+            // calculate points for each team in each group
+            for (Team team : groups.get(groupNumber)) {
+                teamPoints.put(team, team.getMostRecentScore());
+                /*Team team1 = match.getTeam1();
                 Team team2 = match.getTeam2();
                 int score1 = match.getTeam1Score();
                 int score2 = match.getTeam2Score();
@@ -116,8 +114,7 @@ public class GroupStage extends Stage{
                 } else {
                     teamPoints.put(team1, (teamPoints.get(team1) + 1));
                     teamPoints.put(team2, (teamPoints.get(team2) + 1));
-                }
-
+                }*/
             }
             // sort teams by points in descending order(highest to lowest)
             // TODO: BUG: groupPanel and groupStage can have different group stage winners if 2nd & 3rd place have the same point values
