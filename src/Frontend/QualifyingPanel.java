@@ -115,7 +115,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      * with that matches that took place on those days.
      * Uses a border layout to display the month panel and navigation controls.
      *
-     * @param matches
+     * @param matches, a List of matches for the month being shown
      */
     public void initMonthPanel(List<Match> matches) {
 
@@ -194,7 +194,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             con2.setX(Spring.sum(Spring.constant(10), con1.getConstraint(SpringLayout.EAST)));
 
             SpringLayout.Constraints con3 = layout.getConstraints(header3);
-            con3.setX(Spring.sum(Spring.constant(200), con2.getConstraint(SpringLayout.EAST)));
+            con3.setX(Spring.sum(Spring.constant(300), con2.getConstraint(SpringLayout.EAST)));
 
 
             ArrayList<Team> sortedArr = new ArrayList<Team>();
@@ -244,7 +244,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
                 tempPanel.add(teamRank);
                 newTab.add(tempPanel);
 
-                tempPanel.setPreferredSize(new Dimension(1600, 30));
+                tempPanel.setPreferredSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize().width, 30));
                 if(sortedArr.indexOf(team) % 2 == 0) {
                     tempPanel.setBackground(ROW1_COLOR);
                 }
@@ -279,12 +279,15 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             JScrollPane scroll = new JScrollPane(newTab);
             newTab.setBackground(SCROLLPANE_COLOR);
             scroll.setOpaque(false);
-            newTab.setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize());
-            scroll.setPreferredSize(new Dimension(800, 600));
+            int height = Math.max(Toolkit.getDefaultToolkit().getScreenSize().height, (30 * sortedArr.size())+ 50);
+            newTab.setPreferredSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize().width, height));
             scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
+            //theThirdOne.add(scroll, BorderLayout.CENTER);
+
             tabPane.insertTab(newTab.getName(), null, scroll, null, i);
-            //tabPane.revalidate();
+            tabPane.revalidate();
+            scroll.revalidate();
 
 
         }
@@ -345,8 +348,9 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
         this.add(tabPane);
         tabPane.setBackground(BG_COLOR);
+        //tabPane.setPreferredSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize()));
         month.setBackground(BG_COLOR);
-        this.setSize(new Dimension(1600, 900));
+        //this.setSize(new Dimension(1600, 900));
         initialized = true;
 
     }
