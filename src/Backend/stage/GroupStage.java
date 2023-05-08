@@ -56,7 +56,7 @@ public class GroupStage extends Stage{
     @Override
     public void arrangeMatches() {
         // Match date algorithm - each match is played on separate consecutive days
-        LocalDate seed = LocalDate.of(2021, 1, 1);
+        LocalDate seed = LocalDate.of(2018, 5, 14);
 
         // index of next Team in this.teams to add to a group
         int teamIndex = 0;
@@ -100,73 +100,6 @@ public class GroupStage extends Stage{
 
     /**
      * Determine which teams from each group are moving on to the knockout stage
-
-    public void determineGroupWinners() {
-        // for each group
-        for(Integer groupNumber : groups.keySet()) {
-            System.out.println();
-            System.out.println("Group: " + (groupNumber+1));
-
-            // Associate each team in group with their most recent point value
-            HashMap<Team, Integer> teamPoints = new HashMap<Team, Integer>();
-            for(Team t : groups.get(groupNumber)) {
-                teamPoints.put(t, t.getMostRecentScore());
-                System.out.println(t.getName() + " - " + t.getMostRecentScore());
-            }
-
-            // TODO: BUG: groupPanel and groupStage can have different group stage winners if 2nd & 3rd place have the same point values
-            // sort teams in this group by point value
-            List<Map.Entry<Team, Integer>> sortedTeams = new ArrayList<>(teamPoints.entrySet());
-            sortedTeams.sort((e1, e2) -> e2.getValue().compareTo(e1.getValue()));
-
-            // if team points tie then select winners alphabetically, Fifa uses goal stats to break ties here
-            Team first;
-            Team second = null;
-            List<Team> teamsTiedForTopPosition = new ArrayList<>();
-
-            // get the largest point score in group
-            int highestPoints = sortedTeams.get(0).getValue();
-            // Collect all teams that tied this value
-            for(int i = 0; i < 4; i++) {
-                if (sortedTeams.get(i).getValue() == highestPoints) {
-                    teamsTiedForTopPosition.add(sortedTeams.get(i).getKey());
-                }
-            }
-            // sort teams tied for 1st alphabetically
-            teamsTiedForTopPosition.sort(Comparator.comparing(Team::getName));
-            // alphabetically first team tied for first is given first place
-            first = teamsTiedForTopPosition.get(0);
-            // remove first place from tied teams
-            teamsTiedForTopPosition.remove(first);
-
-            // if any number of other teams were tied for first
-            if(teamsTiedForTopPosition.size() > 0) {
-                // already sorted, get next team
-                second = teamsTiedForTopPosition.get(1);
-                teamsTiedForTopPosition.remove(second);
-            // 2nd and 3rd weren't tied for first, but could be tied with each other
-            }
-
-            // if no team was tied for 1st, check for ties for second
-            if(second == null) {
-                teamsTiedForTopPosition = new ArrayList<>();
-                int secondHighestPoints = sortedTeams.get(1).getValue();
-                for (int i = 0; i < 4; i++) {
-                    // get each team tied for 2nd
-                    if (sortedTeams.get(i).getValue() == secondHighestPoints) {
-                        teamsTiedForTopPosition.add(sortedTeams.get(i).getKey());
-                    }
-                    // get alphabetically first team tied for 2nd place and give them 2nd place
-                    // if there's no tie then size() == 1 and that team is still second place
-                    second = teamsTiedForTopPosition.get(0);
-                }
-            }
-
-            // Collect the two highest point value teams
-            teamsMovingOntoKnockout.add(first);
-            teamsMovingOntoKnockout.add(second);
-        }
-    }
      */
     public void determineGroupWinners() {
         for (Integer groupNumber : groups.keySet()) {
@@ -208,13 +141,6 @@ public class GroupStage extends Stage{
             }
         }
     }
-
-
-
-
-
-
-
 
     /**
      * Run the simulation method for each Match
