@@ -172,18 +172,20 @@ public class MonthPanel extends JPanel {
             matches = new ArrayList<>();
             this.date = LocalDate.from(date);
 
+            JLabel dayLabel = new JLabel(String.valueOf(date.getDayOfMonth()));
+            dayLabel.setBorder(BorderFactory.createEmptyBorder(2,2,-1,-1));
             labelConstraints = new GridBagConstraints();
             labelConstraints.anchor = GridBagConstraints.NORTHWEST;
             labelConstraints.fill = GridBagConstraints.HORIZONTAL;
             labelConstraints.gridx = 0; //position
             labelConstraints.gridy = 0; //position
-            labelConstraints.insets = new Insets(4, 4, 4, 4);
-            labelConstraints.gridwidth = 1;
+            labelConstraints.insets = new Insets(0, 0, 0, 0);
+            labelConstraints.gridwidth = 5;
             labelConstraints.gridheight = 1;
             labelConstraints.weightx = 0.8;
             labelConstraints.weighty = 1.0;
 
-            addLabel(new JLabel(String.valueOf(date.getDayOfMonth())));
+            addLabel(dayLabel);
 
             labelConstraints.weighty = 0; //make match labels go to bottom of screen
             labelConstraints.anchor = GridBagConstraints.SOUTH;
@@ -195,20 +197,33 @@ public class MonthPanel extends JPanel {
         }
 
         private void addLabel(JLabel leftImage, JLabel matchLabel, JLabel rightImage) {
-            labelConstraints.anchor = GridBagConstraints.SOUTHWEST;
+            labelConstraints.gridwidth = 1;
+            Component leftStrut = Box.createHorizontalStrut(1);
+            labelConstraints.anchor = GridBagConstraints.WEST;
+            labelConstraints.weightx = 1;
             labelConstraints.gridx = 0;
+            this.add(leftStrut, labelConstraints);
+            labelConstraints.weightx = 0;
+            labelConstraints.anchor = GridBagConstraints.EAST;
+            labelConstraints.gridx = 1;
             this.add(leftImage, labelConstraints);
             labelConstraints.anchor = GridBagConstraints.SOUTH;
-            labelConstraints.gridx = 1;
-            this.add(matchLabel, labelConstraints);
-            labelConstraints.anchor = GridBagConstraints.SOUTHEAST;
+            labelConstraints.insets = labelConstraints.gridy == 0? new Insets(0, 5, 2, 5) : new Insets(0, 5, 0, 5);
             labelConstraints.gridx = 2;
+            this.add(matchLabel, labelConstraints);
+            labelConstraints.anchor = GridBagConstraints.WEST;
+            labelConstraints.insets = new Insets(0, 0, 0, 0);
+            labelConstraints.gridx = 3;
             this.add(rightImage, labelConstraints);
+            Component rightStrut = Box.createHorizontalStrut(1);
+            labelConstraints.anchor = GridBagConstraints.EAST;
+            labelConstraints.weightx = 1;
+            labelConstraints.gridx = 4;
+            this.add(rightStrut, labelConstraints);
             labelConstraints.gridy = labelConstraints.gridy + 1;
         }
-
         /**
-         * assert that all matches in the DayPanel are actually on thate date
+         * Assert that all matches in the DayPanel are actually on that date
          *
          * @return true if the class invariant is not violated
          */
@@ -219,7 +234,6 @@ public class MonthPanel extends JPanel {
             }
             return flag;
         }
-
         private JLabel loadFlagLabel(String teamAbbv) {
             JLabel flagIcon = new JLabel();
             File imgFile = new File("Assets" + File.separator + "Images" + File.separator + "smallFlags" + File.separator + teamAbbv + ".png");
@@ -263,8 +277,7 @@ public class MonthPanel extends JPanel {
 
 
             //add a mouseover to display JPopupMenu
-            JLabel matchLabel = new JLabel();
-            matchLabel.setText(String.format("%s v. %s", match.getTeam1().getAbbv(), match.getTeam2().getAbbv()));
+            JLabel matchLabel = new JLabel(String.format("%s v. %s", match.getTeam1().getAbbv(), match.getTeam2().getAbbv()), JLabel.CENTER);
             matchLabel.setToolTipText(formatMatchToolTip(match));
 
 
