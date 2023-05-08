@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class Team implements Comparable<Team> {
     private String name;
@@ -25,17 +26,12 @@ public class Team implements Comparable<Team> {
     }
 
     public int getMostRecentScore() {
-        LocalDate mostRecentDate = null;
-        for (LocalDate date : pointsMap.keySet()) {
-            if ((mostRecentDate == null || date.isAfter(mostRecentDate))) {
-                mostRecentDate = date;
-            }
-        }
-        if (mostRecentDate == null) {
-            return 0; // No previous matches found
-        } else {
-            return pointsMap.get(mostRecentDate);
-        }
+        final Optional<LocalDate> mostRecentDateOptional = pointsMap.keySet().stream().reduce(this::getMostRecentDate);
+        return mostRecentDateOptional.isPresent() ? pointsMap.get(mostRecentDateOptional.get()) : 0;
+    }
+
+    private LocalDate getMostRecentDate(LocalDate firstDate, LocalDate secondDate) {
+        return firstDate.isAfter(secondDate) ? firstDate : secondDate;
     }
 
     public String getName() {
