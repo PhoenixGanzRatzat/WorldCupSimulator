@@ -54,6 +54,10 @@ public class Team implements Comparable<Team> {
         return rank;
     }
 
+    public int getPoints(LocalDate date) {
+        return pointsMap.get(date);
+    }
+
     public int getMostRecentScore(LocalDate date) {
         return pointsMap.get(date);
     }
