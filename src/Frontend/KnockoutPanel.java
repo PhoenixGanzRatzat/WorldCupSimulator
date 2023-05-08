@@ -287,10 +287,6 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         return initialized;
     }
 
-    @Override
-    public Color getThemeColor() {
-        return themeColor;
-    }
     public void initPanel(List<Match> matchList, List<Team> teamList){
         this.matches = new ArrayList<>();
         matches.addAll(matchList);

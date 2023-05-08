@@ -761,10 +761,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         return initialized;
     }
 
-    @Override
-    public Color getThemeColor() {
-        return themeColor;
-    }
 
     /**
      * Event handler for button clicks
