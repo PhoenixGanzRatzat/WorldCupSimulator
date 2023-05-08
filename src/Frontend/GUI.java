@@ -138,7 +138,7 @@ public class GUI extends JFrame implements ActionListener {
         setTitle("World Cup Simulator");
         setSize(1600,900);
         setLocation((Toolkit.getDefaultToolkit().getScreenSize().width-1600)/2, (Toolkit.getDefaultToolkit().getScreenSize().height-900)/2);
-        setMinimumSize(new Dimension(1600,900));
+        setMinimumSize(new Dimension(1470,900));
         setExtendedState(MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
