@@ -5,11 +5,21 @@ import Backend.Team;
 import java.time.LocalDate;
 import java.util.*;
 
+/**
+ * Group Stage of the tournament. Receive teams from qualifying stage and sorts them into 8 groups
+ * which then perform round-robin tournaments. The two teams from each group with the highest point
+ * values move on to knockout stage. Creates all match objects for each group and simulates them.
+ */
 public class GroupStage extends Stage{
+    /* Key: group number, Value: teams in that group */
     private HashMap<Integer, List<Team>> groups;
+    /* All teams that made it to the group stage */
     private List<Team> teams;
+    /* All matches played in all groups */
     private List<Match> matches;
+    /* Key: group number, Value: matches played in that group */
     private HashMap<Integer, ArrayList<Match>> groupMatches;
+    /* 2 teams from each group with the highest point value move on to knockout stage */
     private List<Team> teamsMovingOntoKnockout;
 
     public GroupStage(List<Team> teams) {
@@ -24,6 +34,9 @@ public class GroupStage extends Stage{
         groups.put(6, new ArrayList<>());
         groups.put(7, new ArrayList<>());
 
+        this.teams = getTeams();
+        this.matches = getMatches(); // init with empty list
+
         groupMatches = new HashMap<>();
         groupMatches.put(0, new ArrayList<>());
         groupMatches.put(1, new ArrayList<>());
@@ -35,8 +48,6 @@ public class GroupStage extends Stage{
         groupMatches.put(7, new ArrayList<>());
 
         teamsMovingOntoKnockout = new ArrayList<>();
-        this.teams = getTeams();
-        this.matches = getMatches(); // always returns empty list
     }
 
     /**
@@ -45,8 +56,7 @@ public class GroupStage extends Stage{
      */
     @Override
     public void arrangeMatches() {
-        // create groups
-        // index of next Team to add to a group
+        // index of next Team in this.teams to add to a group
         int teamIndex = 0;
         // for every team
         while(teamIndex < teams.size()) {
@@ -58,21 +68,20 @@ public class GroupStage extends Stage{
             }
         }
 
+        // Match date algorithm - each match is played on separate consecutive days
+        LocalDate seed = LocalDate.of(2020, 1, 1);
         // create all matches in each group, each team vs each team once.
         // for each group
         for (Integer groupNumber : groups.keySet()) {
             // team (a) plays each team indexed after (a)
-            for(int a = 0; a < groups.get(groupNumber).size() - 1; a++) { // [g.size()-1] > all matches created before last team becomes team (a)
+            for(int a = 0; a < groups.get(groupNumber).size() - 1; a++) { // [g.size()-1] > all matches are created before last team becomes team (a)
                 // team (b) starts at the index after team (a)
                 for(int b = (a + 1); b < groups.get(groupNumber).size(); b++) {
-                    // match
-                    // TODO: start/seed date for group stage
-                    LocalDate seed = LocalDate.of(2020, 1, 1);
-                    // TODO: match date algorithm - assume every Match in the GroupStage is played on separate consecutive days
                     Match nextMatch = new Match(groups.get(groupNumber).get(a), // team a
                             groups.get(groupNumber).get(b), // team b
                             seed.plusDays(1));
-                    matches.add(nextMatch); // list of all matches in stage
+                    // Collect all matches in Group Stage of tournament
+                    matches.add(nextMatch);
                     // Associate this match with this group
                     groupMatches.get(groupNumber).add(nextMatch); // Map of all matches by group
                 }
@@ -82,27 +91,25 @@ public class GroupStage extends Stage{
     }
 
     /**
-     * Determine which teams from each group that are moving on to the knockout stage
+     * Determine which teams from each group are moving on to the knockout stage
      */
     public void determineGroupWinners() {
+        // for each group
         for(Integer groupNumber : groups.keySet()) {
+            // Associates each team in group with a tally of their points earned
             HashMap<Team, Integer> teamPoints = new HashMap<Team, Integer>();
-
-            // calculate points for each team in each group
+            // Add each team in group to points tracker
+            for(Team t : groups.get(groupNumber)) {
+                teamPoints.put(t, 0);
+            }
+            // for each match in group
             for (Match match : groupMatches.get(groupNumber)) {
                 Team team1 = match.getTeam1();
                 Team team2 = match.getTeam2();
                 int score1 = match.getTeam1Score();
                 int score2 = match.getTeam2Score();
 
-                // init teams if first time
-                if(!(teamPoints.containsKey(team1))) {
-                    teamPoints.put(team1, 0);
-                }
-                if(!(teamPoints.containsKey(team2))) {
-                    teamPoints.put(team2, 0);
-                }
-
+                // give points to teams based on wins and draws
                 if (score1 > score2) {
                     teamPoints.put(team1, (teamPoints.get(team1) + 3));
                 } else if (score1 < score2) {
@@ -113,16 +120,20 @@ public class GroupStage extends Stage{
                 }
 
             }
-            // sort teams by points in descending order
+            // sort teams by points in descending order(highest to lowest)
+            // TODO: BUG: groupPanel and groupStage can have different group stage winners if 2nd & 3rd place have the same point values
             List<Map.Entry<Team, Integer>> sortedTeams = new ArrayList<>(teamPoints.entrySet());
             sortedTeams.sort((e1, e2) -> e2.getValue().compareTo(e1.getValue()));
 
-            // extract first two teams
+            // Collect the two highest point value teams
             teamsMovingOntoKnockout.add(sortedTeams.get(0).getKey());
             teamsMovingOntoKnockout.add(sortedTeams.get(1).getKey());
         }
     }
 
+    /**
+     * Run the simulation method for each Match
+     */
     @Override
     public void calculateMatchResults(){
         for(Match m:matches){
@@ -137,6 +148,7 @@ public class GroupStage extends Stage{
     public List<Team> qualifiedTeams() {
         return teamsMovingOntoKnockout;
     }
+
     public HashMap<Integer, List<Team>> getGroups(){
         return groups;
     }
