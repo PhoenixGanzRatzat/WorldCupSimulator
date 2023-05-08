@@ -23,9 +23,9 @@ public class GUI extends JFrame implements ActionListener {
     private JPanel cardPanel;
     private JPanel buttonPanel;
     private JPanel startPanel;
-    private JPanel qualifyingPanel;
-    private JPanel groupPanel;
-    private JPanel knockoutPanel;
+    private QualifyingPanel qualifyingPanel;
+    private GroupPanel groupPanel;
+    private KnockoutPanel knockoutPanel;
     private JButton startButton;
     private JButton qualifyingButton;
     private JButton groupButton;
@@ -197,22 +197,21 @@ public class GUI extends JFrame implements ActionListener {
         if (stage == 1) {
             checkIfPanelNeedsInit(qualifyingPanel, stage);
         } else if (stage == 2) {
-            ((StagePanel) qualifyingPanel).checkIfCompleted();
-            checkIfPanelNeedsInit(groupPanel, stage);
+            if(qualifyingPanel.checkIfCompleted()) {
+                checkIfPanelNeedsInit(groupPanel, stage);
+            }
         } else if (stage == 3) {
-            ((StagePanel) groupPanel).checkIfCompleted();
-            checkIfPanelNeedsInit(knockoutPanel, stage);
+            if(groupPanel.checkIfCompleted()) {
+                checkIfPanelNeedsInit(knockoutPanel, stage);
+            }
         }
         changeCard(cardPanel, panelString);
     }
 
-    private void checkIfPanelNeedsInit(JPanel panel, int stage) {
-        if (panel instanceof StagePanel) {
-            StagePanel sPanel = (StagePanel) panel;
-            if (!sPanel.checkIfInitialized()) {
-                sPanel.initPanel(gameSim.stageMatches(stage), gameSim.getTeams());
-            }
-        }
+    private void checkIfPanelNeedsInit(StagePanel panel, int stage) {
+       if (!panel.checkIfInitialized()){
+           panel.initPanel(gameSim.stageMatches(stage), gameSim.getTeams());
+       }
     }
 
     /**
