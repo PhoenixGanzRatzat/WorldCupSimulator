@@ -92,20 +92,8 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         groupsThatAreComplete = new boolean[]{false, false, false, false, false, false, false, false};
         resultsPanel = new JPanel();
         flags = new HashMap<>();
-        initPanel();
-    }
-
-    public GroupPanel(List<Match> matches, List<Team> teams) {
-        this();
-        this.matches = matches;
-        this.teams = teams;
-        try {
-            initFlags();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        createGroups();
-        initGroupPanelsWithTeams();
+        matches = new ArrayList<>();
+        teams = new ArrayList<>();
     }
 
 
@@ -664,6 +652,14 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     @Override
     public void initPanel(List<Match> matchList, List<Team> teamList) {
         this.matches = matchList;
+        this.teams = teamList;
+
+        try {
+            initFlags();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         createGroups();
         initPanel();
     }
@@ -752,6 +748,8 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         this.add(infoPanel, BorderLayout.NORTH);
         this.add(displayPanel, BorderLayout.CENTER);
         this.add(functionPanel, BorderLayout.SOUTH);
+
+        initGroupPanelsWithTeams();
 
         initialized = true;
     }
