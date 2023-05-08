@@ -12,24 +12,24 @@ import java.util.List;
  */
 public interface StagePanel {
 
-    public final static Color fifaBlue = new Color(50, 98, 149);
-    public final static Color buttonBackground = new Color(59, 133, 190);
-    public final static Color buttonBorder = new Color(203, 223, 239);
-    public final static Color buttonText = new Color(232, 246, 255);
+    Color fifaBlue = new Color(50, 98, 149);
+    Color buttonBackground = new Color(59, 133, 190);
+    Color buttonBorder = new Color(203, 223, 239);
+    Color buttonText = new Color(232, 246, 255);
 
     /**
      * prepares the panel for display
      */
-    public void initPanel();
+    void initPanel();
 
     /**
      * Checks StagePanel state to see if the next stage can be moved onto
      * @return
      */
-    public void initPanel(List<Match> matches);
-    public boolean checkIfCompleted();
+    void initPanel(List<Match> matches);
+    boolean checkIfCompleted();
 
-    public boolean checkIfInitialized();
+    boolean checkIfInitialized();
     @NotNull
-    public Color getThemeColor();
+    Color getThemeColor();
 }
