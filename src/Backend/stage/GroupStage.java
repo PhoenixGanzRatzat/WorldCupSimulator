@@ -74,7 +74,6 @@ public class GroupStage extends Stage{
         for(Team t : teams) {
             // set each teams most recent score to zero to begin the Stage
             t.setPoints(seed, 0);
-            System.out.println("Seed check[" + index + "]: Team > " + t.getName() + " MRS > " + t.getMostRecentScore());
             index++;
         }
 
@@ -103,13 +102,9 @@ public class GroupStage extends Stage{
      */
     public void determineGroupWinners() {
         for (Integer groupNumber : groups.keySet()) {
-            System.out.println();
-            System.out.println("Group: " + (groupNumber + 1));
-
             HashMap<Team, Integer> teamPoints = new HashMap<>();
             for (Team t : groups.get(groupNumber)) {
                 teamPoints.put(t, t.getMostRecentScore());
-                System.out.println(t.getName() + " - " + t.getMostRecentScore());
             }
 
             List<Map.Entry<Team, Integer>> sortedTeams = new ArrayList<>(teamPoints.entrySet());
