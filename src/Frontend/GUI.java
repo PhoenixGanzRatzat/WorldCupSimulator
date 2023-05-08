@@ -90,6 +90,11 @@ public class GUI extends JFrame implements ActionListener {
         groupButton.addActionListener(this);
         knockoutButton.addActionListener(this);
 
+        buttonPanel.setBackground(fifaBlue);
+        setButtonLook(startButton, buttonText, buttonBackground);
+        setButtonLook(qualifyingButton, buttonText, buttonBackground);
+        setButtonLook(groupButton, buttonText, buttonBackground);
+        setButtonLook(knockoutButton, buttonText, buttonBackground);
         qualifyingButton.setVisible(false);
         groupButton.setVisible(false);
         knockoutButton.setVisible(false);
@@ -159,7 +164,6 @@ public class GUI extends JFrame implements ActionListener {
 
     /**
      * Sets actions to perform when each of the navigational buttons in the top panel of the GUI is pressed.
-     *
      * @param e
      */
     @Override
@@ -171,6 +175,7 @@ public class GUI extends JFrame implements ActionListener {
         if (e.getSource() == startButton) {
             panel = qualifyingPanel;
             panelString = "qual";
+            //makeBGBrighter = false;
             qualifyingButton.setVisible(true);
             groupButton.setVisible(true);
             knockoutButton.setVisible(true);
@@ -209,12 +214,6 @@ public class GUI extends JFrame implements ActionListener {
                     if (((StagePanel) groupPanel).checkIfCompleted()) {
                         checkIfPanelNeedsInit(knockoutPanel, stage);
                     }
-                    panelBackground = ((StagePanel) panel).getThemeColor();
-                    buttonBackground = panelBackground.darker();
-                    buttonPanel.setBackground(panelBackground);
-                    setButtonLook(qualifyingButton, buttonText, buttonBackground);
-                    setButtonLook(groupButton, buttonText, buttonBackground);
-                    setButtonLook(knockoutButton, buttonText, buttonBackground);
                     changeCard(cardPanel, panelString);
                 }
             }

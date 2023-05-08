@@ -662,7 +662,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     }
 
     @Override
-    public void initPanel(List<Match> matchList) {
+    public void initPanel(List<Match> matchList, List<Team> teamList) {
         this.matches = matchList;
         createGroups();
         initPanel();
@@ -671,7 +671,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     /**
      * Create an empty group stage panel that will be filled in as the user interacts with function buttons
      */
-    @Override
     public void initPanel() {
         themeColor = new Color(21, 21, 240);
         Font font = new Font("Arial", Font.BOLD, 30);

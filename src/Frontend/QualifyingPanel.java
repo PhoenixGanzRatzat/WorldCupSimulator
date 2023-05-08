@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 public class QualifyingPanel extends JPanel implements StagePanel {
 
-    protected static final Color BG_COLOR = new Color(140, 177, 217);
+    protected static final Color BG_COLOR = fifaBlue;
     protected static final Color ROW1_COLOR = new Color(179, 201, 230);
     protected static final Color ROW2_COLOR = new Color(198, 215, 236);
     protected static final Color SCROLLPANE_COLOR = new Color(198, 215, 236);
@@ -330,7 +330,6 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      * Initiates the JTabbedPane before the simulation has started, with a blank calendar
      * tab and temporary region tabs.
      */
-    @Override
     public void initPanel()  {
         curMonth = earliestMatchDate.getMonthValue();
         curYear = earliestMatchDate.getYear();
@@ -362,7 +361,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     }
 
     @Override
-    public void initPanel(List<Match> matches) {
+    public void initPanel(List<Match> matches, List<Team> teamList) {
         //don't need this? Could use it for initMonthPanel but that would be confusing.
     }
 
