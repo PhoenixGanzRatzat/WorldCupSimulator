@@ -102,7 +102,7 @@ public class GUI extends JFrame implements ActionListener {
         layoutConstraints.weighty = 1;
 
         try {
-            fifaLogoLabel = new JLabel(new ImageIcon(ImageIO.read(new File("Assets\\Images\\FIFA_logo.png"))));
+            fifaLogoLabel = new JLabel(new ImageIcon(ImageIO.read(new File("Assets"+File.separator+"Images"+File.separator+"FIFA_logo.png"))));
         } catch (IOException e) {
             fifaLogoLabel = new JLabel("FIFA");
             JOptionPane.showMessageDialog(this, e.getMessage());
