@@ -55,6 +55,9 @@ public class GroupStage extends Stage{
      */
     @Override
     public void arrangeMatches() {
+        // Match date algorithm - each match is played on separate consecutive days
+        LocalDate seed = LocalDate.of(2021, 1, 1);
+
         // index of next Team in this.teams to add to a group
         int teamIndex = 0;
         // for every team
@@ -67,8 +70,14 @@ public class GroupStage extends Stage{
             }
         }
 
-        // Match date algorithm - each match is played on separate consecutive days
-        LocalDate seed = LocalDate.of(2020, 1, 1);
+        int index = 0;
+        for(Team t : teams) {
+            // set each teams most recent score to zero to begin the Stage
+            t.setPoints(seed, 0);
+            System.out.println("Seed check[" + index + "]: Team > " + t.getName() + " MRS > " + t.getMostRecentScore());
+            index++;
+        }
+
         // create all matches in each group, each team vs each team once.
         // for each group
         for (Integer groupNumber : groups.keySet()) {
@@ -91,44 +100,121 @@ public class GroupStage extends Stage{
 
     /**
      * Determine which teams from each group are moving on to the knockout stage
-     */
+
     public void determineGroupWinners() {
         // for each group
         for(Integer groupNumber : groups.keySet()) {
-            // Associates each team in group with a tally of their points earned
+            System.out.println();
+            System.out.println("Group: " + (groupNumber+1));
+
+            // Associate each team in group with their most recent point value
             HashMap<Team, Integer> teamPoints = new HashMap<Team, Integer>();
-            // Add each team in group to points tracker
             for(Team t : groups.get(groupNumber)) {
-                teamPoints.put(t, 0);
+                teamPoints.put(t, t.getMostRecentScore());
+                System.out.println(t.getName() + " - " + t.getMostRecentScore());
             }
-            // for each match in group
-            for (Match match : groupMatches.get(groupNumber)) {
-                Team team1 = match.getTeam1();
-                Team team2 = match.getTeam2();
-                int score1 = match.getTeam1Score();
-                int score2 = match.getTeam2Score();
 
-                // give points to teams based on wins and draws
-                if (score1 > score2) {
-                    teamPoints.put(team1, (teamPoints.get(team1) + 3));
-                } else if (score1 < score2) {
-                    teamPoints.put(team2, (teamPoints.get(team2) + 3));
-                } else {
-                    teamPoints.put(team1, (teamPoints.get(team1) + 1));
-                    teamPoints.put(team2, (teamPoints.get(team2) + 1));
-                }
-
-            }
-            // sort teams by points in descending order(highest to lowest)
             // TODO: BUG: groupPanel and groupStage can have different group stage winners if 2nd & 3rd place have the same point values
+            // sort teams in this group by point value
             List<Map.Entry<Team, Integer>> sortedTeams = new ArrayList<>(teamPoints.entrySet());
             sortedTeams.sort((e1, e2) -> e2.getValue().compareTo(e1.getValue()));
 
+            // if team points tie then select winners alphabetically, Fifa uses goal stats to break ties here
+            Team first;
+            Team second = null;
+            List<Team> teamsTiedForTopPosition = new ArrayList<>();
+
+            // get the largest point score in group
+            int highestPoints = sortedTeams.get(0).getValue();
+            // Collect all teams that tied this value
+            for(int i = 0; i < 4; i++) {
+                if (sortedTeams.get(i).getValue() == highestPoints) {
+                    teamsTiedForTopPosition.add(sortedTeams.get(i).getKey());
+                }
+            }
+            // sort teams tied for 1st alphabetically
+            teamsTiedForTopPosition.sort(Comparator.comparing(Team::getName));
+            // alphabetically first team tied for first is given first place
+            first = teamsTiedForTopPosition.get(0);
+            // remove first place from tied teams
+            teamsTiedForTopPosition.remove(first);
+
+            // if any number of other teams were tied for first
+            if(teamsTiedForTopPosition.size() > 0) {
+                // already sorted, get next team
+                second = teamsTiedForTopPosition.get(1);
+                teamsTiedForTopPosition.remove(second);
+            // 2nd and 3rd weren't tied for first, but could be tied with each other
+            }
+
+            // if no team was tied for 1st, check for ties for second
+            if(second == null) {
+                teamsTiedForTopPosition = new ArrayList<>();
+                int secondHighestPoints = sortedTeams.get(1).getValue();
+                for (int i = 0; i < 4; i++) {
+                    // get each team tied for 2nd
+                    if (sortedTeams.get(i).getValue() == secondHighestPoints) {
+                        teamsTiedForTopPosition.add(sortedTeams.get(i).getKey());
+                    }
+                    // get alphabetically first team tied for 2nd place and give them 2nd place
+                    // if there's no tie then size() == 1 and that team is still second place
+                    second = teamsTiedForTopPosition.get(0);
+                }
+            }
+
             // Collect the two highest point value teams
-            teamsMovingOntoKnockout.add(sortedTeams.get(0).getKey());
-            teamsMovingOntoKnockout.add(sortedTeams.get(1).getKey());
+            teamsMovingOntoKnockout.add(first);
+            teamsMovingOntoKnockout.add(second);
         }
     }
+     */
+    public void determineGroupWinners() {
+        for (Integer groupNumber : groups.keySet()) {
+            System.out.println();
+            System.out.println("Group: " + (groupNumber + 1));
+
+            HashMap<Team, Integer> teamPoints = new HashMap<>();
+            for (Team t : groups.get(groupNumber)) {
+                teamPoints.put(t, t.getMostRecentScore());
+                System.out.println(t.getName() + " - " + t.getMostRecentScore());
+            }
+
+            List<Map.Entry<Team, Integer>> sortedTeams = new ArrayList<>(teamPoints.entrySet());
+            sortedTeams.sort((e1, e2) -> {
+                int compare = e2.getValue().compareTo(e1.getValue());
+                if (compare == 0) {
+                    return e1.getKey().getName().compareTo(e2.getKey().getName());
+                }
+                return compare;
+            });
+
+            Team first = sortedTeams.get(0).getKey();
+            List<Team> teamsTiedForSecond = new ArrayList<>();
+
+            for (int i = 1; i < sortedTeams.size(); i++) {
+                if (sortedTeams.get(i).getValue().equals(sortedTeams.get(1).getValue())) {
+                    teamsTiedForSecond.add(sortedTeams.get(i).getKey());
+                }
+            }
+
+            if (teamsTiedForSecond.size() > 0) {
+                teamsTiedForSecond.sort(Comparator.comparing(Team::getName));
+                Team second = teamsTiedForSecond.get(0);
+                teamsMovingOntoKnockout.add(first);
+                teamsMovingOntoKnockout.add(second);
+            } else {
+                teamsMovingOntoKnockout.add(first);
+                teamsMovingOntoKnockout.add(sortedTeams.get(1).getKey());
+            }
+        }
+    }
+
+
+
+
+
+
+
 
     /**
      * Run the simulation method for each Match

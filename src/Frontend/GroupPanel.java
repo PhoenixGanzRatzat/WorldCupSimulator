@@ -344,23 +344,28 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         // extract an array of only the panels that need sorting
         JPanel[] panelsToSort = new JPanel[numRowPanels - 2];
         for (int i = 2; i < numRowPanels; i++) {
-            panelsToSort[i-2] = (JPanel) rowPanels[i];
+            panelsToSort[i - 2] = (JPanel) rowPanels[i];
         }
 
         // sort those panels by "point" values in descending order
-        // TODO: BUG: groupPanel and groupStage can have different group stage winners if 2nd & 3rd place have the same point values
         Arrays.sort(panelsToSort, (p1, p2) -> {
             Integer points1 = Integer.parseInt(((JLabel) p1.getComponent(6)).getText());
             Integer points2 = Integer.parseInt(((JLabel) p2.getComponent(6)).getText());
-            return points2.compareTo(points1);
+            int pointComparison = points2.compareTo(points1);
+            if (pointComparison == 0) {
+                String country1 = ((JLabel) p1.getComponent(1)).getText();
+                String country2 = ((JLabel) p2.getComponent(1)).getText();
+                return country1.compareTo(country2);
+            }
+            return pointComparison;
         });
 
         // remove each panel and add them back in the sorted order
         for (int i = 2; i < numRowPanels; i++) {
-            ((JLabel) panelsToSort[i-2].getComponent(0)).setText(String.valueOf(i-1));
-            panelsToSort[i-2].setBorder(new CompoundBorder(new LineBorder(Color.BLACK), new EmptyBorder(2,2,2,2)));
-            groupPanel.remove(panelsToSort[i-2]);
-            groupPanel.add(panelsToSort[i-2], i);
+            ((JLabel) panelsToSort[i - 2].getComponent(0)).setText(String.valueOf(i - 1));
+            panelsToSort[i - 2].setBorder(new CompoundBorder(new LineBorder(Color.BLACK), new EmptyBorder(2, 2, 2, 2)));
+            groupPanel.remove(panelsToSort[i - 2]);
+            groupPanel.add(panelsToSort[i - 2], i);
         }
 
         // refreshes the display with changes
