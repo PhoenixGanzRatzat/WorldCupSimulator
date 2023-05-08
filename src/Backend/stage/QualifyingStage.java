@@ -979,18 +979,8 @@ public class QualifyingStage extends Stage {
         List<Match> playOffMatches = new ArrayList<>();
 
         // Simulate play-offs between the confederations (AFC vs CONCACAF and CONMEBOL vs OFC)
-        Team afcVsConcacafWinner = playPlayoffMatch(playoffTeams.get(0), playoffTeams.get(1));
-        Team conmebolVsOfcWinner = playPlayoffMatch(playoffTeams.get(2), playoffTeams.get(3));
-
-        // Add the winners to the list of World Cup qualifiers
-        worldCupQualifiers.add(afcVsConcacafWinner);
-        worldCupQualifiers.add(conmebolVsOfcWinner);
-
-        // Add the played matches to the playOffMatches list
-        playOffMatches.add(new Match(playoffTeams.get(0), playoffTeams.get(1)));
-        playOffMatches.add(new Match(playoffTeams.get(1), playoffTeams.get(0)));
-        playOffMatches.add(new Match(playoffTeams.get(2), playoffTeams.get(3)));
-        playOffMatches.add(new Match(playoffTeams.get(3), playoffTeams.get(2)));
+        playOffMatches.addAll(playPlayoffMatch(playoffTeams.get(0), playoffTeams.get(1)));
+        playOffMatches.addAll(playPlayoffMatch(playoffTeams.get(2), playoffTeams.get(3)));
 
         assignDatesToRoundMatches(playOffMatches, LocalDate.of(2017, 11, 10), 2, 1);
 
@@ -999,20 +989,23 @@ public class QualifyingStage extends Stage {
             match.simulateMatchResult();
         }
 
+        Team afcVsConcacafWinner = determinePlayOffWinner(playOffMatches.subList(0, 2));
+        Team conmebolVsOfcWinner = determinePlayOffWinner(playOffMatches.subList(2, 4));
+
+        // Add the winners to the list of World Cup qualifiers
+        worldCupQualifiers.add(afcVsConcacafWinner);
+        worldCupQualifiers.add(conmebolVsOfcWinner);
+
         return new RoundResult(worldCupQualifiers, playOffMatches);
     }
 
-
-    public Team playPlayoffMatch(Team team1, Team team2) {
+    public List<Match> playPlayoffMatch(Team team1, Team team2) {
         Match homeMatch = new Match(team1, team2);
         Match awayMatch = new Match(team2, team1);
 
-        homeMatch.simulateMatchResult();
-        awayMatch.simulateMatchResult();
-
         // Determine the winner using the determinePlayOffWinner method
         List<Match> playOffMatches = Arrays.asList(homeMatch, awayMatch);
-        return determinePlayOffWinner(playOffMatches);
+        return playOffMatches;
     }
 
 
