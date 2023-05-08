@@ -13,9 +13,9 @@ import java.util.List;
 public interface StagePanel {
 
     public final static Color fifaBlue = new Color(50, 98, 149);
-    public final static Color fifaLite = fifaBlue.brighter();
-    public final static Color fifaDark = fifaBlue.darker();
-    public final static Color buttonText = new Color(213, 226, 216);
+    public final static Color buttonBackground = new Color(59, 133, 190);
+    public final static Color buttonBorder = new Color(203, 223, 239);
+    public final static Color buttonText = new Color(232, 246, 255);
 
     /**
      * prepares the panel for display

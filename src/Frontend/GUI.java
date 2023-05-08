@@ -10,6 +10,8 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
+import static Frontend.StagePanel.*;
+
 /**
  * Main class containing the base graphical elements for the program as well as the entry point for the program.
  */
@@ -28,10 +30,6 @@ public class GUI extends JFrame implements ActionListener {
     private JButton qualifyingButton;
     private JButton groupButton;
     private JButton knockoutButton;
-
-    private final static Color buttonTextColor = new Color(213, 226, 216);
-    private final static Color fifaBGColor = new Color(50, 98, 149);
-
 
     /**
      * Default constructor for GUI.  Calls initGUI to initialize instantiated objects.
@@ -114,21 +112,21 @@ public class GUI extends JFrame implements ActionListener {
         layoutConstraints.gridy = 0;
         startPanel.add(fifaLogoLabel, layoutConstraints);
 
-        startPanel.setBackground(fifaBGColor);
+        startPanel.setBackground(fifaBlue);
 
         layoutConstraints.gridx = 0;
         layoutConstraints.gridy = 1;
 
         subHeaderLabel = new JLabel("World Cup 2018 Simulator");
         subHeaderLabel.setFont(new Font ("Arial Black", Font.PLAIN, 48));
-        subHeaderLabel.setForeground(buttonTextColor);
+        subHeaderLabel.setForeground(buttonText);
         startPanel.add(subHeaderLabel, layoutConstraints);
 
 
         layoutConstraints.gridx = 0;
         layoutConstraints.gridy = 3;
 
-        setButtonLook(startButton, buttonTextColor, fifaBGColor);
+        setButtonLook(startButton, buttonText, fifaBlue);
 
         startPanel.add(startButton, layoutConstraints);
 
@@ -160,47 +158,47 @@ public class GUI extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         JPanel panel;
-        String panelString;
+        String panelString;/*
         Color panelBackground;
         Color buttonBackground;
-        boolean makeBGBrighter;
+        boolean makeBGBrighter;*/
 
         if (e.getSource() == startButton) {
             panel = qualifyingPanel;
             panelString = "qual";
-            makeBGBrighter = false;
+            //makeBGBrighter = false;
             qualifyingButton.setVisible(true);
             groupButton.setVisible(true);
             knockoutButton.setVisible(true);
         } else if (e.getSource() == qualifyingButton) {
             panel = qualifyingPanel;
             panelString = "qual";
-            makeBGBrighter = false;
+            //makeBGBrighter = false;
         } else if (e.getSource() == groupButton) {
             panel = groupPanel;
             panelString = "group";
-            makeBGBrighter = false;
+            //makeBGBrighter = false;
         } else if (e.getSource() == knockoutButton) {
             panel = knockoutPanel;
             panelString = "knock";
-            makeBGBrighter = false;
+            //makeBGBrighter = false;
         } else {
             panel = null;
             panelString = null;
-            makeBGBrighter = false;
+            //makeBGBrighter = false;
         }
         if (panel instanceof StagePanel) {
             checkIfPanelNeedsInit(panel);
-            panelBackground = ((StagePanel)panel).getThemeColor();
+            /*panelBackground = ((StagePanel)panel).getThemeColor();
             if  (makeBGBrighter) {
                 buttonBackground = panelBackground.brighter();
             } else {
                 buttonBackground = panelBackground.darker();
-            }
-            buttonPanel.setBackground(panelBackground);
-            setButtonLook(qualifyingButton, buttonTextColor, buttonBackground);
-            setButtonLook(groupButton, buttonTextColor, buttonBackground);
-            setButtonLook(knockoutButton, buttonTextColor, buttonBackground);
+            }*/
+            buttonPanel.setBackground(fifaBlue);
+            setButtonLook(qualifyingButton, buttonText, buttonBackground);
+            setButtonLook(groupButton, buttonText, buttonBackground);
+            setButtonLook(knockoutButton, buttonText, buttonBackground);
             changeCard(cardPanel, panelString);
         }
     }
