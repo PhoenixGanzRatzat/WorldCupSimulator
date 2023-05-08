@@ -487,64 +487,6 @@ public class QualifyingStage extends Stage {
         return new RoundResult(qualifiedTeams, allGroupMatches);
     }
 
-    private RoundResult processRoundCONCACAF(Region region, int minRank, int maxRank, LocalDate startDate, int daysBetween, int matchPerDay, boolean isFirstRound) {
-        // Filter the teams for those belonging to the CONCACAF region and within the specified rank range
-        List<Team> concacafTeams = getTeams().stream()
-                .filter(team -> team.getRegion() == region)
-                .filter(team -> team.getRank() >= minRank && team.getRank() <= maxRank)
-                .collect(Collectors.toList());
-
-        if (isFirstRound) {
-            concacafTeams.addAll(getFirstRoundResultCONCACAF().getRoundTeams());
-        }
-
-        // Pair the teams into groups of two
-        List<List<Team>> groups = createGroups(concacafTeams, concacafTeams.size() / 2, 2);
-
-        List<Match> roundMatches = new ArrayList<>();
-        List<Team> winningTeams = new ArrayList<>();
-
-        for (List<Team> group : groups) {
-            // Generate home and away matches for each group
-            List<Match> pairedMatches = arrangeHomeAndAwayMatches(group, true);
-            roundMatches.addAll(pairedMatches);
-        }
-
-        // Assign dates to the round matches
-        assignDatesToRoundMatches(roundMatches, startDate, daysBetween, matchPerDay);
-
-        // Simulate the matches
-        for (Match match : roundMatches) {
-            match.simulateMatchResult();
-        }
-
-        for (List<Team> group : groups) {
-            // Get the matches for the current group
-            List<Match> allRoundMatches = roundMatches.stream()
-                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
-                    .collect(Collectors.toList());
-
-            // Determine the winner based on the aggregate score
-            int team1Score = allRoundMatches.get(0).getTeam1Score() + allRoundMatches.get(1).getTeam2Score();
-            int team2Score = allRoundMatches.get(0).getTeam2Score() + allRoundMatches.get(1).getTeam1Score();
-            Team winner = (team1Score > team2Score) ? group.get(0) : group.get(1);
-            // Add the winner to the winningTeams list
-            winningTeams.add(winner);
-        }
-
-        // Return a RoundResult object containing the winners and the matches
-        return new RoundResult(winningTeams, roundMatches);
-    }
-
-//    private RoundResult firstRoundCONCACAF() {
-//        return processRoundCONCACAF(Region.CONCACAF,22, 35, LocalDate.of(2015, 3, 1), 4, 2, false);
-//    }
-//
-//    private RoundResult secondRoundCONCACAF() {
-//        return processRoundCONCACAF(Region.CONCACAF, 9, 21, LocalDate.of(2015, 6, 1), 3, 2, true);
-//    }
-
-
     private RoundResult firstRoundCONCACAF() {
         // Filter the teams for those belonging to the CONCACAF region and ranked 22-35
         List<Team> concacafTeams = getTeams().stream()
