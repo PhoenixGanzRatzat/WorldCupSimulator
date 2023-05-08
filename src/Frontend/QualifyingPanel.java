@@ -316,15 +316,6 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         return initialized;
     }
 
-    /**
-     * Returns the background color this class uses.
-     * @return
-     */
-    @Override
-    public Color getThemeColor() {
-        return BG_COLOR;
-    }
-
 
     /**
      * Initializes attributes necessary to display QualifyingPanel, including teams and matches,
