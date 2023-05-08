@@ -43,8 +43,7 @@ public class GUI extends JFrame implements ActionListener {
         buttonPanel = new JPanel(new FlowLayout());
 
         startPanel = new JPanel(new GridBagLayout());
-        gameSim.stageMatches(1); // TODO: return statement of method is ignored
-        qualifyingPanel = new QualifyingPanel(gameSim.getTeams());
+        qualifyingPanel = new QualifyingPanel(gameSim.stageMatches(1), gameSim.getTeams());
 
         // TODO: give group panel the matches/teams
         groupPanel = new GroupPanel(gameSim.stageMatches(2), gameSim.getTeams());

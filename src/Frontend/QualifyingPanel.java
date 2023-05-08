@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +28,9 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     private int curMonth;
     private HashMap<String, BufferedImage> flags;
     private int curYear;
+    private List<Match> matches;
+    private LocalDate earliestMatchDate;
+    private LocalDate latestMatchDate;
     private List<Team> teams;
     private MonthPanel month;
     private JPanel[] cards;
@@ -38,8 +42,20 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     An in progress constructor that is subject to change.
     @param teamIn an array of all teams participating.
      */
-    public QualifyingPanel (List<Team> teamIn) {
+    public QualifyingPanel (List<Match> matchesIn, List<Team> teamIn) {
 
+        LocalDate earliest = matchesIn.get(0).getMatchDate();
+        LocalDate latest = matchesIn.get(0).getMatchDate();
+
+        for (Match match : matchesIn) {
+            if (match.getMatchDate().isBefore(earliest)) earliest = match.getMatchDate();
+            if (match.getMatchDate().isAfter(latest)) latest = match.getMatchDate();
+        }
+
+        earliestMatchDate = earliest;
+        latestMatchDate = latest;
+
+        matches = matchesIn;
         teams = teamIn;
         month = new MonthPanel();
 
@@ -308,14 +324,14 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      */
     @Override
     public void initPanel()  {
-        curMonth = 1;
-        curYear = 2018;
+        curMonth = earliestMatchDate.getMonthValue();
+        curYear = earliestMatchDate.getYear();
         tabPane =  new JTabbedPane();
         tabPane.setOpaque(true);
         cards = new JPanel[6];
         this.setLayout(new BorderLayout());
 
-        initMonthPanel(new ArrayList<Match>());
+        initMonthPanel(matches);
 
         for(int i = 0; i < 6; i++) {
             JPanel subPanel = new JPanel();
@@ -363,13 +379,20 @@ public class QualifyingPanel extends JPanel implements StagePanel {
                 curMonth = 12;
                 curYear--;
             }
-            if(curYear < 2016) {
+            if(curYear < 2015) {
                 curMonth = 1;
                 curYear++;
             }
+            if(curYear == earliestMatchDate.getYear() && curMonth < earliestMatchDate.getMonthValue()) {
+                curMonth = 3; //earliest match is March 2015
+            }
+
+            if(curYear == latestMatchDate.getYear() && curMonth > latestMatchDate.getMonthValue()) {
+                curMonth = 6; //latest match is June 2018
+            }
 
             month.setToMonth(curYear, curMonth);
-            month.setMatchesOnDayPanels(new ArrayList<Match>()); //backend.getMatchesForYearMonth(
+            month.setMatchesOnDayPanels(matches); //backend.getMatchesForYearMonth(
         }
     };
 
