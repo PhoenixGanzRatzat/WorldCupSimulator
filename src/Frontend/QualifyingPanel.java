@@ -25,7 +25,7 @@ import java.util.HashMap;
 
 public class QualifyingPanel extends JPanel implements StagePanel {
 
-    protected static final Color BG_COLOR = fifaBlue;
+    protected static final Color BG_COLOR = StagePanel.fifaBlue;
     protected static final Color ROW1_COLOR = new Color(179, 201, 230);
     protected static final Color ROW2_COLOR = new Color(198, 215, 236);
     protected static final Color SCROLLPANE_COLOR = new Color(198, 215, 236);
@@ -61,8 +61,6 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         earliestMatchDate = earliest;
         latestMatchDate = latest;
 
-        matches = matchesIn;
-        teams = teamIn;
         month = new MonthPanel();
 
         regions[0] = "AFC";
@@ -233,7 +231,9 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
                 JPanel tempPanel = new JPanel();
                 JLabel teamName = new JLabel(team.getName());
-                JLabel teamPoints = new JLabel("" + team.getMostRecentScore());
+                LocalDate getPointsFrom = java.time.LocalDate.of(curYear, curMonth, 1);
+                getPointsFrom = getPointsFrom.withDayOfMonth(getPointsFrom.lengthOfMonth());
+                JLabel teamPoints = new JLabel("" + team.getPoints(getPointsFrom));
                 JLabel teamRank = new JLabel("" + (sortedArr.indexOf(team) + 1));
                 ImageIcon teamFlag = new ImageIcon(flags.get(team.getAbbv()).getScaledInstance(40, 24, 1));
                 JLabel flagLabel = new JLabel();
@@ -331,6 +331,14 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      * tab and temporary region tabs.
      */
     public void initPanel()  {
+
+
+    }
+
+    @Override
+    public void initPanel(List<Match> matches, List<Team> teamList) {
+        this.matches = matches;
+        this.teams = teamList;
         curMonth = earliestMatchDate.getMonthValue();
         curYear = earliestMatchDate.getYear();
         tabPane =  new JTabbedPane();
@@ -357,12 +365,6 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         month.setBackground(BG_COLOR);
         //this.setSize(new Dimension(1600, 900));
         initialized = true;
-
-    }
-
-    @Override
-    public void initPanel(List<Match> matches, List<Team> teamList) {
-        //don't need this? Could use it for initMonthPanel but that would be confusing.
     }
 
     /**
