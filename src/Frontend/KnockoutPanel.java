@@ -296,7 +296,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     public void initPanel() {
         initialized = true;
     }
-    public void initPanel(List<Match> matchList){
+    public void initPanel(List<Match> matchList, List<Team> teamList){
         this.matches = new ArrayList<>();
         matches.addAll(matchList);
         matches.add(matches.get(matches.size()-2));
