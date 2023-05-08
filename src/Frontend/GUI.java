@@ -64,7 +64,7 @@ public class GUI extends JFrame implements ActionListener {
      * Entry point for code; creates a new GUI object with default constructor.
      * @param args
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         GUI mainGUI = new GUI();
     }
 
@@ -139,9 +139,9 @@ public class GUI extends JFrame implements ActionListener {
         cardPanel.add(knockoutPanel, "knock");
 
         setTitle("World Cup Simulator");
-        //setSize(1600,900);
+        setSize(1600,900);
         setLocation((Toolkit.getDefaultToolkit().getScreenSize().width-1600)/2, (Toolkit.getDefaultToolkit().getScreenSize().height-900)/2);
-        //setMinimumSize(new Dimension(1600,900));
+        setMinimumSize(new Dimension(1600,900));
         setExtendedState(MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
