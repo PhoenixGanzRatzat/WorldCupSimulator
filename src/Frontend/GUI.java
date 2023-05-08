@@ -202,6 +202,10 @@ public class GUI extends JFrame implements ActionListener {
 
     private void moveToStage(JPanel panel, String panelString, int stage) {
 
+        if ((currentPanel) == startPanel) {
+            checkIfPanelNeedsInit(qualifyingPanel, stage);
+        }
+
         if (panel instanceof StagePanel) {
             if ((currentPanel == qualifyingPanel)) {
                 if (stage == 2) {
@@ -221,8 +225,9 @@ public class GUI extends JFrame implements ActionListener {
                     }
                 }
             }
-            changeCard(cardPanel, panelString);
+
         }
+        changeCard(cardPanel, panelString);
     }
 
 
