@@ -158,6 +158,8 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
 
             ArrayList<Team> sortedArr = new ArrayList<Team>();
+            LocalDate getPointsFrom = java.time.LocalDate.of(curYear, curMonth, 1);
+            getPointsFrom = getPointsFrom.withDayOfMonth(getPointsFrom.lengthOfMonth());
 
             for(Team team : teams) {
                 if(team.getRegion().toString() == newTab.getName()) {
@@ -168,7 +170,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
                     else {
                         for(int j = 0; j < sortedArr.size(); j++) {
 
-                            if(team.getMostRecentScore() >= sortedArr.get(j).getMostRecentScore()) {
+                            if(team.getPoints(getPointsFrom) >= sortedArr.get(j).getPoints(getPointsFrom)) {
                                 sortedArr.add(j, team);
                                 j = sortedArr.size();
 
@@ -186,8 +188,6 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
                 JPanel tempPanel = new JPanel();
                 JLabel teamName = new JLabel(team.getName());
-                LocalDate getPointsFrom = java.time.LocalDate.of(curYear, curMonth, 1);
-                getPointsFrom = getPointsFrom.withDayOfMonth(getPointsFrom.lengthOfMonth());
                 JLabel teamPoints = new JLabel("" + team.getPoints(getPointsFrom));
                 JLabel teamRank = new JLabel("" + (sortedArr.indexOf(team) + 1));
                 ImageIcon teamFlag = new ImageIcon(flags.get(team.getAbbv()).getScaledInstance(40, 24, 1));
