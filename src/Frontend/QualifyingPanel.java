@@ -380,6 +380,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
             month.setToMonth(curYear, curMonth);
             month.setMatchesOnDayPanels(matches); //backend.getMatchesForYearMonth(
+            fillResults();
         }
     };
 
