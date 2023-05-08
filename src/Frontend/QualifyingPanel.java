@@ -1,8 +1,6 @@
 package Frontend;
-
 import Backend.Match;
 import Backend.Team;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -15,6 +13,14 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+/**
+ * The QualifyingPanel displays all information related to the qualifying round
+ * of the world cup. It displays this information using a JTabbedPane, which
+ * contains a MonthPanel in one tab and JScrollPanes in the rest. The MonthPanel
+ * can be changed to view all matches over time, and the JScrollPanes display
+ * Teams in ranked order.
+ */
 
 
 public class QualifyingPanel extends JPanel implements StagePanel {
@@ -38,8 +44,9 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     private boolean initialized;
 
     /**
-    An in progress constructor that is subject to change.
-    @param teamIn an array of all teams participating.
+    A constructor for QualifyingPanel
+    @param teamIn a List of all teams participating.
+     @param matchesIn a List of all matches played
      */
     public QualifyingPanel (List<Match> matchesIn, List<Team> teamIn) {
 
@@ -159,7 +166,6 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     Places the results of the qualifying round into tabs, with the results
     sorted by region. Each tab is set up with a SpringLayout and displays the results
     in columns.
-    In the future will take a parameter, likely an array of matches.
      */
     public void fillResults() {
         SpringLayout layout = new SpringLayout();
@@ -194,20 +200,19 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             con2.setX(Spring.sum(Spring.constant(10), con1.getConstraint(SpringLayout.EAST)));
 
             SpringLayout.Constraints con3 = layout.getConstraints(header3);
-            con3.setX(Spring.sum(Spring.constant(300), con2.getConstraint(SpringLayout.EAST)));
+            con3.setX(Spring.sum(Spring.constant(Toolkit.getDefaultToolkit().getScreenSize().width/2),
+                    con2.getConstraint(SpringLayout.EAST)));
 
 
             ArrayList<Team> sortedArr = new ArrayList<Team>();
 
             for(Team team : teams) {
                 if(team.getRegion().toString() == newTab.getName()) {
-                    //team.setQualifierPoints((int) (Math.random() * 10));
                     if(sortedArr.size() == 0) {
                         sortedArr.add(team);
                     }
 
                     else {
-
                         for(int j = 0; j < sortedArr.size(); j++) {
 
                             if(team.getMostRecentScore() >= sortedArr.get(j).getMostRecentScore()) {
@@ -225,6 +230,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             }
 
             for(Team team : sortedArr) {
+
                 JPanel tempPanel = new JPanel();
                 JLabel teamName = new JLabel(team.getName());
                 JLabel teamPoints = new JLabel("" + team.getMostRecentScore());
@@ -244,7 +250,8 @@ public class QualifyingPanel extends JPanel implements StagePanel {
                 tempPanel.add(teamRank);
                 newTab.add(tempPanel);
 
-                tempPanel.setPreferredSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize().width, 30));
+                tempPanel.setPreferredSize(
+                        new Dimension(Toolkit.getDefaultToolkit().getScreenSize().width, 30));
                 if(sortedArr.indexOf(team) % 2 == 0) {
                     tempPanel.setBackground(ROW1_COLOR);
                 }
@@ -320,9 +327,8 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
 
     /**
-     * Initiates the JTabbedPane before the simulation has started, with a blank calandar
-     * tab and temporary region tabs. Will likely never need parameters.
-     *
+     * Initiates the JTabbedPane before the simulation has started, with a blank calendar
+     * tab and temporary region tabs.
      */
     @Override
     public void initPanel()  {
@@ -360,6 +366,10 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         //don't need this? Could use it for initMonthPanel but that would be confusing.
     }
 
+    /**
+     * An ActionListener that I decided would be more convenient than
+     * implementing the interface.
+     */
     ActionListener listener = new ActionListener() {
         @Override
         public void actionPerformed (ActionEvent e) {
