@@ -668,7 +668,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
      * Create an empty group stage panel that will be filled in as the user interacts with function buttons
      */
     public void initPanel() {
-        themeColor = new Color(21, 21, 240);
+        themeColor = fifaBlue;
         Font font = new Font("Arial", Font.BOLD, 30);
         /* Top bar across window for displaying current round */
         JPanel infoPanel = new JPanel(new GridLayout(1,4));
