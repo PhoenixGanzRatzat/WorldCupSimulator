@@ -24,7 +24,6 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     protected static final Color ROW2_COLOR = new Color(198, 215, 236);
     protected static final Color SCROLLPANE_COLOR = new Color(198, 215, 236);
 
-    //ARIAL BLACK BOLD
     private int curMonth;
     private HashMap<String, BufferedImage> flags;
     private int curYear;
@@ -280,7 +279,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             JScrollPane scroll = new JScrollPane(newTab);
             newTab.setBackground(SCROLLPANE_COLOR);
             scroll.setOpaque(false);
-            newTab.setPreferredSize(new Dimension(1600, 1000));
+            newTab.setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize());
             scroll.setPreferredSize(new Dimension(800, 600));
             scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
