@@ -266,9 +266,9 @@ public class MonthPanel extends JPanel {
         private void addMatch(Match match) {
             this.matches.add(match);
 
-            JLabel leftFlag = loadFlagLabel(match.getTeam1().getAbbv());
+            JLabel leftFlag = loadFlagLabel(match.getTeam1().getAbbreviation());
             leftFlag.setToolTipText(match.getTeam1().getName());
-            JLabel rightFlag = loadFlagLabel(match.getTeam2().getAbbv());
+            JLabel rightFlag = loadFlagLabel(match.getTeam2().getAbbreviation());
             rightFlag.setToolTipText(match.getTeam2().getName());
 
 
