@@ -68,7 +68,7 @@ public class Team implements Comparable<Team> {
         if (closestBefore != null) {
             return pointsMap.get(closestBefore);
         }
-        return -1;
+        return 0;
     }
 
     public int getMostRecentScore(LocalDate date) {
