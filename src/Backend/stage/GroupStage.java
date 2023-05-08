@@ -90,10 +90,10 @@ public class GroupStage extends Stage{
 
             // calculate points for each team in each group
             for (Match match : groupMatches.get(groupNumber)) {
-                Team team1 = match.getTeamOne();
-                Team team2 = match.getTeamTwo();
-                int score1 = match.getTeamOneScore();
-                int score2 = match.getTeamTwoScore();
+                Team team1 = match.getTeam1();
+                Team team2 = match.getTeam2();
+                int score1 = match.getTeam1Score();
+                int score2 = match.getTeam2Score();
 
                 // init teams if first time
                 if(!(teamPoints.containsKey(team1))) {
