@@ -62,7 +62,7 @@ public class QualifyingStage extends Stage {
         for (RoundResult roundResult : roundResults) {
             QualifierMatches.addAll(roundResult.getRoundMatches());
         }
-         rearrangeMatchDates(QualifierMatches,  6);
+        rearrangeMatchDates(QualifierMatches,  6);
     }
 
     // Get the list of all qualifier matches
@@ -117,10 +117,15 @@ public class QualifyingStage extends Stage {
                     continue;
                 }
 
+                // Check if the match date is beyond November 2017, if so, set the match date back to the start date plus 2 days
+                if (matchDate.isAfter(LocalDate.of(2017, 11, 30))) {
+                    matchDate = startDate.plusDays(2);
+                }
+
                 int matchesOnDate = matchesPerDay.getOrDefault(matchDate, 0);
 
-                Set<LocalDate> team1MatchDates = teamMatchDates.getOrDefault(match.getWinner(), new HashSet<>());
-                Set<LocalDate> team2MatchDates = teamMatchDates.getOrDefault(match.getLoser(), new HashSet<>());
+                Set<LocalDate> team1MatchDates = teamMatchDates.getOrDefault(match.getTeam1(), new HashSet<>());
+                Set<LocalDate> team2MatchDates = teamMatchDates.getOrDefault(match.getTeam2(), new HashSet<>());
 
                 LocalDate finalMatchDate = matchDate;
                 boolean team1HasMatchOnDate = team1MatchDates.stream().anyMatch(date -> date.equals(finalMatchDate));
@@ -134,8 +139,8 @@ public class QualifyingStage extends Stage {
 
                     team1MatchDates.add(matchDate);
                     team2MatchDates.add(matchDate);
-                    teamMatchDates.put(match.getWinner(), team1MatchDates);
-                    teamMatchDates.put(match.getLoser(), team2MatchDates);
+                    teamMatchDates.put(match.getTeam1(), team1MatchDates);
+                    teamMatchDates.put(match.getTeam2(), team2MatchDates);
 
                     matchScheduled = true;
                 } else {
@@ -175,45 +180,55 @@ public class QualifyingStage extends Stage {
 
     private RoundResult firstRoundAFC() {
         // Filter the teams for those belonging to the AFC region and ranked 35-46
-        List<Team> afcTeams = getTeams().stream()
-                .filter(team -> team.getRegion() == Region.AFC)
+        List<Team> firstRoundTeams = getTeams().stream()
+                .filter(team -> team.getRegion() == Backend.Region.AFC)
                 .filter(team -> team.getRank() >= 35 && team.getRank() <= 46)
                 .collect(Collectors.toList());
 
-        List<Match> firstRoundMatches = new ArrayList<>();
+
+        List<List<Team>> groups = createGroups(firstRoundTeams, firstRoundTeams.size() / 2, 2);
         List<Team> winningTeams = new ArrayList<>();
+        List<Match> firstRoundMatches = new ArrayList<>();
 
-        // Pair the teams and create home-and-away matches
-        for (int i = 0; i < afcTeams.size(); i += 2) {
-            Team team1 = afcTeams.get(i);
-            Team team2 = afcTeams.get(i + 1);
-
-            // Create home and away matches
-            Match homeMatch = new Match(team1, team2);
-            Match awayMatch = new Match(team2, team1);
-
-            // Determine the winner based on the aggregate score
-            int team1Score = homeMatch.getTeam1Score() + awayMatch.getTeam2Score();
-            int team2Score = homeMatch.getTeam2Score() + awayMatch.getTeam1Score();
-            Team winner = (team1Score > team2Score) ? team1 : team2;
-
-            // Add the matches and the winner
-            firstRoundMatches.add(homeMatch);
-            firstRoundMatches.add(awayMatch);
-            winningTeams.add(winner);
+        for (List<Team> pair : groups) {
+            // Generate home and away matches for each pair
+            List<Match> pairedMatches = arrangeHomeAndAwayMatches(pair, true);
+            firstRoundMatches.addAll(pairedMatches);
         }
 
         // Assign dates to the first round matches
         assignDatesToRoundMatches(firstRoundMatches, LocalDate.of(2015, 3, 12), 5, 6);
 
+        // Simulate the matches
+        for (Match match : firstRoundMatches) {
+            match.simulateMatchResult();
+        }
+
+        for (List<Team> group : groups) {
+            // Get the matches for the current group
+            List<Match> allRoundMatches = firstRoundMatches.stream()
+                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
+                    .collect(Collectors.toList());
+
+            // Determine the winner based on the aggregate score
+            int team1Score = allRoundMatches.get(0).getTeam1Score() + allRoundMatches.get(1).getTeam2Score();
+            int team2Score = allRoundMatches.get(0).getTeam2Score() + allRoundMatches.get(1).getTeam1Score();
+            Team winner = (team1Score > team2Score) ? group.get(0) : group.get(1);
+            // Add the winner to the winningTeams list
+            winningTeams.add(winner);
+        }
+
+
         // Return a RoundResult object containing the winners and the matches
         return new RoundResult(winningTeams, firstRoundMatches);
     }
 
+
+
     private RoundResult secondRoundAFC() {
         // Get the top 34 teams and the 6 first round winners
         List<Team> secondRoundTeams = getTeams().stream()
-                .filter(team -> team.getRegion() == Region.AFC)
+                .filter(team -> team.getRegion() == Backend.Region.AFC)
                 .sorted(Comparator.comparing(Team::getRank))
                 .limit(34)
                 .collect(Collectors.toList());
@@ -233,23 +248,39 @@ public class QualifyingStage extends Stage {
         for (List<Team> group : groups) {
             // Arrange home and away matches for the group
             List<Match> secondRoundMatches = arrangeHomeAndAwayMatches(group, true);
-
-            // Simulate the matches and add their results
-            for (Match match : secondRoundMatches) {
-                match.simulateMatchResult();
-            }
             allGroupMatches.addAll(secondRoundMatches);
+        }
+
+        // Assign dates to the second round matches
+        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2015, 6, 11), 3, 4);
+
+        // Simulate the matches
+        for (Match match : allGroupMatches) {
+            match.simulateMatchResult();
+        }
+
+        for (List<Team> group : groups) {
+            // Get the matches for the current group
+            List<Match> secondRoundMatches = allGroupMatches.stream()
+                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
+                    .collect(Collectors.toList());
+
+            // Get the last match date in the group
+            LocalDate lastMatchDate = secondRoundMatches.get(secondRoundMatches.size() - 1).getMatchDate();
 
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
+            group.sort((t1, t2) -> Integer.compare(t2.getPoints(lastMatchDate), t1.getPoints(lastMatchDate)));
 
             // Add the group winner and runner-up to the respective lists
             groupWinners.add(group.get(0));
             groupRunnersUp.add(group.get(1));
         }
 
+        // Get the last match date in the group
+        LocalDate lastMatchDate = allGroupMatches.get(allGroupMatches.size() - 1).getMatchDate();
+
         // Sort the runners-up by their qualifier points in descending order
-        groupRunnersUp.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
+        groupRunnersUp.sort((t1, t2) -> Integer.compare(t2.getPoints(lastMatchDate), t1.getPoints(lastMatchDate)));
 
         // Get the four best group runners-up
         List<Team> bestGroupRunnersUp = groupRunnersUp.subList(0, 4);
@@ -258,11 +289,11 @@ public class QualifyingStage extends Stage {
         List<Team> qualifiedTeams = new ArrayList<>(groupWinners);
         qualifiedTeams.addAll(bestGroupRunnersUp);
 
-        // Assign dates to the second round matches
-        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2015, 6, 11), 3, 4);
-
         return new RoundResult(qualifiedTeams, allGroupMatches);
     }
+
+
+
 
     private RoundResult thirdRoundAFC() {
         List<List<Team>> thirdRoundGroups = createGroups(secondRoundResultAFC.getRoundTeams(), 2, 6);
@@ -270,17 +301,30 @@ public class QualifyingStage extends Stage {
         List<Team> thirdPlacedTeams = new ArrayList<>();
         List<Match> allGroupMatches = new ArrayList<>();
 
+        // Iterate through each group
         for (List<Team> group : thirdRoundGroups) {
-            List<Match> groupMatches = arrangeHomeAndAwayMatches(group, true);
-            // Assign dates to the matches with a 2-day interval and 6 matches per day
-            assignDatesToRoundMatches(groupMatches, LocalDate.of(2016, 9, 1), 11, 2);
-            for (Match match : groupMatches) {
-                match.simulateMatchResult();
-            }
-            allGroupMatches.addAll(groupMatches);
+            // Arrange home and away matches for the group
+            List<Match> secondRoundMatches = arrangeHomeAndAwayMatches(group, true);
+            allGroupMatches.addAll(secondRoundMatches);
+        }
 
+        // Assign dates to the matches with a 2-day interval and 6 matches per day
+        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2016, 9, 1), 11, 2);
+
+        // Simulate the matches
+        for (Match match : allGroupMatches) {
+            match.simulateMatchResult();
+        }
+
+        for (List<Team> group : thirdRoundGroups) {
+            // Get the matches for the current group
+            List<Match> thirdRoundMatches = allGroupMatches.stream()
+                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
+                    .collect(Collectors.toList());
+            // Get the last match date in the group
+            LocalDate lastMatchDate = thirdRoundMatches.get(thirdRoundMatches.size() - 1).getMatchDate();
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
+            group.sort((t1, t2) -> Integer.compare(t2.getPoints(lastMatchDate), t1.getPoints(lastMatchDate)));
 
             // Add the top two teams from each group to the qualified teams
             qualifiedTeams.add(group.get(0));
@@ -294,29 +338,24 @@ public class QualifyingStage extends Stage {
         return new RoundResult(qualifiedTeams, thirdPlacedTeams, allGroupMatches);
     }
 
-
-
     public RoundResult fourthRoundAFC() {
         // Two third-placed teams from the third round groups
         Team team1 = getThirdRoundResultAFC().getPlayOffTeams().get(0);
         Team team2 = getThirdRoundResultAFC().getPlayOffTeams().get(1);
 
-        // Create a home-and-away match between the two teams
-        Match homeMatch = new Match(team1, team2);
-        Match awayMatch = new Match(team2, team1);
+        // Create home-and-away matches between the two teams
+        List<Match> fourthRoundMatches = arrangeHomeAndAwayMatches(Arrays.asList(team1, team2), true);
 
-        // Simulate the match results
-        homeMatch.simulateMatchResult();
-        awayMatch.simulateMatchResult();
+        // Assign dates to the fourth round matches
+        assignDatesToRoundMatches(fourthRoundMatches, LocalDate.of(2017, 10, 5), 5, 1);
 
-        List<Match> fourthRoundMatches = new ArrayList<>();
-        fourthRoundMatches.add(homeMatch);
-        fourthRoundMatches.add(awayMatch);
+        // Simulate the matches
+        for (Match match : fourthRoundMatches) {
+            match.simulateMatchResult();
+        }
 
         // Determine the winner of the play-off
         Team playOffWinner = determinePlayOffWinner(fourthRoundMatches);
-
-        assignDatesToRoundMatches(fourthRoundMatches, LocalDate.of(2017, 10, 5), 5, 1);
 
         return new RoundResult(Collections.singletonList(playOffWinner), fourthRoundMatches);
     }
@@ -328,34 +367,33 @@ public class QualifyingStage extends Stage {
                 .filter(team -> team.getRank() >= 28 && team.getRank() <= 53)
                 .collect(Collectors.toList());
 
-        List<Match> firstRoundMatches = new ArrayList<>();
+        List<List<Team>> groups = createGroups(cafTeams, cafTeams.size() / 2, 2);
         List<Team> winningTeams = new ArrayList<>();
+        List<Match> firstRoundMatches = new ArrayList<>();
 
-        // Pair the teams and create home-and-away matches
-        for (int i = 0; i < cafTeams.size(); i += 2) {
-            Team team1 = cafTeams.get(i);
-            Team team2 = cafTeams.get(i + 1);
+        for (List<Team> pair : groups) {
+            // Generate home and away matches for each pair
+            List<Match> pairedMatches = arrangeHomeAndAwayMatches(pair, true);
+            firstRoundMatches.addAll(pairedMatches);
+        }
 
-            // Create home and away matches
-            Match homeMatch = new Match(team1, team2);
-            Match awayMatch = new Match(team2, team1);
+        // Assign dates to the first round matches
+        assignDatesToRoundMatches(firstRoundMatches, LocalDate.of(2015, 10, 7), 1, 6);
 
-            // Simulate home and away matches
-            homeMatch.simulateMatchResult();
-            awayMatch.simulateMatchResult();
+        for (List<Team> group : groups) {
+            // Get the matches for the current group
+            List<Match> allRoundMatches = firstRoundMatches.stream()
+                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
+                    .collect(Collectors.toList());
 
             // Determine the winner based on the aggregate score
-            int team1Score = homeMatch.getTeam1Score() + awayMatch.getTeam2Score();
-            int team2Score = homeMatch.getTeam2Score() + awayMatch.getTeam1Score();
-            Team winner = (team1Score > team2Score) ? team1 : team2;
-
-            // Add the matches and the winner
-            firstRoundMatches.add(homeMatch);
-            firstRoundMatches.add(awayMatch);
+            int team1Score = allRoundMatches.get(0).getTeam1Score() + allRoundMatches.get(1).getTeam2Score();
+            int team2Score = allRoundMatches.get(0).getTeam2Score() + allRoundMatches.get(1).getTeam1Score();
+            Team winner = (team1Score > team2Score) ? group.get(0) : group.get(1);
+            // Add the winner to the winningTeams list
             winningTeams.add(winner);
         }
 
-        assignDatesToRoundMatches(firstRoundMatches, LocalDate.of(2015, 10, 7), 1, 6);
 
         // Return a RoundResult object containing the winners and the matches
         return new RoundResult(winningTeams, firstRoundMatches);
@@ -363,41 +401,44 @@ public class QualifyingStage extends Stage {
 
     public RoundResult secondRoundCAF() {
         List<Team> cafTeams = getTeams().stream()
-                .filter(team -> team.getRegion() == Region.CAF)
+                .filter(team -> team.getRegion() == Backend.Region.CAF)
                 .sorted(Comparator.comparing(Team::getRank))
                 .limit(27)
                 .collect(Collectors.toList());
         // Add the 6 first round winners
         cafTeams.addAll(firstRoundResultCAF.getRoundTeams());
 
+        List<List<Team>> groups = createGroups(cafTeams, cafTeams.size() / 2, 2);
         List<Match> secondRoundMatches = new ArrayList<>();
         List<Team> winningTeams = new ArrayList<>();
 
-        // Pair the teams and create home-and-away matches
-        for (int i = 0; i < cafTeams.size(); i += 2) {
-            Team team1 = cafTeams.get(i);
-            Team team2 = cafTeams.get(i + 1);
-
-            // Create home and away matches
-            Match homeMatch = new Match(team1, team2);
-            Match awayMatch = new Match(team2, team1);
-
-            // Simulate home and away matches
-            homeMatch.simulateMatchResult();
-            awayMatch.simulateMatchResult();
-
-            // Determine the winner based on the aggregate score
-            int team1Score = homeMatch.getTeam1Score() + awayMatch.getTeam2Score();
-            int team2Score = homeMatch.getTeam2Score() + awayMatch.getTeam1Score();
-            Team winner = (team1Score > team2Score) ? team1 : team2;
-
-            // Add the matches and the winner
-            secondRoundMatches.add(homeMatch);
-            secondRoundMatches.add(awayMatch);
-            winningTeams.add(winner);
+        for (List<Team> pair : groups) {
+            // Generate home and away matches for each pair
+            List<Match> pairedMatches = arrangeHomeAndAwayMatches(pair, true);
+            secondRoundMatches.addAll(pairedMatches);
         }
 
+        // Assign dates to the first round matches
         assignDatesToRoundMatches(secondRoundMatches, LocalDate.of(2015, 11, 9), 1, 6);
+
+        // Simulate the matches
+        for (Match match : secondRoundMatches) {
+            match.simulateMatchResult();
+        }
+
+        for (List<Team> group : groups) {
+            // Get the matches for the current group
+            List<Match> allRoundMatches = secondRoundMatches.stream()
+                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
+                    .collect(Collectors.toList());
+
+            // Determine the winner based on the aggregate score
+            int team1Score = allRoundMatches.get(0).getTeam1Score() + allRoundMatches.get(1).getTeam2Score();
+            int team2Score = allRoundMatches.get(0).getTeam2Score() + allRoundMatches.get(1).getTeam1Score();
+            Team winner = (team1Score > team2Score) ? group.get(0) : group.get(1);
+            // Add the winner to the winningTeams list
+            winningTeams.add(winner);
+        }
 
         // Return a RoundResult object containing the winners and the matches
         return new RoundResult(winningTeams, secondRoundMatches);
@@ -410,22 +451,35 @@ public class QualifyingStage extends Stage {
         List<Team> groupWinners = new ArrayList<>();
         List<Match> allGroupMatches = new ArrayList<>();
 
+        // Iterate through each group
         for (List<Team> group : groups) {
-            List<Match> thirdRoundMatches = arrangeHomeAndAwayMatches(group, true);
+            // Arrange home and away matches for the group
+            List<Match> secondRoundMatches = arrangeHomeAndAwayMatches(group, true);
+            allGroupMatches.addAll(secondRoundMatches);
+        }
+        // Assign dates to the second round matches
+        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2016, 10, 7), 9, 3);
 
-            for (Match match : thirdRoundMatches) {
-                match.simulateMatchResult();
-            }
-            allGroupMatches.addAll(thirdRoundMatches);
+        // Simulate the matches
+        for (Match match : allGroupMatches) {
+            match.simulateMatchResult();
+        }
+
+        for (List<Team> group : groups) {
+            // Get the matches for the current group
+            List<Match> secondRoundMatches = allGroupMatches.stream()
+                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
+                    .collect(Collectors.toList());
+
+            // Get the last match date in the group
+            LocalDate lastMatchDate = secondRoundMatches.get(secondRoundMatches.size() - 1).getMatchDate();
 
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
+            group.sort((t1, t2) -> Integer.compare(t2.getPoints(lastMatchDate), t1.getPoints(lastMatchDate)));
 
             // Add the group winner and runner-up to the respective lists
             groupWinners.add(group.get(0));
-
         }
-        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2016, 10, 7), 9, 3);
 
         // Combine the winners and the best runners-up
         List<Team> qualifiedTeams = new ArrayList<>(groupWinners);
@@ -441,36 +495,40 @@ public class QualifyingStage extends Stage {
                 .collect(Collectors.toList());
 
         // Pair the teams into groups of two
-        List<List<Team>> pairedTeams = createGroups(concacafTeams, concacafTeams.size() / 2, 2);
+        List<List<Team>> groups = createGroups(concacafTeams, concacafTeams.size() / 2, 2);
 
         List<Match> firstRoundMatches = new ArrayList<>();
         List<Team> winningTeams = new ArrayList<>();
 
-        // Iterate through each pair of teams in the list
-        for (List<Team> pair : pairedTeams) {
-            // Generate home and away matches for each pair
-            List<Match> pairMatches = arrangeHomeAndAwayMatches(pair, true);
-
-
-
-            // Simulate match results
-            for (Match match : pairMatches) {
-                match.simulateMatchResult();
-            }
-
-            // Add the matches to the firstRoundMatches list
+        // Iterate through each group
+        for (List<Team> group : groups) {
+            // Arrange home and away matches for the group
+            List<Match> pairMatches = arrangeHomeAndAwayMatches(group, true);
             firstRoundMatches.addAll(pairMatches);
+        }
+
+        // Assign dates to the second round matches
+        assignDatesToRoundMatches(firstRoundMatches, LocalDate.of(2015, 3, 1), 4, 2);
+
+        // Simulate the matches
+        for (Match match : firstRoundMatches) {
+            match.simulateMatchResult();
+        }
+
+
+        for (List<Team> group : groups) {
+            // Get the matches for the current group
+            List<Match> allRoundMatches = firstRoundMatches.stream()
+                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
+                    .collect(Collectors.toList());
 
             // Determine the winner based on the aggregate score
-            int team1Score = pairMatches.get(0).getTeam1Score() + pairMatches.get(1).getTeam2Score();
-            int team2Score = pairMatches.get(0).getTeam2Score() + pairMatches.get(1).getTeam1Score();
-            Team winner = (team1Score > team2Score) ? pair.get(0) : pair.get(1);
-
+            int team1Score = allRoundMatches.get(0).getTeam1Score() + allRoundMatches.get(1).getTeam2Score();
+            int team2Score = allRoundMatches.get(0).getTeam2Score() + allRoundMatches.get(1).getTeam1Score();
+            Team winner = (team1Score > team2Score) ? group.get(0) : group.get(1);
             // Add the winner to the winningTeams list
             winningTeams.add(winner);
         }
-
-        assignDatesToRoundMatches(firstRoundMatches, LocalDate.of(2015, 3, 1), 4, 2);
 
         // Return a RoundResult object containing the winners and the matches
         return new RoundResult(winningTeams, firstRoundMatches);
@@ -485,35 +543,41 @@ public class QualifyingStage extends Stage {
 
         concacafTeams.addAll(getFirstRoundResultCONCACAF().getRoundTeams());
 
+
+
         // Pair the teams into groups of two
-        List<List<Team>> pairedTeams = createGroups(concacafTeams, concacafTeams.size() / 2, 2);
+        List<List<Team>> groups = createGroups(concacafTeams, concacafTeams.size() / 2, 2);
 
         List<Match> secondRoundMatches = new ArrayList<>();
         List<Team> winningTeams = new ArrayList<>();
 
-        // Iterate through each pair of teams in the list
-        for (List<Team> pair : pairedTeams) {
+        for (List<Team> pair : groups) {
             // Generate home and away matches for each pair
-            List<Match> pairMatches = arrangeHomeAndAwayMatches(pair, true);
+            List<Match> pairedMatches = arrangeHomeAndAwayMatches(pair, true);
+            secondRoundMatches.addAll(pairedMatches);
+        }
 
-            // Simulate match results
-            for (Match match : pairMatches) {
-                match.simulateMatchResult();
-            }
+        // Assign dates to the first round matches
+        assignDatesToRoundMatches(secondRoundMatches, LocalDate.of(2015, 6, 1), 3, 2);
 
-            // Add the matches to the firstRoundMatches list
-            secondRoundMatches.addAll(pairMatches);
+        // Simulate the matches
+        for (Match match : secondRoundMatches) {
+            match.simulateMatchResult();
+        }
+
+        for (List<Team> group : groups) {
+            // Get the matches for the current group
+            List<Match> allRoundMatches = secondRoundMatches.stream()
+                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
+                    .collect(Collectors.toList());
 
             // Determine the winner based on the aggregate score
-            int team1Score = pairMatches.get(0).getTeam1Score() + pairMatches.get(1).getTeam2Score();
-            int team2Score = pairMatches.get(0).getTeam2Score() + pairMatches.get(1).getTeam1Score();
-            Team winner = (team1Score > team2Score) ? pair.get(0) : pair.get(1);
-
+            int team1Score = allRoundMatches.get(0).getTeam1Score() + allRoundMatches.get(1).getTeam2Score();
+            int team2Score = allRoundMatches.get(0).getTeam2Score() + allRoundMatches.get(1).getTeam1Score();
+            Team winner = (team1Score > team2Score) ? group.get(0) : group.get(1);
             // Add the winner to the winningTeams list
             winningTeams.add(winner);
         }
-
-        assignDatesToRoundMatches(secondRoundMatches, LocalDate.of(2015, 6, 1), 3, 2);
 
         // Return a RoundResult object containing the winners and the matches
         return new RoundResult(winningTeams, secondRoundMatches);
@@ -529,34 +593,37 @@ public class QualifyingStage extends Stage {
         concacafTeams.addAll(getSecondRoundResultCONCACAF().getRoundTeams());
 
         // Pair the teams into groups of two
-        List<List<Team>> pairedTeams = createGroups(concacafTeams, concacafTeams.size() / 2, 2);
+        List<List<Team>> groups = createGroups(concacafTeams, concacafTeams.size() / 2, 2);
 
         List<Match> thirdRoundMatches = new ArrayList<>();
         List<Team> winningTeams = new ArrayList<>();
 
-        // Iterate through each pair of teams in the list
-        for (List<Team> pair : pairedTeams) {
+        for (List<Team> pair : groups) {
             // Generate home and away matches for each pair
-            List<Match> pairMatches = arrangeHomeAndAwayMatches(pair, true);
+            List<Match> pairedMatches = arrangeHomeAndAwayMatches(pair, true);
+            thirdRoundMatches.addAll(pairedMatches);
+        }
 
-            // Simulate match results
-            for (Match match : pairMatches) {
-                match.simulateMatchResult();
-            }
+        // Assign dates to the first round matches
+        assignDatesToRoundMatches(thirdRoundMatches, LocalDate.of(2015, 9, 1), 5, 2);
+        // Simulate the matches
+        for (Match match : thirdRoundMatches) {
+            match.simulateMatchResult();
+        }
 
-            // Add the matches to the firstRoundMatches list
-            thirdRoundMatches.addAll(pairMatches);
+        for (List<Team> group : groups) {
+            // Get the matches for the current group
+            List<Match> allRoundMatches = thirdRoundMatches.stream()
+                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
+                    .collect(Collectors.toList());
 
             // Determine the winner based on the aggregate score
-            int team1Score = pairMatches.get(0).getTeam1Score() + pairMatches.get(1).getTeam2Score();
-            int team2Score = pairMatches.get(0).getTeam2Score() + pairMatches.get(1).getTeam1Score();
-            Team winner = (team1Score > team2Score) ? pair.get(0) : pair.get(1);
-
+            int team1Score = allRoundMatches.get(0).getTeam1Score() + allRoundMatches.get(1).getTeam2Score();
+            int team2Score = allRoundMatches.get(0).getTeam2Score() + allRoundMatches.get(1).getTeam1Score();
+            Team winner = (team1Score > team2Score) ? group.get(0) : group.get(1);
             // Add the winner to the winningTeams list
             winningTeams.add(winner);
         }
-
-        assignDatesToRoundMatches(thirdRoundMatches, LocalDate.of(2015, 9, 1), 5, 2);
 
         // Return a RoundResult object containing the winners and the matches
         return new RoundResult(winningTeams, thirdRoundMatches);
@@ -572,32 +639,43 @@ public class QualifyingStage extends Stage {
         concacafTeams.addAll(getThirdRoundResultCONCACAF().getRoundTeams());
 
         // Pair the teams into groups of two
-        List<List<Team>> groupTeams = createGroups(concacafTeams, 3, 4);
+        List<List<Team>> groups = createGroups(concacafTeams, 3, 4);
 
         List<Match> fourthRoundMatches = new ArrayList<>();
         List<Team> qualifiedTeams = new ArrayList<>();
         List<Match> allGroupMatches = new ArrayList<>();
 
-        // Iterate through each pair of teams in the list
-        for (List<Team> group : groupTeams) {
-            fourthRoundMatches.addAll(arrangeHomeAndAwayMatches(group, true));
-            for (Match match : fourthRoundMatches) {
-                match.simulateMatchResult();
-            }
-            allGroupMatches.addAll(fourthRoundMatches);
-
-            // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
-
-            // Add the top two teams from each group to the qualified teams
-            qualifiedTeams.add(group.get(0));
-            qualifiedTeams.add(group.get(1));
-
-
+        // Iterate through each group
+        for (List<Team> group : groups) {
+            // Arrange home and away matches for the group
+            List<Match> secondRoundMatches = arrangeHomeAndAwayMatches(group, true);
+            allGroupMatches.addAll(secondRoundMatches);
         }
 
+        // Assign dates to the second round matches
         assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2015, 11, 1), 3, 2);
 
+        // Simulate the matches
+        for (Match match : allGroupMatches) {
+            match.simulateMatchResult();
+        }
+
+        for (List<Team> group : groups) {
+            // Get the matches for the current group
+            List<Match> secondRoundMatches = allGroupMatches.stream()
+                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
+                    .collect(Collectors.toList());
+
+            // Get the last match date in the group
+            LocalDate lastMatchDate = secondRoundMatches.get(secondRoundMatches.size() - 1).getMatchDate();
+
+            // Sort the teams in the group by their qualifier points in descending order
+            group.sort((t1, t2) -> Integer.compare(t2.getPoints(lastMatchDate), t1.getPoints(lastMatchDate)));
+
+            // Add the group winner and runner-up to the respective lists
+            qualifiedTeams.add(group.get(0));
+            qualifiedTeams.add(group.get(1));
+        }
         // return a FourthRoundResult object with the third round matches
         return new RoundResult(qualifiedTeams, allGroupMatches);
     }
@@ -605,25 +683,41 @@ public class QualifyingStage extends Stage {
     private RoundResult fifthRoundCONCACAF() {
 
         // Pair the teams into groups of two
-        List<List<Team>> groupTeams = createGroups(getFourthRoundResultCONCACAF().getRoundTeams(), 1, 6);
+        List<List<Team>> groups = createGroups(getFourthRoundResultCONCACAF().getRoundTeams(), 1, 6);
 
         List<Match> fifthRoundMatches = new ArrayList<>();
         List<Team> qualifiedTeams = new ArrayList<>();
         List<Team> fourthPlacedTeams = new ArrayList<>();
         List<Match> allGroupMatches = new ArrayList<>();
 
-        // Iterate through each pair of teams in the list
-        for (List<Team> group : groupTeams) {
-            fifthRoundMatches.addAll(arrangeHomeAndAwayMatches(group, true));
-            for (Match match : fifthRoundMatches) {
-                match.simulateMatchResult();
-            }
-            allGroupMatches.addAll(fifthRoundMatches);
+        // Iterate through each group
+        for (List<Team> group : groups) {
+            // Arrange home and away matches for the group
+            List<Match> secondRoundMatches = arrangeHomeAndAwayMatches(group, true);
+            allGroupMatches.addAll(secondRoundMatches);
+        }
+
+        // Assign dates to the second round matches
+        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2016, 11, 2), 10, 2);
+
+        // Simulate the matches
+        for (Match match : allGroupMatches) {
+            match.simulateMatchResult();
+        }
+
+        for (List<Team> group : groups) {
+            // Get the matches for the current group
+            List<Match> secondRoundMatches = allGroupMatches.stream()
+                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
+                    .collect(Collectors.toList());
+
+            // Get the last match date in the group
+            LocalDate lastMatchDate = secondRoundMatches.get(secondRoundMatches.size() - 1).getMatchDate();
 
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
+            group.sort((t1, t2) -> Integer.compare(t2.getPoints(lastMatchDate), t1.getPoints(lastMatchDate)));
 
-            // Add the top two teams from each group to the qualified teams
+            // Add the group winner and runner-up to the respective lists
             qualifiedTeams.add(group.get(0));
             qualifiedTeams.add(group.get(1));
             qualifiedTeams.add(group.get(2));
@@ -632,8 +726,6 @@ public class QualifyingStage extends Stage {
 
 
         }
-
-        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2016, 11, 2), 10, 2);
 
         // return a FourthRoundResult object with the third round matches and the third-placed teams
         return new RoundResult(qualifiedTeams,fourthPlacedTeams, allGroupMatches);
@@ -644,25 +736,41 @@ public class QualifyingStage extends Stage {
                 .filter(team -> team.getRegion() == Region.CONMEBOL)
                 .collect(Collectors.toList());
 
-        List<List<Team>> groupTeams = createGroups(conmebolTeams, 1, 10);
+        List<List<Team>> groups = createGroups(conmebolTeams, 1, 10);
 
-        List<Match> fifthRoundMatches = new ArrayList<>();
         List<Match> allGroupMatches = new ArrayList<>();
         List<Team> qualifiedTeams = new ArrayList<>();
         List<Team> fifthPlacedTeams = new ArrayList<>();
 
-        // Iterate through each pair of teams in the list
-        for (List<Team> group : groupTeams) {
-            fifthRoundMatches.addAll(arrangeHomeAndAwayMatches(group, true));
-            for (Match match : fifthRoundMatches) {
-                match.simulateMatchResult();
-            }
-            allGroupMatches.addAll(fifthRoundMatches);
+        // Iterate through each group
+        for (List<Team> group : groups) {
+            // Arrange home and away matches for the group
+            List<Match> secondRoundMatches = arrangeHomeAndAwayMatches(group, true);
+            allGroupMatches.addAll(secondRoundMatches);
+        }
+
+        // Assign dates to the second round matches
+        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2015, 10, 8), 10, 3);
+
+        // Simulate the matches
+        for (Match match : allGroupMatches) {
+            match.simulateMatchResult();
+        }
+
+
+        for (List<Team> group : groups) {
+            // Get the matches for the current group
+            List<Match> secondRoundMatches = allGroupMatches.stream()
+                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
+                    .collect(Collectors.toList());
+
+            // Get the last match date in the group
+            LocalDate lastMatchDate = secondRoundMatches.get(secondRoundMatches.size() - 1).getMatchDate();
 
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
+            group.sort((t1, t2) -> Integer.compare(t2.getPoints(lastMatchDate), t1.getPoints(lastMatchDate)));
 
-            // Add the top two teams from each group to the qualified teams
+            // Add the group winner and runner-up to the respective lists
             qualifiedTeams.add(group.get(0));
             qualifiedTeams.add(group.get(1));
             qualifiedTeams.add(group.get(2));
@@ -672,8 +780,6 @@ public class QualifyingStage extends Stage {
 
 
         }
-
-        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2015, 10, 8), 10, 3);
 
         // return a FourthRoundResult object with the third round matches and the third-placed teams
         return new RoundResult(qualifiedTeams,fifthPlacedTeams, allGroupMatches);
@@ -686,24 +792,40 @@ public class QualifyingStage extends Stage {
                 .filter(team -> Arrays.asList("American Samoa", "Cook Islands", "Samoa", "Tonga").contains(team.getName()))
                 .collect(Collectors.toList());
 
-        // Create round-robin matches for the four teams
-        List<Match> firstRoundMatches = arrangeHomeAndAwayMatches(ofcTeams, false);
+        List<List<Team>> groups = createGroups(ofcTeams, ofcTeams.size() / 2, 2);
+        List<Match> firstRoundMatches = new ArrayList<>();
+        List<Team> winningTeams = new ArrayList<>();
+
+        for (List<Team> pair : groups) {
+            // Generate home and away matches for each pair
+            List<Match> pairedMatches = arrangeHomeAndAwayMatches(pair, true);
+            firstRoundMatches.addAll(pairedMatches);
+        }
+
+        // Assign dates to the first round matches
+        assignDatesToRoundMatches(firstRoundMatches, LocalDate.of(2015, 9, 1), 2, 2);
 
         // Simulate match results
         for (Match match : firstRoundMatches) {
             match.simulateMatchResult();
         }
 
-        // Sort the teams by their qualifier points in descending order
-        ofcTeams.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
+        for (List<Team> group : groups) {
+            // Get the matches for the current group
+            List<Match> allRoundMatches = firstRoundMatches.stream()
+                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
+                    .collect(Collectors.toList());
 
-        // The winner is the team with the highest qualifier points
-        Team winner = ofcTeams.get(0);
-
-        assignDatesToRoundMatches(firstRoundMatches, LocalDate.of(2015, 9, 1), 2, 2);
+            // Determine the winner based on the aggregate score
+            int team1Score = allRoundMatches.get(0).getTeam1Score() + allRoundMatches.get(1).getTeam2Score();
+            int team2Score = allRoundMatches.get(0).getTeam2Score() + allRoundMatches.get(1).getTeam1Score();
+            Team winner = (team1Score > team2Score) ? group.get(0) : group.get(1);
+            // Add the winner to the winningTeams list
+            winningTeams.add(winner);
+        }
 
         // Return a RoundResult object containing the winner and the matches
-        return new RoundResult(Collections.singletonList(winner), firstRoundMatches);
+        return new RoundResult(winningTeams, firstRoundMatches);
     }
 
     public RoundResult secondRoundOFC() {
@@ -714,62 +836,84 @@ public class QualifyingStage extends Stage {
 
         ofcTeams.addAll(getFirstRoundResultOFC().getRoundTeams());
 
-        List<List<Team>> groupTeams = createGroups(ofcTeams, 2, 4);
+        List<List<Team>> groups = createGroups(ofcTeams, 2, 4);
 
-        List<Match> secondRoundMatches = new ArrayList<>();
         List<Match> allGroupMatches = new ArrayList<>();
         List<Team> qualifiedTeams = new ArrayList<>();
 
+        // Iterate through each group
+        for (List<Team> group : groups) {
+            // Arrange home and away matches for the group
+            List<Match> groupMatches = arrangeHomeAndAwayMatches(group, true);
+            allGroupMatches.addAll(groupMatches);
+        }
 
-        // Iterate through each pair of teams in the list
-        for (List<Team> group : groupTeams) {
-            secondRoundMatches.addAll(arrangeHomeAndAwayMatches(group, false));
-            for (Match match : secondRoundMatches) {
-                match.simulateMatchResult();
-            }
-            allGroupMatches.addAll(secondRoundMatches);
+        // Assign dates to the second round matches
+        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2016, 6, 1), 2, 3);
+
+        // Simulate the matches
+        for (Match match : allGroupMatches) {
+            match.simulateMatchResult();
+        }
+
+
+        for (List<Team> group : groups) {
+            // Get the matches for the current group
+            List<Match> secondRoundMatches = allGroupMatches.stream()
+                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
+                    .collect(Collectors.toList());
+
+            // Get the last match date in the group
+            LocalDate lastMatchDate = secondRoundMatches.get(secondRoundMatches.size() - 1).getMatchDate();
 
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
+            group.sort((t1, t2) -> Integer.compare(t2.getPoints(lastMatchDate), t1.getPoints(lastMatchDate)));
 
             // Add the top two teams from each group to the qualified teams
             qualifiedTeams.add(group.get(0));
             qualifiedTeams.add(group.get(1));
             qualifiedTeams.add(group.get(2));
 
-
-
         }
-
-        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2016, 6, 1), 2, 3);
 
         // return a FourthRoundResult object with the third round matches and the third-placed teams
         return new RoundResult(qualifiedTeams, allGroupMatches);
     }
 
     public RoundResult thirdRoundOFC() {
-        List<List<Team>> groupTeams = createGroups(getSecondRoundResultOFC().getRoundTeams(), 2, 3);
+        List<List<Team>> groups = createGroups(getSecondRoundResultOFC().getRoundTeams(), 2, 3);
 
-        List<Match> thirdRoundMatches = new ArrayList<>();
+        List<Match> allGroupMatches = new ArrayList<>();
         List<Team> groupWinners = new ArrayList<>();
 
-        // Iterate through each group of teams
-        for (List<Team> group : groupTeams) {
-            // Generate home and away round-robin matches for each group
-            List<Match> groupMatches = arrangeHomeAndAwayMatches(group, false);
+        // Iterate through each group
+        for (List<Team> group : groups) {
+            // Arrange home and away matches for the group
+            List<Match> secondRoundMatches = arrangeHomeAndAwayMatches(group, true);
+            allGroupMatches.addAll(secondRoundMatches);
+        }
 
-            // Simulate match results
-            for (Match match : groupMatches) {
-                match.simulateMatchResult();
-            }
+        // Assign dates to the second round matches
+        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2016, 11, 7), 23, 2);
 
-            // Add the matches to the thirdRoundMatches list
-            thirdRoundMatches.addAll(groupMatches);
+        // Simulate the matches
+        for (Match match : allGroupMatches) {
+            match.simulateMatchResult();
+        }
+
+        for (List<Team> group : groups) {
+            // Get the matches for the current group
+            List<Match> secondRoundMatches = allGroupMatches.stream()
+                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
+                    .collect(Collectors.toList());
+
+            // Get the last match date in the group
+            LocalDate lastMatchDate = secondRoundMatches.get(secondRoundMatches.size() - 1).getMatchDate();
 
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
+            group.sort((t1, t2) -> Integer.compare(t2.getPoints(lastMatchDate), t1.getPoints(lastMatchDate)));
 
-            // Add the group winner to the groupWinners list
+            // Add the group winner and runner-up to the respective lists
             groupWinners.add(group.get(0));
         }
 
@@ -777,11 +921,17 @@ public class QualifyingStage extends Stage {
         Match homeMatch = new Match(groupWinners.get(0), groupWinners.get(1));
         Match awayMatch = new Match(groupWinners.get(1), groupWinners.get(0));
 
+        List<Match> playOffMatches = new ArrayList<>();
+        playOffMatches.add(homeMatch);
+        playOffMatches.add(awayMatch);
+
+        // Assign dates to the play-off matches
+        assignDatesToRoundMatches(playOffMatches, LocalDate.of(2017, 9, 1), 5, 1);
+
         // Simulate the match results
         homeMatch.simulateMatchResult();
         awayMatch.simulateMatchResult();
 
-        List<Match> playOffMatches = new ArrayList<>();
         playOffMatches.add(homeMatch);
         playOffMatches.add(awayMatch);
 
@@ -789,10 +939,8 @@ public class QualifyingStage extends Stage {
         Team playOffWinner = determinePlayOffWinner(playOffMatches);
 
         // Combine third round matches and play-off matches
-        List<Match> allMatches = new ArrayList<>(thirdRoundMatches);
+        List<Match> allMatches = new ArrayList<>(allGroupMatches);
         allMatches.addAll(playOffMatches);
-
-        assignDatesToRoundMatches(allMatches, LocalDate.of(2016, 11, 7), 23, 2);
 
         // Return a RoundResult object containing the play-off winner and all matches
         return new RoundResult(Collections.singletonList(playOffWinner), allMatches);
@@ -810,71 +958,85 @@ public class QualifyingStage extends Stage {
         List<List<Team>> groups = new ArrayList<>(groupsOfSix);
         groups.addAll(groupsOfFive);
 
-        List<Match> firstRoundMatches = new ArrayList<>();
+        List<Match> allGroupMatches = new ArrayList<>();
         List<Team> groupWinners = new ArrayList<>();
         List<Team> groupRunnersUp = new ArrayList<>();
 
+        // Iterate through each group
         for (List<Team> group : groups) {
-            firstRoundMatches.addAll(arrangeHomeAndAwayMatches(group, true));
-            for (Match match : firstRoundMatches) {
-                match.simulateMatchResult();
-            }
+            // Arrange home and away matches for the group
+            List<Match> secondRoundMatches = arrangeHomeAndAwayMatches(group, true);
+            allGroupMatches.addAll(secondRoundMatches);
+        }
+
+        // Assign dates to the second round matches
+        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2016, 9, 4), 2, 3);
+
+        // Simulate the matches
+        for (Match match : allGroupMatches) {
+            match.simulateMatchResult();
+        }
+
+
+
+        for (List<Team> group : groups) {
+            // Get the matches for the current group
+            List<Match> secondRoundMatches = allGroupMatches.stream()
+                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
+                    .collect(Collectors.toList());
+
+            // Get the last match date in the group
+            LocalDate lastMatchDate = secondRoundMatches.get(secondRoundMatches.size() - 1).getMatchDate();
 
             // Sort the teams in the group by their qualifier points in descending order
-            group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
+            group.sort((t1, t2) -> Integer.compare(t2.getPoints(lastMatchDate), t1.getPoints(lastMatchDate)));
 
             // Add the group winner and runner-up to the respective lists
             groupWinners.add(group.get(0));
             groupRunnersUp.add(group.get(1));
         }
 
-        // Sort the runners-up by their qualifier points in descending order
-        groupRunnersUp.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
-
         // Get the eight best group runners-up
         List<Team> bestGroupRunnersUp = groupRunnersUp.subList(0, 8);
 
-        assignDatesToRoundMatches(firstRoundMatches, LocalDate.of(2016, 9, 4), 2, 3);
-
-        return new RoundResult(groupWinners, bestGroupRunnersUp, firstRoundMatches);
+        return new RoundResult(groupWinners, bestGroupRunnersUp, allGroupMatches);
     }
 
     private RoundResult secondRoundUEFA() {
         // Get the eight best runners-up from the first round
         List<Team> runnersUp = getFirstRoundResultUEFA().getPlayOffTeams();
 
-        // Pair the teams into groups of two
-        List<List<Team>> pairedTeams = createGroups(runnersUp, runnersUp.size() / 2, 2);
-
-        List<Match> secondRoundMatches = new ArrayList<>();
+        List<List<Team>> groups = createGroups(runnersUp, runnersUp.size() / 2, 2);
         List<Team> winningTeams = new ArrayList<>();
+        List<Match> firstRoundMatches = new ArrayList<>();
 
-        // Iterate through each pair of teams in the list
-        for (List<Team> pair : pairedTeams) {
+        for (List<Team> pair : groups) {
             // Generate home and away matches for each pair
-            List<Match> pairMatches = arrangeHomeAndAwayMatches(pair, true);
+            List<Match> pairedMatches = arrangeHomeAndAwayMatches(pair, true);
+            firstRoundMatches.addAll(pairedMatches);
+        }
 
-            // Simulate match results
-            for (Match match : pairMatches) {
-                match.simulateMatchResult();
-            }
+        // Assign dates to the second round matches
+        assignDatesToRoundMatches(firstRoundMatches, LocalDate.of(2017, 11, 9), 2, 2);
 
-            // Add the matches to the secondRoundMatches list
-            secondRoundMatches.addAll(pairMatches);
+        for (List<Team> group : groups) {
+            // Get the matches for the current group
+            List<Match> allRoundMatches = firstRoundMatches.stream()
+                    .filter(match -> group.contains(match.getTeam1()) && group.contains(match.getTeam2()))
+                    .collect(Collectors.toList());
 
             // Determine the winner based on the aggregate score
-            int team1Score = pairMatches.get(0).getTeam1Score() + pairMatches.get(1).getTeam2Score();
-            int team2Score = pairMatches.get(0).getTeam2Score() + pairMatches.get(1).getTeam1Score();
-            Team winner = (team1Score > team2Score) ? pair.get(0) : pair.get(1);
+            int team1Score = allRoundMatches.get(0).getTeam1Score() + allRoundMatches.get(1).getTeam2Score();
+            int team2Score = allRoundMatches.get(0).getTeam2Score() + allRoundMatches.get(1).getTeam1Score();
+            Team winner = (team1Score > team2Score) ? group.get(0) : group.get(1);
 
             // Add the winner to the winningTeams list
             winningTeams.add(winner);
         }
 
-        assignDatesToRoundMatches(secondRoundMatches, LocalDate.of(2017, 11, 9), 2, 2);
 
         // Return a RoundResult object containing the winners and the matches
-        return new RoundResult(winningTeams, secondRoundMatches);
+        return new RoundResult(winningTeams, firstRoundMatches);
     }
 
     public RoundResult playInterConfederationPlayoffs() {
@@ -900,12 +1062,12 @@ public class QualifyingStage extends Stage {
         playOffMatches.add(new Match(playoffTeams.get(2), playoffTeams.get(3)));
         playOffMatches.add(new Match(playoffTeams.get(3), playoffTeams.get(2)));
 
+        assignDatesToRoundMatches(playOffMatches, LocalDate.of(2017, 11, 10), 2, 1);
+
         // Simulate the matches
         for (Match match : playOffMatches) {
             match.simulateMatchResult();
         }
-
-        assignDatesToRoundMatches(playOffMatches, LocalDate.of(2017, 11, 10), 2, 1);
 
         return new RoundResult(worldCupQualifiers, playOffMatches);
     }
@@ -927,7 +1089,7 @@ public class QualifyingStage extends Stage {
 
     private Team determinePlayOffWinner(List<Match> playOffMatches) {
         int homeTeamGoals = playOffMatches.get(0).getTeam1Score() + playOffMatches.get(1).getTeam2Score();
-        int awayTeamGoals = playOffMatches.get(0).getTeam2Score() + playOffMatches.get(1).getTeam1Score();
+        int awayTeamGoals = playOffMatches.get(0).getTeam1Score() + playOffMatches.get(1).getTeam1Score();
 
         // Get the home and away teams
         Team homeTeam = playOffMatches.get(0).getTeam1();
