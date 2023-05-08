@@ -50,11 +50,7 @@ public class KnockoutStage extends Stage {
     private List<Match> createMatchesFromTeams(List<Team> teams) {
         List<Match> matches = new ArrayList<>();
         List<LocalDate> matchDates = getMatchDatesFromNumberOfTeams(teams.size());
-        for (int i = 0; i < teams.size(); i += 2) {
-            LocalDate matchDate = teams.size() <= NUM_TEAMS_IN_SEMIFINALS ? matchDates.get(i / 2) : matchDates.get(i / 4);
-            Match match = new Match(teams.get(i), teams.get(i + 1), matchDate, true);
-            matches.add(match);
-        }
+        populateMatchList(matches, teams, matchDates);
         return matches;
     }
 
@@ -70,6 +66,14 @@ public class KnockoutStage extends Stage {
                 return Collections.singletonList(LocalDate.of(WORLD_CUP_YEAR, Month.JULY.getValue(), 15));
         }
         return Collections.emptyList();
+    }
+
+    private void populateMatchList(List<Match> matches, List<Team> teams, List<LocalDate> matchDates) {
+        for (int i = 0; i < teams.size(); i += 2) {
+            LocalDate matchDate = teams.size() <= NUM_TEAMS_IN_SEMIFINALS ? matchDates.get(i / 2) : matchDates.get(i / 4);
+            Match match = new Match(teams.get(i), teams.get(i + 1), matchDate);
+            matches.add(match);
+        }
     }
 
     private List<LocalDate> getMatchDatesForRoundOfSixteen() {
