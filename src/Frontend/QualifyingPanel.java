@@ -20,32 +20,73 @@ import java.util.HashMap;
  * contains a MonthPanel in one tab and JScrollPanes in the rest. The MonthPanel
  * can be changed to view all matches over time, and the JScrollPanes display
  * Teams in ranked order.
+ *
+ * @author Dov Zipursky
  */
 
 
 public class QualifyingPanel extends JPanel implements StagePanel {
 
+    /**
+     * Various colors that this class uses
+     */
     protected static final Color BG_COLOR = StagePanel.fifaBlue;
     protected static final Color ROW1_COLOR = new Color(179, 201, 230);
     protected static final Color ROW2_COLOR = new Color(198, 215, 236);
     protected static final Color SCROLLPANE_COLOR = new Color(198, 215, 236);
 
+    /**
+     * The month and year that are currently shown in the MonthPanel
+     */
     private int curMonth;
-    private HashMap<String, BufferedImage> flags;
     private int curYear;
+
+    /**
+     * A HashMap of flag images, used to access those images with the
+     * team abbreviation
+     */
+    private HashMap<String, BufferedImage> flags;
+    /**
+     * A list of all matches played in the qualifying round
+     */
     private List<Match> matches;
+
+    /**
+     * The date of the first match played
+     */
     private LocalDate earliestMatchDate;
+    /**
+     * The date of the last match played
+     */
     private LocalDate latestMatchDate;
+    /**
+     * A list of all teams participating in the qualifying round
+     */
     private List<Team> teams;
+    /**
+     * The MonthPanel
+     */
     private MonthPanel month;
+    /**
+     * An array used to hold all of the region tabs
+     */
     private JPanel[] cards;
+    /**
+     * An array of regions to be used for sorting and tab titles
+     */
     private String[] regions = new String[6];
+    /**
+     * The JTabbedPane that serves as the base of this class's display
+     */
     private JTabbedPane tabPane;
+    /**
+     * A boolean tracking if this class has had initPanel() called or not
+     */
     private boolean initialized;
 
     /**
     The default constructor for QualifyingPanel.
-    Initializes the regions array with strings.
+    Initializes the regions array with strings and creates a MonthPanel.
      */
     public QualifyingPanel () {
 
@@ -75,7 +116,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      * with that matches that took place on those days.
      * Uses a border layout to display the month panel and navigation controls.
      *
-     * @param matches, a List of matches for the month being shown
+     * @param matches a List of matches for the month being shown
      */
     public void initMonthPanel(List<Match> matches) {
 
@@ -275,6 +316,10 @@ public class QualifyingPanel extends JPanel implements StagePanel {
         return initialized;
     }
 
+    /**
+     * Returns the background color this class uses.
+     * @return
+     */
     @Override
     public Color getThemeColor() {
         return BG_COLOR;
@@ -282,14 +327,11 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
 
     /**
-     * Initiates the JTabbedPane before the simulation has started, with a blank calendar
-     * tab and temporary region tabs.
+     * Initializes attributes necessary to display QualifyingPanel, including teams and matches,
+     * all tabs, and the starting date.
+     * @param matches a list of all matches in the qualifying round
+     * @param teamList a list of all teams in the qualifying round
      */
-    public void initPanel()  {
-
-
-    }
-
     @Override
     public void initPanel(List<Match> matches, List<Team> teamList) {
         LocalDate earliest = matches.get(0).getMatchDate();
@@ -342,7 +384,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
     /**
      * An ActionListener that I decided would be more convenient than
-     * implementing the interface.
+     * implementing the interface. Handles the buttons that change the months displayed.
      */
     ActionListener listener = new ActionListener() {
         @Override
@@ -385,7 +427,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     };
 
     /**
-     * Written by Chris P. and reused here for the same purpose.
+     * Written by Chris P. for GroupPanel and reused here for the same purpose.
      * Fills a HashMap with Flag images that are accessed by the
      * relevant team abbreviation.
      * @throws IOException
