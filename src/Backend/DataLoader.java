@@ -1,7 +1,5 @@
 package Backend;
 
-import Frontend.GUI;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,10 +11,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DataLoader {
-    private static final String TEAM_DATA_FILE_NAME = "../teams.txt";
+    private static final String TEAM_DATA_FILE_NAME = "teams.txt";
     private static final String DATA_DELIMITER = ",";
 
-    private DataLoader() {
+    DataLoader() {
     }
 
     /**
@@ -24,7 +22,7 @@ public class DataLoader {
      *
      * @return A list of Teams.
      */
-    public static List<Team> loadTeamData() {
+    public List<Team> loadTeamData() {
         final List<Team> teams = new ArrayList<>();
         final InputStream dataFileStream = getDataInputStream();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(dataFileStream))) {
@@ -35,12 +33,12 @@ public class DataLoader {
         return teams;
     }
 
-    private static InputStream getDataInputStream() {
-        final InputStream dataFileStream = GUI.class.getResourceAsStream(TEAM_DATA_FILE_NAME);
+    private InputStream getDataInputStream() {
+        final InputStream dataFileStream = this.getClass().getClassLoader().getResourceAsStream(TEAM_DATA_FILE_NAME);
         return Objects.requireNonNull(dataFileStream);
     }
 
-    private static void createTeamsFromLinesOfText(List<Team> teams, BufferedReader reader) {
+    private void createTeamsFromLinesOfText(List<Team> teams, BufferedReader reader) {
         final Region[] currentTeamRegion = {null};
         final List<String> fileLines = cleanFileTextInputBeforeReading(reader.lines());
         fileLines.forEach(lineText -> {
@@ -49,24 +47,24 @@ public class DataLoader {
         });
     }
 
-    private static List<String> cleanFileTextInputBeforeReading(Stream<String> fileStream) {
+    private List<String> cleanFileTextInputBeforeReading(Stream<String> fileStream) {
         final Stream<String> nonEmptyFileLines = filterOutEmptyLines(fileStream);
         return trimLinesAndConvertToList(nonEmptyFileLines);
     }
 
-    private static Stream<String> filterOutEmptyLines(Stream<String> lines) {
+    private Stream<String> filterOutEmptyLines(Stream<String> lines) {
         return lines.filter(s -> !s.isEmpty());
     }
 
-    private static List<String> trimLinesAndConvertToList(Stream<String> lines) {
+    private List<String> trimLinesAndConvertToList(Stream<String> lines) {
         return lines.map(String::trim).collect(Collectors.toList());
     }
 
-    private static boolean isLineTextARegionName(String line) {
+    private boolean isLineTextARegionName(String line) {
         return !line.contains(DATA_DELIMITER);
     }
 
-    private static Team createTeamFromTextLine(String line, Region region) {
+    private Team createTeamFromTextLine(String line, Region region) {
         String[] parts = line.split(DATA_DELIMITER);
         return new Team(parts[0], parts[1], region, Integer.parseInt(parts[2]));
     }

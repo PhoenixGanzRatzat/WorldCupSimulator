@@ -11,14 +11,17 @@ public class WorldCupSimulator {
     private QualifyingStage qualifiers;
     private GroupStage roundRobbin;
     private KnockoutStage brackets;
+    private static DataLoader dataLoader;
+
     public WorldCupSimulator(){
+        dataLoader = new DataLoader();
         this.startProgram();
         qualifiers = new QualifyingStage(teams);
         roundRobbin = null;
         brackets = null;
     }
     private void startProgram() {
-        teams = DataLoader.loadTeamData();
+        teams = dataLoader.loadTeamData();
     }
 
     public List<Team> getTeams() {
@@ -44,5 +47,9 @@ public class WorldCupSimulator {
                 return brackets.getMatches();
         }
         return null;
+    }
+
+    public static DataLoader getDataLoader() {
+        return dataLoader;
     }
 }

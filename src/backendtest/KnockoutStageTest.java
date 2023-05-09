@@ -2,6 +2,7 @@ package backendtest;
 
 import Backend.DataLoader;
 import Backend.Match;
+import Backend.WorldCupSimulator;
 import Backend.stage.KnockoutStage;
 import Backend.Team;
 
@@ -18,7 +19,7 @@ public class KnockoutStageTest {
     private final KnockoutStage knockoutStage;
 
     KnockoutStageTest() {
-        teams = DataLoader.loadTeamData().subList(0, NUM_OF_TEAMS_IN_KNOCKOUT_STAGE);
+        teams = WorldCupSimulator.getDataLoader().loadTeamData().subList(0, NUM_OF_TEAMS_IN_KNOCKOUT_STAGE);
         knockoutStage = new KnockoutStage(teams);
         arrangeMatches();
         simulateRounds();
