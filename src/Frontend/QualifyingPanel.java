@@ -362,11 +362,11 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             tabPane.addTab(regions[i], cards[i]);
         }
 
-
+        tabPane.setForeground(Color.BLACK);
         fillResults();
 
         this.add(tabPane);
-        tabPane.setBackground(BG_COLOR);
+        tabPane.setBackground(ROW1_COLOR);
         //tabPane.setPreferredSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize()));
         month.setBackground(BG_COLOR);
         //this.setSize(new Dimension(1600, 900));
