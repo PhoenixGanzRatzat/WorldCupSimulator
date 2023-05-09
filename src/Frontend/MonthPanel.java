@@ -16,7 +16,6 @@ import java.util.List;
 
 public class MonthPanel extends JPanel {
 
-    protected static final Color BG_COLOR = QualifyingPanel.BG_COLOR;
     protected static final Color FG_COLOR = QualifyingPanel.ROW2_COLOR;
 
     private static final GridLayout LAYOUT_FIVE_ROW = new GridLayout(5, 7, 10, 10);
@@ -27,7 +26,7 @@ public class MonthPanel extends JPanel {
     private JPanel calendarPanel;
     private JPanel monthLabelPanel;
     private JLabel monthLabel;
-    private List<DayPanel> dayPanels; //TODO: can probably use JPanel::getComponent(int)
+    private List<DayPanel> dayPanels;
 
     private java.time.LocalDate monthStart;
 
@@ -55,7 +54,7 @@ public class MonthPanel extends JPanel {
         this.monthLabelPanel = new JPanel();
         monthLabelPanel.setLayout(new BoxLayout(monthLabelPanel, BoxLayout.Y_AXIS));
         this.monthLabel = new JLabel();
-        monthLabel.setFont(new Font("Default",  Font.PLAIN, 24));
+        monthLabel.setFont(new Font("Default", Font.PLAIN, 24));
         monthLabel.setVerticalAlignment(SwingConstants.CENTER);
         monthLabelPanel.setBackground(FG_COLOR);
         monthLabelPanel.add(monthLabel);
@@ -90,7 +89,7 @@ public class MonthPanel extends JPanel {
 
         boolean sixRowsNeeded = daysInMonth + dayOffset > 35;
 
-        if (sixRowsNeeded){
+        if (sixRowsNeeded) {
             calendarPanel.setLayout(LAYOUT_SIX_ROW);
         } else {
             calendarPanel.setLayout(LAYOUT_FIVE_ROW);
@@ -111,7 +110,7 @@ public class MonthPanel extends JPanel {
                 calendarPanel.add(dayPanel, i);
             }
         }
-        for (int i = daysInMonth + dayOffset; i < (sixRowsNeeded ? 42:35); i++) {
+        for (int i = daysInMonth + dayOffset; i < (sixRowsNeeded ? 42 : 35); i++) {
             calendarPanel.add(new JLabel());
         }
     }
@@ -145,11 +144,6 @@ public class MonthPanel extends JPanel {
         }
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-    }
-
     /**
      * Inner class representing one day in a MonthPanel
      */
@@ -165,24 +159,26 @@ public class MonthPanel extends JPanel {
          */
         public DayPanel(java.time.LocalDate date) {
             //MAX OF 7 MATCHES PER DAY
-            this.setLayout(new GridBagLayout()); //TODO: use gridbaglayout
+            this.setLayout(new GridBagLayout());
             this.setSize(new Dimension(100, 100));
             this.setBackground(MonthPanel.FG_COLOR);
             matches = new ArrayList<>();
             this.date = LocalDate.from(date);
 
+            JLabel dayLabel = new JLabel(String.valueOf(date.getDayOfMonth()));
+            dayLabel.setBorder(BorderFactory.createEmptyBorder(2, 2, -1, -1));
             labelConstraints = new GridBagConstraints();
             labelConstraints.anchor = GridBagConstraints.NORTHWEST;
             labelConstraints.fill = GridBagConstraints.HORIZONTAL;
             labelConstraints.gridx = 0; //position
             labelConstraints.gridy = 0; //position
-            labelConstraints.insets = new Insets(4, 4, 4, 4);
-            labelConstraints.gridwidth = 1;
+            labelConstraints.insets = new Insets(0, 0, 0, 0);
+            labelConstraints.gridwidth = 5;
             labelConstraints.gridheight = 1;
             labelConstraints.weightx = 0.8;
             labelConstraints.weighty = 1.0;
 
-            addLabel(new JLabel(String.valueOf(date.getDayOfMonth())));
+            addLabel(dayLabel);
 
             labelConstraints.weighty = 0; //make match labels go to bottom of screen
             labelConstraints.anchor = GridBagConstraints.SOUTH;
@@ -194,20 +190,34 @@ public class MonthPanel extends JPanel {
         }
 
         private void addLabel(JLabel leftImage, JLabel matchLabel, JLabel rightImage) {
-            labelConstraints.anchor = GridBagConstraints.SOUTHWEST;
+            labelConstraints.gridwidth = 1;
+            Component leftStrut = Box.createHorizontalStrut(1);
+            labelConstraints.anchor = GridBagConstraints.WEST;
+            labelConstraints.weightx = 1;
             labelConstraints.gridx = 0;
+            this.add(leftStrut, labelConstraints);
+            labelConstraints.weightx = 0;
+            labelConstraints.anchor = GridBagConstraints.EAST;
+            labelConstraints.gridx = 1;
             this.add(leftImage, labelConstraints);
             labelConstraints.anchor = GridBagConstraints.SOUTH;
-            labelConstraints.gridx = 1;
-            this.add(matchLabel, labelConstraints);
-            labelConstraints.anchor = GridBagConstraints.SOUTHEAST;
+            labelConstraints.insets = labelConstraints.gridy == 0 ? new Insets(0, 5, 2, 5) : new Insets(0, 5, 0, 5);
             labelConstraints.gridx = 2;
+            this.add(matchLabel, labelConstraints);
+            labelConstraints.anchor = GridBagConstraints.WEST;
+            labelConstraints.insets = new Insets(0, 0, 0, 0);
+            labelConstraints.gridx = 3;
             this.add(rightImage, labelConstraints);
+            Component rightStrut = Box.createHorizontalStrut(1);
+            labelConstraints.anchor = GridBagConstraints.EAST;
+            labelConstraints.weightx = 1;
+            labelConstraints.gridx = 4;
+            this.add(rightStrut, labelConstraints);
             labelConstraints.gridy = labelConstraints.gridy + 1;
         }
 
         /**
-         * assert that all matches in the DayPanel are actually on thate date
+         * Assert that all matches in the DayPanel are actually on that date
          *
          * @return true if the class invariant is not violated
          */
@@ -255,15 +265,14 @@ public class MonthPanel extends JPanel {
         private void addMatch(Match match) {
             this.matches.add(match);
 
-            JLabel leftFlag = loadFlagLabel(match.getTeamOne().getAbbv());
-            leftFlag.setToolTipText(match.getTeamOne().getName());
-            JLabel rightFlag = loadFlagLabel(match.getTeamTwo().getAbbv());
-            rightFlag.setToolTipText(match.getTeamTwo().getName());
+            JLabel leftFlag = loadFlagLabel(match.getTeam1().getAbbv());
+            leftFlag.setToolTipText(match.getTeam1().getName());
+            JLabel rightFlag = loadFlagLabel(match.getTeam2().getAbbv());
+            rightFlag.setToolTipText(match.getTeam2().getName());
 
 
             //add a mouseover to display JPopupMenu
-            JLabel matchLabel = new JLabel();
-            matchLabel.setText(String.format("%s v. %s", match.getTeamOne().getAbbv(), match.getTeamTwo().getAbbv()));
+            JLabel matchLabel = new JLabel(String.format("%s v. %s", match.getTeam1().getAbbv(), match.getTeam2().getAbbv()), JLabel.CENTER);
             matchLabel.setToolTipText(formatMatchToolTip(match));
 
 
@@ -273,10 +282,19 @@ public class MonthPanel extends JPanel {
         }
 
         private String formatMatchToolTip(Match match) {
-            String winnerScore = String.valueOf(match.getWinnerScore());
-            String loserScore = String.valueOf(match.getLoserScore());
-            if(match.getWinner() == null) {
-                winnerScore = String.valueOf(match.getTeamOneScore());
+            String winnerScore;
+            String loserScore;
+            if (match.getTeam1Score() > match.getTeam2Score()) {
+                winnerScore = String.valueOf(match.getTeam1Score());
+                loserScore = String.valueOf(match.getTeam2Score());
+            } else if (match.getTeam1Score() < match.getTeam2Score()) {
+                winnerScore = String.valueOf(match.getTeam2Score());
+                loserScore = String.valueOf(match.getTeam1Score());
+            } else {
+                winnerScore = String.valueOf(match.getTeam2Score()); // scores are the same for draws
+                loserScore = String.valueOf(match.getTeam1Score());
+            }
+            if (match.getWinner() == null) {
                 return String.format(
                         "<html>" +
                                 "<p><u><b>" +
@@ -287,7 +305,7 @@ public class MonthPanel extends JPanel {
                                 "<br>" +
                                 "Score: %s - %s" +
                                 "</p></html>",
-                        match.getTeamOne().getName(), match.getTeamTwo().getName(), winnerScore, winnerScore);
+                        match.getTeam1().getName(), match.getTeam2().getName(), winnerScore, winnerScore);
 
 
             } else {
@@ -302,15 +320,9 @@ public class MonthPanel extends JPanel {
                                 "<br>" +
                                 "Score: %s - %s" +
                                 "</p></html>",
-                        match.getTeamOne().getName(), match.getTeamTwo().getName(), winnerDisplayName, winnerScore, loserScore);
+                        match.getTeam1().getName(), match.getTeam2().getName(), winnerDisplayName, winnerScore, loserScore);
 
             }
         }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-        }
-
     }
 }

@@ -18,16 +18,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.*;
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -70,152 +69,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     /* Tracker for groups that have completed displaying all of their matches*/
     private boolean[] groupsThatAreComplete;
     private boolean initialized;
-    private Color themeColor;
-
-    /* TODO:
-        >>> who moves on? top points in each group? what if multiple teams have the same final points?
-        who do i highlight and why
-            > Top 2
-            > Should I have a "winners" map for each group
-       Todo:
-     */
-
-    /**
-     * TEMPORARY
-     */
-    public static void main(String[] args) {
-        GroupPanel panel = new GroupPanel();
-        JFrame frame = new JFrame();
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.add(panel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-    }
-
-    /**
-     * TEMPORARY: REMOVE FOR FINAL IMPLEMENTATION
-     */
-    private void testMatches() {
-        Team team1 = new Team("United States", "USA", null, 0);
-        Team team2 = new Team("Canada", "CAN", null, 0);
-        Team team3 = new Team("Germany", "GER", null, 0);
-        Team team4 = new Team("Sudan", "SDN", null, 0);
-
-        Team team5 = new Team("France", "FRA", null, 0);
-        Team team6 = new Team("Iran", "IRN", null, 0);
-        Team team7 = new Team("Wales", "WAL", null, 0);
-        Team team8 = new Team("England", "ENG", null, 0);
-
-        Team team9 = new Team("Netherlands", "NED", null, 0);
-        Team team10 = new Team("Ecuador", "ECU", null, 0);
-        Team team11 = new Team("Qatar", "QAT", null, 0);
-        Team team12 = new Team("Australia", "AUS", null, 0);
-
-        Team team13 = new Team("Croatia", "CRC", null, 0);
-        Team team14 = new Team("Japan", "JPN", null, 0);
-        Team team15 = new Team("Denmark", "DEN", null, 0);
-        Team team16 = new Team("Tunisia", "TUN", null, 0);
-
-        Team team17 = new Team("South Korea", "KOR", null, 0);
-        Team team18 = new Team("China", "CHN",null, 0);
-        Team team19 = new Team("Iraq", "IRQ", null, 0);
-        Team team20 = new Team("India", "IND", null, 0);
-
-        Team team21 = new Team("Oman", "OMA", null, 0);
-        Team team22 = new Team("Lebanon", "LBN",null, 0);
-        Team team23 = new Team("Mexico", "MEX", null, 0);
-        Team team24 = new Team("Dominica", "DMA", null, 0);
-
-        Team team25 = new Team("Pakistan", "PAK", null, 0);
-        Team team26 = new Team("Macau", "MAC",null, 0);
-        Team team27 = new Team("Libya", "LBY", null, 0);
-        Team team28 = new Team("Namibia", "NAM", null, 0);
-
-        Team team29 = new Team("El Salvador", "SLV", null, 0);
-        Team team30 = new Team("Togo", "TOG",null, 0);
-        Team team31 = new Team("Bahamas", "BAH", null, 0);
-        Team team32 = new Team("Bermuda", "BER", null, 0);
-
-        this.teams = new ArrayList<>(Arrays.asList(team1, team2, team3, team4, team5, team6, team7,
-                team8, team9, team10, team11, team12, team13, team14, team15, team16,
-                team17, team18, team19, team20, team21, team22, team23, team24, team25,
-                team26, team27, team28, team29, team30, team31, team32));
-
-
-        // group teams: alpha, bravo, charlie, delta
-        /* matches in every group for round robin tournament
-            alpha v bravo
-            alpha v charlie
-            alpha v delta
-            bravo v charlie
-            bravo v delta
-            charlie v delta
-         */
-
-        Match match6  = new Match(team3 , team4 , 0,1, LocalDate.of(2020, 5, 1));
-        Match match5  = new Match(team2 , team4 , 1,0, LocalDate.of(2020, 4, 1));
-        Match match2  = new Match(team1 , team3 , 1,1, LocalDate.of(2020, 2, 1));
-        Match match3  = new Match(team1 , team4 , 2,1, LocalDate.of(2020, 6, 1));
-        Match match4  = new Match(team2 , team3 , 1,2, LocalDate.of(2020, 3, 1));
-        Match match1  = new Match(team1 , team2 , 2,1, LocalDate.of(2020, 1, 1));
-
-        Match match7  = new Match(team7 , team8 , 1,1, LocalDate.of(2020, 5, 1));
-        Match match8  = new Match(team6 , team8 , 2,0, LocalDate.of(2020, 4, 1));
-        Match match9  = new Match(team5 , team7 , 1,2, LocalDate.of(2020, 2, 1));
-        Match match10 = new Match(team5 , team8 , 2,2, LocalDate.of(2020, 6, 1));
-        Match match11 = new Match(team6 , team7 , 1,0, LocalDate.of(2020, 3, 1));
-        Match match12 = new Match(team5 , team6 , 1,1, LocalDate.of(2020, 1, 1));
-
-        Match match13 = new Match(team11, team12, 2,1, LocalDate.of(2020, 5, 1));
-        Match match14 = new Match(team10, team12, 2,0, LocalDate.of(2020, 4, 1));
-        Match match15 = new Match(team9 , team11, 0,1, LocalDate.of(2020, 2, 1));
-        Match match16 = new Match(team9 , team12, 1,1, LocalDate.of(2020, 6, 1));
-        Match match17 = new Match(team10, team11, 3,2, LocalDate.of(2020, 3, 1));
-        Match match18 = new Match(team9 , team10, 1,1, LocalDate.of(2020, 1, 1));
-
-        Match match19 = new Match(team15, team16, 0,2, LocalDate.of(2020, 5, 1));
-        Match match20 = new Match(team14, team16, 1,1, LocalDate.of(2020, 4, 1));
-        Match match21 = new Match(team13, team15, 1,2, LocalDate.of(2020, 2, 1));
-        Match match22 = new Match(team13, team16, 2,0, LocalDate.of(2020, 6, 1));
-        Match match23 = new Match(team14, team15, 1,0, LocalDate.of(2020, 3, 1));
-        Match match24 = new Match(team13, team14, 2,2, LocalDate.of(2020, 1, 1));
-
-        Match match25 = new Match(team19, team20, 1,1, LocalDate.of(2020, 5, 1));
-        Match match26 = new Match(team18, team20, 1,2, LocalDate.of(2020, 4, 1));
-        Match match27 = new Match(team17, team19, 2,3, LocalDate.of(2020, 2, 1));
-        Match match28 = new Match(team17, team20, 0,1, LocalDate.of(2020, 6, 1));
-        Match match29 = new Match(team18, team19, 1,1, LocalDate.of(2020, 3, 1));
-        Match match30 = new Match(team17, team18, 1,2, LocalDate.of(2020, 1, 1));
-
-        Match match31 = new Match(team23, team24, 1,1, LocalDate.of(2020, 5, 1));
-        Match match32 = new Match(team22, team24, 2,0, LocalDate.of(2020, 4, 1));
-        Match match33 = new Match(team21, team23, 0,1, LocalDate.of(2020, 2, 1));
-        Match match34 = new Match(team21, team24, 0,0, LocalDate.of(2020, 6, 1));
-        Match match35 = new Match(team22, team23, 2,1, LocalDate.of(2020, 3, 1));
-        Match match36 = new Match(team21, team22, 1,0, LocalDate.of(2020, 1, 1));
-
-        Match match37 = new Match(team27, team28, 0,1, LocalDate.of(2020, 5, 1));
-        Match match38 = new Match(team26, team28, 0,1, LocalDate.of(2020, 4, 1));
-        Match match39 = new Match(team25, team27, 0,2, LocalDate.of(2020, 2, 1));
-        Match match40 = new Match(team25, team28, 2,3, LocalDate.of(2020, 6, 1));
-        Match match41 = new Match(team26, team27, 1,2, LocalDate.of(2020, 3, 1));
-        Match match42 = new Match(team25, team26, 1,1, LocalDate.of(2020, 1, 1));
-
-        Match match43 = new Match(team31, team32, 1,0, LocalDate.of(2020, 5, 1));
-        Match match44 = new Match(team30, team32, 2,1, LocalDate.of(2020, 4, 1));
-        Match match45 = new Match(team29, team31, 2,0, LocalDate.of(2020, 2, 1));
-        Match match46 = new Match(team29, team32, 1,1, LocalDate.of(2020, 6, 1));
-        Match match47 = new Match(team30, team31, 2,1, LocalDate.of(2020, 3, 1));
-        Match match48 = new Match(team29, team30, 1,0, LocalDate.of(2020, 1, 1));
-
-        this.matches = new ArrayList<>(Arrays.asList(match1, match2, match3, match4, match5, match6,
-                match7, match8, match9, match10, match11, match12, match13, match14, match15,
-                match16, match17, match18, match19, match20, match21, match22, match23, match24,
-                match25, match26, match27, match28, match29, match30, match31, match32, match33,
-                match34, match35, match36, match37, match38, match39, match40, match41, match42,
-                match43, match44, match45, match46, match47, match48));
-        createGroups();
-    }
 
     /* __ CONSTRUCTORS __ */
     public GroupPanel() {
@@ -233,16 +86,10 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         groupsThatAreComplete = new boolean[]{false, false, false, false, false, false, false, false};
         resultsPanel = new JPanel();
         flags = new HashMap<>();
-        testMatches();
-        try {
-            initFlags();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        initPanel();
-
-
+        matches = new ArrayList<>();
+        teams = new ArrayList<>();
     }
+
 
     /* __ FUNCTIONS __ */
     /* GROUP PANEL FUNCTIONS */
@@ -259,15 +106,16 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     private JPanel createGroupPanel(int groupNumber) {
         // panel that is returned is 'base'
         JPanel base = new JPanel();
-        base.setLayout(new GridLayout(6,1,1,1));
-        base.setPreferredSize(new Dimension(500, 125));
-        base.setBorder(new LineBorder(Color.BLACK));
+        base.setBackground(buttonBackground);
+        base.setLayout(new GridLayout(6,1, 0,1));
+        //base.setPreferredSize(new Dimension(500, 125));
+        base.setBorder(new LineBorder(buttonBorder));
 
         // top button used to select this group
         JPanel groupSelectBTNPanel = new JPanel(new BorderLayout());
-        String groupLetter = String.valueOf((char) (groupNumber + 65)); // '65' = 'A' // TODO: maybe a String
+        String groupLetter = String.valueOf((char) (groupNumber + 65)); // '65' = 'A'
         JButton groupSelectBTN = new JButton(groupLetter); // top of each group panel has a 'Select this group' button
-        groupSelectBTN.setPreferredSize(new Dimension(base.getWidth(), 25));
+        //groupSelectBTN.setPreferredSize(new Dimension(base.getWidth(), 35));
         groupSelectBTN.addActionListener(this);
 
         // The top row of the group panel is a button with the group letter
@@ -277,8 +125,9 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         // Title's that go above each column of data in group panel
         JPanel titlePane = new JPanel();
         titlePane.setLayout(new GridLayout(1, 7, 2, 2));
-        titlePane.setPreferredSize(new Dimension(base.getWidth(), 25));
+        //titlePane.setPreferredSize(new Dimension(base.getWidth(), 25));
         titlePane.setBorder(new LineBorder(Color.BLACK));
+        titlePane.setBackground(fifaBlue);
 
         /*
             __ Title pane __
@@ -293,6 +142,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         titles[5] = new JLabel("Losses");
         titles[6] = new JLabel("Points");
         for (JLabel l : titles) {
+            l.setForeground(buttonText);
             l.setHorizontalAlignment(SwingConstants.CENTER);
             titlePane.add(l);
         }
@@ -308,19 +158,20 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
             rowPanes[i].setBorder(new LineBorder(Color.BLACK));
             rowPanes[i].setLayout(new GridLayout(1,7));
             rowPanes[i].setFont(new Font("Arial", Font.BOLD, 10));
-
+            rowPanes[i].setBackground(buttonBackground);
+            rowPanes[i].setBorder(new LineBorder(buttonBorder));
             // compose
             for (int j = 0; j < 7; j++) {
-                JLabel label;
+                JLabel label = new JLabel();
+                label.setForeground(buttonText);
                 if(j == 0) { // { POSITION }
-                    label = new JLabel();
                     label.setText(String.valueOf(i + 1)); // display position (1-4)
                 }
                 if(j == 2) { // { FLAG }
-                    label = new JLabel(new ImageIcon());
+                    label.setIcon(new ImageIcon());
                     label.setText("");
                 } else {
-                    label = new JLabel("*");
+                    label.setText("0");
                 }
 
                 label.setHorizontalAlignment(SwingConstants.CENTER);
@@ -353,6 +204,27 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
                 ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(4)).setText("0");
                 ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(5)).setText("0");
                 ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(6)).setText("0");
+            }
+        }
+    }
+
+    /**
+     * After initialization of class object this method will update panels with the teams in each group
+     */
+    private void initGroupPanelsWithTeams() {
+        // for each group
+        for(Integer groupNumber : this.groupTeams.keySet()) {
+            // get group panel
+            JPanel groupPanel = (JPanel) this.groupDisplayPanel.getComponent(groupNumber-1);
+            // for each group row panel, Components: [0] - selection button, [1] title pane
+            for (int b = 2; b < groupPanel.getComponents().length; b++) {
+                JPanel row = (JPanel) groupPanel.getComponent(b);
+
+                Team team = this.groupTeams.get(groupNumber).get(b-2);
+                ((JLabel) row.getComponent(1)).setText(team.getName());
+                ((JLabel) row.getComponent(1)).setToolTipText(team.getName());
+                ((JLabel) row.getComponent(2)).setIcon(getScaledIcon(team.getAbbv()));
+
             }
         }
     }
@@ -420,11 +292,9 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
                 }
             }
         }
-        // TODO: possible error, unhandled
         return null;
     }
     /**
-     * helper method for updateGroupPanelInfo()
      * Extracts the text from the JLabel in GroupRowPanel at index
      * converts text to integer then adds the increment value
      * then sets the text of the same JLabel with the new value.
@@ -437,6 +307,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         int value = (Integer.parseInt(indexStr)) + increment;
         ((JLabel) rowPanel.getComponent(index)).setText(String.valueOf(value));
     }
+
     /**
      * Used to ensure that group panels always display row information based on
      * descending position 1 - 4 top to bottom
@@ -448,22 +319,28 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         // extract an array of only the panels that need sorting
         JPanel[] panelsToSort = new JPanel[numRowPanels - 2];
         for (int i = 2; i < numRowPanels; i++) {
-            panelsToSort[i-2] = (JPanel) rowPanels[i];
+            panelsToSort[i - 2] = (JPanel) rowPanels[i];
         }
 
         // sort those panels by "point" values in descending order
         Arrays.sort(panelsToSort, (p1, p2) -> {
-            int points1 = Integer.parseInt(((JLabel) p1.getComponent(6)).getText());
-            int points2 = Integer.parseInt(((JLabel) p2.getComponent(6)).getText());
-            return Integer.compare(points2, points1);
+            Integer points1 = Integer.parseInt(((JLabel) p1.getComponent(6)).getText());
+            Integer points2 = Integer.parseInt(((JLabel) p2.getComponent(6)).getText());
+            int pointComparison = points2.compareTo(points1);
+            if (pointComparison == 0) {
+                String country1 = ((JLabel) p1.getComponent(1)).getText();
+                String country2 = ((JLabel) p2.getComponent(1)).getText();
+                return country1.compareTo(country2);
+            }
+            return pointComparison;
         });
 
         // remove each panel and add them back in the sorted order
         for (int i = 2; i < numRowPanels; i++) {
-            ((JLabel) panelsToSort[i-2].getComponent(0)).setText(String.valueOf(i-1));
-            panelsToSort[i-2].setBorder(new CompoundBorder(new LineBorder(Color.BLACK), new EmptyBorder(2,2,2,2)));
-            groupPanel.remove(panelsToSort[i-2]);
-            groupPanel.add(panelsToSort[i-2], i);
+            ((JLabel) panelsToSort[i - 2].getComponent(0)).setText(String.valueOf(i - 1));
+            panelsToSort[i - 2].setBorder(new CompoundBorder(new LineBorder(buttonBorder), new EmptyBorder(2, 2, 2, 2)));
+            groupPanel.remove(panelsToSort[i - 2]);
+            groupPanel.add(panelsToSort[i - 2], i);
         }
 
         // refreshes the display with changes
@@ -480,11 +357,18 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
      */
     private JPanel createMatchResultRowPanel() {
         JPanel base = new JPanel(new FlowLayout());
+        base.setBackground(buttonBackground);
+        base.setBorder(new LineBorder(buttonBorder));
         for (int i = 0; i < 7; i++) {
+            JLabel label = new JLabel();
+            label.setForeground(buttonText);
+            label.setFont(new Font("Monospaced", Font.BOLD, 17));
             if(i == 3) {
-                base.add(new JLabel("-"));
+                label.setText("-");
+                base.add(label);
             } else {
-                base.add(new JLabel("x"));
+                label.setText("x");
+                base.add(label);
             }
         }
         return base;
@@ -512,11 +396,11 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         String result1;
         String result2;
         if (score1 > score2) {
-            result1 = "Win";
+            result1 = "Win ";
             result2 = "Loss";
         } else if (score1 < score2) {
             result1 = "Loss";
-            result2 = "Win";
+            result2 = "Win ";
         } else {
             result1 = "Draw";
             result2 = "Draw";
@@ -664,8 +548,8 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         JPanel rowPanel2 = (JPanel) groupPanel.getComponent(3);
         rowPanel1.setBorder(new LineBorder(Color.green, 1));
         rowPanel2.setBorder(new LineBorder(Color.green, 1));
-        groupPanel.getComponent(4).setBackground(Color.lightGray);
-        groupPanel.getComponent(5).setBackground(Color.lightGray);
+        groupPanel.getComponent(4).setBackground(new Color(107, 140, 166));
+        groupPanel.getComponent(5).setBackground(new Color(107, 140, 166));
 
     }
     /**
@@ -701,7 +585,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
                     int size = groupTeams.size();
                     groupTeams.put((size + 1), new ArrayList<>());
                     groupMatches.put((size + 1), new ArrayList<>());
-
                 }
 
                 for (Integer gn : groupTeams.keySet()) {     // Search each group for empty group
@@ -752,16 +635,25 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     public boolean checkIfCompleted() {
         boolean finalResult = true;
         for(boolean groupComplete : this.groupsThatAreComplete) {
-            if(!groupComplete) {
+            if (!groupComplete) {
                 finalResult = false;
+                break;
             }
         }
         return finalResult;
     }
 
     @Override
-    public void initPanel(List<Match> matchList) {
+    public void initPanel(List<Match> matchList, List<Team> teamList) {
         this.matches = matchList;
+        this.teams = teamList;
+
+        try {
+            initFlags();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         createGroups();
         initPanel();
     }
@@ -769,34 +661,48 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     /**
      * Create an empty group stage panel that will be filled in as the user interacts with function buttons
      */
-    @Override
     public void initPanel() {
+        Font font = new Font("Arial", Font.BOLD, 30);
         /* Top bar across window for displaying current round */
-        JPanel infoPanel = new JPanel();
+        JPanel infoPanel = new JPanel(new GridLayout(1,4));
+        infoPanel.setBackground(fifaBlue);
         /* Center container for group results and group teams */
         JPanel displayPanel = new JPanel();
         displayPanel.setLayout(new GridBagLayout());
-        displayPanel.setBorder(new LineBorder(Color.BLACK));
         GridBagConstraints constraints = new GridBagConstraints();
-        displayPanel.setBackground(new Color(0, 0, 75));
-        themeColor = displayPanel.getBackground();
+        displayPanel.setBackground(fifaBlue);
         /* Bottom bar across window for housing functions */
         JPanel functionPanel = new JPanel();
+        functionPanel.setBackground(new Color(107, 140, 166));
+        functionPanel.setBorder(new LineBorder(buttonBorder));
+
 
         /* Information Panel */
-        JLabel titleLabel = new JLabel("Group Stage!");
-        infoPanel.add(titleLabel);
         JLabel groupLabel = new JLabel("Group: ");
+        groupLabel.setFont(font);
+        groupLabel.setForeground(buttonText);
+        groupLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         infoPanel.add(groupLabel);
+
+        infoPanelGroupLabel.setFont(font);
+        infoPanelGroupLabel.setForeground(buttonText);
+        infoPanelGroupLabel.setHorizontalAlignment(SwingConstants.CENTER);
         infoPanel.add(infoPanelGroupLabel);
+
         JLabel roundLabel = new JLabel("Round: ");
+        roundLabel.setFont(font);
+        roundLabel.setForeground(buttonText);
         infoPanel.add(roundLabel);
+
+        infoPanelRoundNumberLabel.setFont(font);
+        infoPanelRoundNumberLabel.setForeground(buttonText);
         infoPanel.add(infoPanelRoundNumberLabel);
 
         /* __ Display Panel */
         // Container for all group panes - displays each teams w/d/l record and points
-        groupDisplayPanel.setLayout(new GridLayout(4, 2, 2, 2));
+        groupDisplayPanel.setLayout(new GridLayout(4, 2,5,5));
         groupDisplayPanel.setOpaque(false);
+        groupDisplayPanel.setPreferredSize(new Dimension(975, 550));
         for (int i = 0; i < 8; i++) {
             groupDisplayPanel.add(createGroupPanel(i));
         }
@@ -804,17 +710,20 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
 
         // results side-pane - displays score and outcome between each match in the group
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
-        resultsPanel.setPreferredSize(new Dimension(200, 215));
-        resultsPanel.setBorder(new LineBorder(Color.black));
+        resultsPanel.setPreferredSize(new Dimension(230, 245));
+        resultsPanel.setBorder(new LineBorder(buttonBorder));
+        resultsPanel.setBackground(buttonBackground);
         JPanel resultsTitlePane = new JPanel();
+        resultsTitlePane.setBackground(buttonBackground);
         JLabel resultsTitleLabel = new JLabel("Group A Results");
-        resultsTitlePane.setBackground(Color.lightGray);
-        resultsTitlePane.setBorder(new LineBorder(Color.BLACK));
+        resultsTitleLabel.setForeground(buttonText);
+        resultsTitlePane.setBackground(buttonBackground);
+        resultsTitlePane.setBorder(new LineBorder(buttonBorder));
         resultsTitlePane.add(resultsTitleLabel);
         resultsPanel.add(resultsTitlePane);
         for (int c = 0; c < 6; c++) {
             resultsPanel.add(createMatchResultRowPanel());
-            ((JPanel) resultsPanel.getComponent(c+1)).setBorder(new LineBorder(Color.BLACK));
+            ((JPanel) resultsPanel.getComponent(c+1)).setBorder(new LineBorder(buttonBorder));
         }
         // compose display panel
         displayPanel.add(groupDisplayPanel, constraints);
@@ -823,12 +732,15 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         displayPanel.add(resultsPanel, constraints);
 
         /* Function Panel */
-        JButton nextRoundSelectedGroupBTN = new JButton("Next round in group " + selectedGroup);
-        nextRoundSelectedGroupBTN.addActionListener(this);
+        JButton nextRoundSelectedGroupBTN = new JButton("Next round for group " + selectedGroup);
+        setButtonLook(nextRoundSelectedGroupBTN);
+
         JButton nextRoundAllGroupsBTN = new JButton("Next round for all groups");
-        nextRoundAllGroupsBTN.addActionListener(this);
+        setButtonLook(nextRoundAllGroupsBTN);
+
         JButton completeStageBTN = new JButton("Complete Stage");
-        completeStageBTN.addActionListener(this);
+        setButtonLook(completeStageBTN);
+
         // compose function panel
         functionPanel.add(nextRoundSelectedGroupBTN);
         functionPanel.add(nextRoundAllGroupsBTN);
@@ -839,7 +751,19 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         this.add(displayPanel, BorderLayout.CENTER);
         this.add(functionPanel, BorderLayout.SOUTH);
 
+        initGroupPanelsWithTeams();
+
         initialized = true;
+    }
+
+    private void setButtonLook(JButton button) {
+        button.addActionListener(this);
+        button.setBackground(buttonBackground);
+        button.setForeground(buttonText);
+        button.setFocusPainted(false);
+        button.setPreferredSize(new Dimension(250, 30));
+        button.setFont(new Font("Arial", Font.BOLD, 16));
+        button.setBorder(new BevelBorder(BevelBorder.RAISED));
     }
 
     @Override
@@ -847,10 +771,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         return initialized;
     }
 
-    @Override
-    public Color getThemeColor() {
-        return themeColor;
-    }
 
     /**
      * Event handler for button clicks
