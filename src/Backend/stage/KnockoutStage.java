@@ -9,6 +9,20 @@ import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
+/**
+ * <p>A class representing the knockout stage of the World Cup.
+ * The knockout stage has five rounds of matches:</p>
+ * <ul>
+ * <li>The Round of 16</li>
+ * <li>The Quarter-finals</li>
+ * <li>The Semi-finals</li>
+ * <li>The Final match</li>
+ * <li>The Third-place playoff</li>
+ * <ul>
+ * <p>Each of these rounds are represented as a list of matches.</p>
+ *
+ */
 public class KnockoutStage extends Stage {
 
     private static final int WORLD_CUP_YEAR = 2018;
@@ -25,6 +39,11 @@ public class KnockoutStage extends Stage {
     private Team secondPlaceTeam;
     private Team thirdPlaceTeam;
 
+    /**
+     * Creates a knockout stage containing the specified initial list of teams not exceeding a size of 16 and with
+     * all rounds initialized to an empty list of matches.
+     * @param teams The teams participating in this knockout stage.
+     */
     public KnockoutStage(List<Team> teams) {
         super(teams);
         roundOfSixteenMatches = new ArrayList<>();
@@ -39,14 +58,27 @@ public class KnockoutStage extends Stage {
         roundOfSixteenMatches = createMatchesFromTeams(getTeams());
     }
 
+    /**
+     * Checks if the list of teams provided to this knockout stage is an odd count, or if it's empty.
+     * @return True if the list of teams is empty, or if the list contains an odd number of teams.
+     */
     private boolean isTeamListNotSizedProperly(List<Team> teams) {
         return teams.isEmpty() || isNotEvenNumberOfTeams(teams);
     }
 
+    /**
+     * Checks if the list of teams provided to this knockout stage is counted oddly.
+     * @return True if the list contains an odd count of teams.
+     */
     private boolean isNotEvenNumberOfTeams(List<Team> teams) {
         return teams.size() % 2 != 0;
     }
 
+    /**
+     * Creates a list of matches from the list of teams provided.
+     * @param teams The teams used for the matches.
+     * @return A list of non-simulated matches.
+     */
     private List<Match> createMatchesFromTeams(List<Team> teams) {
         List<Match> matches = new ArrayList<>();
         List<LocalDate> matchDates = getMatchDatesFromNumberOfTeams(teams.size());
@@ -58,6 +90,11 @@ public class KnockoutStage extends Stage {
         return matches;
     }
 
+    /**
+     * Returns a list of dates for the round containing the specified number of teams provided as an argument.
+     * @param numberOfTeams The number of teams provided a parameter for determining which round to get dates for.
+     * @return A list of dates for the round determined by the number of teams.
+     */
     private List<LocalDate> getMatchDatesFromNumberOfTeams(int numberOfTeams) {
         switch (numberOfTeams) {
             case NUM_TEAMS_IN_ROUND_OF_SIXTEEN:
@@ -101,6 +138,9 @@ public class KnockoutStage extends Stage {
         simulateAllStageRounds();
     }
 
+    /**
+     * Simulates all the rounds for the knockout stage, assigning first, second, and third place winners.
+     */
     private void simulateAllStageRounds() {
         simulateRoundOfSixteen();
         List<Team> lastMatchWinners = getWinningTeamsOfMatchResults(roundOfSixteenMatches);
@@ -119,20 +159,35 @@ public class KnockoutStage extends Stage {
         secondPlaceTeam = finalsMatch.getLoser();
     }
 
+    /**
+     * Simulates all matches in the Round of 16.
+     */
     private void simulateRoundOfSixteen() {
         roundOfSixteenMatches.forEach(Match::simulateMatchResult);
     }
 
+    /**
+     * Simulates the quarter-final matches using the provided list of teams.
+     * @param teams The teams to be contained in the list of quarter-final matches.
+     */
     private void simulateQuarterfinals(List<Team> teams) {
         quarterfinalsMatches = createMatchesFromTeams(teams);
         quarterfinalsMatches.forEach(Match::simulateMatchResult);
     }
 
+    /**
+     * Simulates the semi-final matches using the provided list of teams.
+     * @param teams The teams to be contained in the list of semi-final matches.
+     */
     private void simulateSemifinals(List<Team> teams) {
         semifinalsMatches = createMatchesFromTeams(teams);
         semifinalsMatches.forEach(Match::simulateMatchResult);
     }
 
+    /**
+     * Simulates the final match using the given two teams as competitors.
+     * @return A simulated match.
+     */
     private Match simulateFinalsMatch(Team teamOne, Team teamTwo) {
         LocalDate matchDate = LocalDate.of(WORLD_CUP_YEAR, Month.JULY.getValue(), 15);
         Match match = new Match(teamOne, teamTwo, matchDate, true);
@@ -140,6 +195,10 @@ public class KnockoutStage extends Stage {
         return match;
     }
 
+    /**
+     * Simulates the third place play-off match between two teams.
+     * @return A simulated match.
+     */
     private Match simulateThirdPlacePlayoffMatch(Team teamOne, Team teamTwo) {
         LocalDate matchDate = LocalDate.of(WORLD_CUP_YEAR, Month.JULY.getValue(), 14);
         Match match = new Match(teamOne, teamTwo, matchDate, true);
@@ -147,10 +206,16 @@ public class KnockoutStage extends Stage {
         return match;
     }
 
+    /**
+     * Returns a list of winning teams from the provided list of matches.
+     */
     private List<Team> getWinningTeamsOfMatchResults(List<Match> match) {
         return match.stream().map(Match::getWinner).collect(Collectors.toList());
     }
 
+    /**
+     * Returns a list of losing teams from the provided list of matches.
+     */
     private List<Team> getLosingTeamsOfMatches(List<Match> matches) {
         return matches.stream().map(Match::getLoser).collect(Collectors.toList());
     }
