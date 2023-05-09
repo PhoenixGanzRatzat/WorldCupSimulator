@@ -526,7 +526,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         private void setMatch(Match newMatch) {
             this.match = newMatch;
             this.team = isMatch()? new Team[]{match.getTeam1(), match.getTeam2()} : new Team[]{match.getWinner()};
-            this.setTeamName(isMatch()? new String[]{team[0].getAbbv(), team[1].getAbbv()} : new String[]{team[0].getAbbv()} );
+            this.setTeamName(isMatch()? new String[]{team[0].getAbbreviation(), team[1].getAbbreviation()} : new String[]{team[0].getAbbreviation()} );
             this.setScoreValue(isMatch()? new int[]{match.getTeam1Score(), match.getTeam2Score()} : new int[]{team[0].equals(match.getTeam1())? match.getTeam1Score() : match.getTeam2Score()});
             updateLabels();
             setCellRevealed(false);
@@ -543,7 +543,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         private void updateLabels() {
             Color hidden = new Color(0, 0, 0, 0);
             for(int i = 0; i < (isMatch() ? 2:1); i++) {
-                flagPath[i] = "Assets" + File.separator + "Images"  + File.separator + "smallFlags" + File.separator + ((teamName[i].equals("???") || !isCellRevealed())? ("BLANK.png") : (team[i].getAbbv() + ".png"));
+                flagPath[i] = "Assets" + File.separator + "Images"  + File.separator + "smallFlags" + File.separator + ((teamName[i].equals("???") || !isCellRevealed())? ("BLANK.png") : (team[i].getAbbreviation() + ".png"));
                 flag[i].setIcon(createScaledFlagIcon(i));
                 teamLabel[i].setText(teamName[i]);
                 scoreLabel[i].setText(String.valueOf(scoreValue[i]));
