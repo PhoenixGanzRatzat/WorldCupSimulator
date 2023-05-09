@@ -8,8 +8,8 @@ import java.awt.*;
 import java.util.List;
 
 /**
- * Interface to ensure the various stage panels have necessary functions for GUi to be able to ensure the next stage
- * is ready to be displayed before switching to it visually
+ * Interface to ensure the various stage panels have a standarized look and have necessary functions for GUi to be
+ * able to ensure the next stage is ready to be displayed before switching to it visually
  */
 public interface StagePanel {
 
@@ -18,12 +18,16 @@ public interface StagePanel {
     Color buttonBorder = new Color(203, 223, 239);
     Color buttonText = new Color(232, 246, 255);
 
-    public boolean checkIfInitialized();
-
     /**
      * prepares the panel for display
      */
     public void initPanel(List<Match> matches, List<Team> teams);
+
+    /**
+     * Checks to see if panel has been initialized previously
+     * @return
+     */
+    public boolean checkIfInitialized();
 
     /**
      * Checks StagePanel state to see if the next stage can be moved onto
