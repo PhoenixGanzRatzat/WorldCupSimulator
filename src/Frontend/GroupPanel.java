@@ -69,10 +69,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     private boolean[] groupsThatAreComplete;
     private boolean initialized;
 
-    /* TODO:
-       Todo:
-     */
-
     /* __ CONSTRUCTORS __ */
     public GroupPanel() {
         this.setLayout(new BorderLayout());
@@ -116,7 +112,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
 
         // top button used to select this group
         JPanel groupSelectBTNPanel = new JPanel(new BorderLayout());
-        String groupLetter = String.valueOf((char) (groupNumber + 65)); // '65' = 'A' // TODO: maybe a String
+        String groupLetter = String.valueOf((char) (groupNumber + 65)); // '65' = 'A'
         JButton groupSelectBTN = new JButton(groupLetter); // top of each group panel has a 'Select this group' button
         //groupSelectBTN.setPreferredSize(new Dimension(base.getWidth(), 35));
         groupSelectBTN.addActionListener(this);
@@ -230,13 +226,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
 
             }
         }
-
-        // for each group panel
-        for (Component groupPanel : this.groupDisplayPanel.getComponents()) {
-            if (groupPanel instanceof JPanel) {
-
-            }
-        }
     }
     /**
      * Retrieves and updates the groupPanel for groupNumber with the results of
@@ -302,7 +291,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
                 }
             }
         }
-        // TODO: possible error, unhandled
         return null;
     }
     /**
@@ -568,7 +556,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
      * and 6 matches. total of 8 groups.
      */
     private void createGroups() {
-        // TODO: verify dynamic size groups work (>4 teams)
         /* put teams into groups */
         for (Match match : matches) {
             // get teams
@@ -647,8 +634,9 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     public boolean checkIfCompleted() {
         boolean finalResult = true;
         for(boolean groupComplete : this.groupsThatAreComplete) {
-            if(!groupComplete) {
+            if (!groupComplete) {
                 finalResult = false;
+                break;
             }
         }
         return finalResult;

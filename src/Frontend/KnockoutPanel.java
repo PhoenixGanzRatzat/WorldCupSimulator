@@ -286,6 +286,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     public boolean checkIfInitialized() {
         return initialized;
     }
+
     public void initPanel(List<Match> matchList, List<Team> teamList){
         this.matches = new ArrayList<>();
         matches.addAll(matchList);
