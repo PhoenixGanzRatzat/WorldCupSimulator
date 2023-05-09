@@ -90,10 +90,10 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
          *        by Naomi                                 4/28/23
          */
         int[][] row = new int[][]{new int[]{1, 3, 5, 7, 10, 12, 14, 16},
-                new int[]{2, 6, 11, 15},
-                new int[]{5, 12},
-                new int[]{6, 11},
-                new int[]{5, 10}
+                                  new int[]{2, 6, 11, 15},
+                                  new int[]{5, 12},
+                                  new int[]{6, 11},
+                                  new int[]{5, 10}
         };
         for (int i = 0; i < 8; i++) {
             // first round
@@ -206,7 +206,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         if(gY.length<gX.length){
             for(int i = 0; i < gY.length; i++){
                 //for(){
-                //addSpacer(gX[])
+                    //addSpacer(gX[])
                 //}
             }
         }
@@ -502,7 +502,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             updateLabels();
             setCellRevealed(false);
             //if(round == ROUND_OF_SIXTEEN && row == 1){
-            setCellRevealed(true);
+                setCellRevealed(true);
             //}
         }
         private void setTeamName(String[] teamAbbv) {
