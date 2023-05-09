@@ -52,7 +52,7 @@ public class KnockoutStage extends Stage {
         List<LocalDate> matchDates = getMatchDatesFromNumberOfTeams(teams.size());
         for (int i = 0; i < teams.size(); i += 2) {
             LocalDate matchDate = teams.size() <= NUM_TEAMS_IN_SEMIFINALS ? matchDates.get(i / 2) : matchDates.get(i / 4);
-            Match match = new Match(teams.get(i), teams.get(i + 1), matchDate);
+            Match match = new Match(teams.get(i), teams.get(i + 1), matchDate, true);
             matches.add(match);
         }
         return matches;
@@ -135,14 +135,14 @@ public class KnockoutStage extends Stage {
 
     private Match simulateFinalsMatch(Team teamOne, Team teamTwo) {
         LocalDate matchDate = LocalDate.of(WORLD_CUP_YEAR, Month.JULY.getValue(), 15);
-        Match match = new Match(teamOne, teamTwo, matchDate);
+        Match match = new Match(teamOne, teamTwo, matchDate, true);
         match.simulateMatchResult();
         return match;
     }
 
     private Match simulateThirdPlacePlayoffMatch(Team teamOne, Team teamTwo) {
         LocalDate matchDate = LocalDate.of(WORLD_CUP_YEAR, Month.JULY.getValue(), 14);
-        Match match = new Match(teamOne, teamTwo, matchDate);
+        Match match = new Match(teamOne, teamTwo, matchDate, true);
         match.simulateMatchResult();
         return match;
     }
