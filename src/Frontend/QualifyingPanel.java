@@ -111,13 +111,6 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
     }
 
-    /**
-     * Returns the JTabbedPane that this object uses to display its contents.
-     * @return JTabbedPane
-     */
-    public JTabbedPane getPane() {
-        return tabPane;
-    }
 
     /**
      * Takes an array of matches and fills the visible day panels
@@ -385,7 +378,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      * An ActionListener that I decided would be more convenient than
      * implementing the interface. Handles the buttons that change the months displayed.
      */
-    ActionListener listener = new ActionListener() {
+    private ActionListener listener = new ActionListener() {
         @Override
         public void actionPerformed (ActionEvent e) {
             String command = e.getActionCommand();
