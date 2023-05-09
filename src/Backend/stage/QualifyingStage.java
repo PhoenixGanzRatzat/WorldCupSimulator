@@ -1372,6 +1372,7 @@ public class QualifyingStage extends Stage {
          * @return The list of playoff teams.
          */
         public List<Team> getPlayoffTeams() {
+
             return playoffTeams;
         }
 
