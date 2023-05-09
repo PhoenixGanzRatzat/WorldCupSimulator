@@ -4,46 +4,42 @@ import java.awt.image.BufferedImage;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
-public class Team implements Comparable<Team> {
+public class Team {
     private String name;
-    private String abbv;
+    private String abbreviation;
     private Region region;
     private BufferedImage flag;
     private int rank;
-    private Map<LocalDate, Integer> pointsMap;
+    private Map<LocalDate, Integer> dateToPointsMap;
     private boolean isFavorite;
 
     public Team(String name, String abbreviation, Region region, int rank) {
         this.name = name;
-        this.abbv = abbreviation;
+        this.abbreviation = abbreviation;
         this.region = region;
         this.rank = rank;
-        pointsMap = new HashMap<>();
+        dateToPointsMap = new HashMap<>();
         isFavorite = false;
         flag = null;
     }
 
     public int getMostRecentScore() {
-        LocalDate mostRecentDate = null;
-        for (LocalDate date : pointsMap.keySet()) {
-            if ((mostRecentDate == null || date.isAfter(mostRecentDate))) {
-                mostRecentDate = date;
-            }
-        }
-        if (mostRecentDate == null) {
-            return 0; // No previous matches found
-        } else {
-            return pointsMap.get(mostRecentDate);
-        }
+        final Optional<LocalDate> mostRecentDateOptional = dateToPointsMap.keySet().stream().reduce(this::getMostRecentDate);
+        return mostRecentDateOptional.isPresent() ? dateToPointsMap.get(mostRecentDateOptional.get()) : 0;
+    }
+
+    private LocalDate getMostRecentDate(LocalDate firstDate, LocalDate secondDate) {
+        return firstDate.isAfter(secondDate) ? firstDate : secondDate;
     }
 
     public String getName() {
         return name;
     }
 
-    public String getAbbv() {
-        return abbv;
+    public String getAbbreviation() {
+        return abbreviation;
     }
 
     public Region getRegion() {
@@ -54,11 +50,14 @@ public class Team implements Comparable<Team> {
         return rank;
     }
 
+    public int getScoreOnDate(LocalDate date) {
+        return dateToPointsMap.get(date);
+    }
     public int getPoints(LocalDate date) {
         LocalDate closestBefore = null;
         int closestDaysBefore = Integer.MAX_VALUE;
 
-        for (LocalDate localDate : pointsMap.keySet()) {
+        for (LocalDate localDate : dateToPointsMap.keySet()) {
             int daysBefore = localDate.until(date).getDays();
             if (daysBefore < closestDaysBefore) {
                 closestDaysBefore = daysBefore;
@@ -66,19 +65,15 @@ public class Team implements Comparable<Team> {
             }
         }
         if (closestBefore != null) {
-            return pointsMap.get(closestBefore);
+            return dateToPointsMap.get(closestBefore);
         }
         return 0;
     }
 
-    public int getMostRecentScore(LocalDate date) {
-        return pointsMap.get(date);
+    public void setPointsOnDate(LocalDate date, int points) {
+        this.dateToPointsMap.put(date, points);
     }
-
-    public void setPoints(LocalDate date, int points) {
-        this.pointsMap.put(date, points);
-    }
-    public boolean getIsFavorite() {
+    public boolean isFavorite() {
         return isFavorite;
     }
 
@@ -90,17 +85,8 @@ public class Team implements Comparable<Team> {
         return flag;
     }
 
-    @Override
-    public int compareTo(Team o) {
-        Team t = (Team) o;
-        if (this.getRank() > t.getRank()) {
-            return 1;
-        } else if (this.getRank() == t.getRank()) {
-            return 0;
-        } else if (this.getRank() < t.getRank()) {
-            return -1;
-        }
-        return 0;
+    public int compareRanks(Team other) {
+        return Integer.compare(rank, other.rank);
     }
 
 
@@ -108,10 +94,10 @@ public class Team implements Comparable<Team> {
     public String toString() {
         return "Team{" +
                 "name='" + name + '\'' +
-                ", abbv='" + abbv + '\'' +
+                ", abbv='" + abbreviation + '\'' +
                 ", region=" + region +
                 ", rank=" + rank +
-                ", pointsMap=" + pointsMap +
+                ", pointsMap=" + dateToPointsMap +
                 ", isFavorite=" + isFavorite +
                 '}';
     }

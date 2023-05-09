@@ -73,7 +73,7 @@ public class GroupStage extends Stage{
         int index = 0;
         for(Team t : teams) {
             // set each teams most recent score to zero to begin the Stage
-            t.setPoints(seed, 0);
+            t.setPointsOnDate(seed, 0);
             index++;
         }
 

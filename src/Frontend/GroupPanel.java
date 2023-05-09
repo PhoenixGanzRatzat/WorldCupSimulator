@@ -198,7 +198,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
                 ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(1)).setText(countryName);
                 // component 2 = "Flags"
                 ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(2)).setIcon(
-                        getScaledIcon( this.groupTeams.get(a+1).get(b-2).getAbbv() ) );
+                        getScaledIcon( this.groupTeams.get(a+1).get(b-2).getAbbreviation() ) );
                 // Component 3-6 = { "Wins" "Draws" "Losses" "Points" }
                 ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(3)).setText("0");
                 ((JLabel) ((JPanel) groupRowPanels[b]).getComponent(4)).setText("0");
@@ -223,7 +223,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
                 Team team = this.groupTeams.get(groupNumber).get(b-2);
                 ((JLabel) row.getComponent(1)).setText(team.getName());
                 ((JLabel) row.getComponent(1)).setToolTipText(team.getName());
-                ((JLabel) row.getComponent(2)).setIcon(getScaledIcon(team.getAbbv()));
+                ((JLabel) row.getComponent(2)).setIcon(getScaledIcon(team.getAbbreviation()));
 
             }
         }
@@ -389,8 +389,8 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         Component[] labels = roundRowPanel.getComponents();
 
         // Initialize
-        String name1 = match.getTeam1().getAbbv();
-        String name2 = match.getTeam2().getAbbv();
+        String name1 = match.getTeam1().getAbbreviation();
+        String name2 = match.getTeam2().getAbbreviation();
         int score1 = match.getTeam1Score();
         int score2 = match.getTeam2Score();
         String result1;
@@ -458,7 +458,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
      */
     private void initFlags() throws IOException {
         for(Team team : this.teams) {
-            String abbv = team.getAbbv();
+            String abbv = team.getAbbreviation();
             BufferedImage flag = ImageIO.read(new File("Assets" + File.separator + "Images" + File.separator + "smallFlags" + File.separator +  abbv + ".png"));
             flags.put(abbv, flag);
         }
