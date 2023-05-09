@@ -37,7 +37,7 @@ public class Match {
         this.team1Score = 0;
         this.team2Score = 0;
         this.matchDate = date;
-        this.isKnockout = false;
+        this.isKnockout = isKnockout;
     }
 
     /**
