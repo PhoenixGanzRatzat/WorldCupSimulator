@@ -8,22 +8,8 @@ public class Match {
     private int team1Score;
     private int team2Score;
     private LocalDate matchDate;
+    private boolean isKnockout;
 
-    /**
-     * TEMPORARY - used for groupPanel testing, delete later.
-     * @param teamOne
-     * @param teamTwo
-     * @param score1
-     * @param score2
-     * @param date
-     */
-    public Match (Team teamOne, Team teamTwo, int score1, int score2, LocalDate date){
-        this.team1 = teamOne;
-        this.team2 = teamTwo;
-        team1Score = score1;
-        team2Score = score2;
-        this.matchDate = date;
-    }
     public Match(Team teamOne, Team teamTwo){
         this(teamOne, teamTwo, LocalDate.now());
     }
@@ -33,6 +19,15 @@ public class Match {
         this.team1Score = 0;
         this.team2Score = 0;
         this.matchDate = date;
+        this.isKnockout = false;
+    }
+    public Match (Team teamOne, Team teamTwo, LocalDate date, boolean isKnockout) {
+        this.team1 = teamOne;
+        this.team2 = teamTwo;
+        this.team1Score = 0;
+        this.team2Score = 0;
+        this.matchDate = date;
+        this.isKnockout = false;
     }
 
     /**
@@ -41,16 +36,15 @@ public class Match {
      */
     public void simulateMatchResult() {
         // Generate random scores for each team (0-4)
+        // TODO: Adjust scoring calculation to more accurately simulate a game.
+
         this.team1Score = (int) (Math.random() * 5);
         this.team2Score = (int) (Math.random() * 5);
 
 
         // Check if match is in knockout stage
-        // TODO: this is not a safe way to determine knockout stage
-        boolean isKnockoutActive = matchDate.getMonthValue() >= 6;
-
         // If match is taking place during the knockout stage and ends in a draw, execute tiebreaker procedure
-        if (isKnockoutActive && team1Score == team2Score) {
+        if (isKnockout && team1Score == team2Score) {
             // Simulate extra time being played, generate new scores for each team
             int extraTimeTeam1Score = (int) (Math.random() * 2);
             int extraTimeTeam2Score = (int) (Math.random() * 2);
