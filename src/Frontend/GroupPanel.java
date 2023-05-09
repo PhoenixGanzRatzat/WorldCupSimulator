@@ -373,6 +373,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         for (int i = 0; i < 7; i++) {
             JLabel label = new JLabel();
             label.setForeground(buttonText);
+            label.setFont(new Font("Monospaced", Font.BOLD, 17));
             if(i == 3) {
                 label.setText("-");
                 base.add(label);
@@ -717,7 +718,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
 
         // results side-pane - displays score and outcome between each match in the group
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
-        resultsPanel.setPreferredSize(new Dimension(200, 215));
+        resultsPanel.setPreferredSize(new Dimension(230, 245));
         resultsPanel.setBorder(new LineBorder(buttonBorder));
         resultsPanel.setBackground(buttonBackground);
         JPanel resultsTitlePane = new JPanel();
