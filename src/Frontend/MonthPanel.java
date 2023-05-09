@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static Frontend.StagePanel.*;
+
 public class MonthPanel extends JPanel {
 
     protected static final Color FG_COLOR = QualifyingPanel.ROW2_COLOR;
@@ -48,6 +50,7 @@ public class MonthPanel extends JPanel {
         ToolTipManager.sharedInstance().setInitialDelay(0);
 //        ToolTipManager.sharedInstance().setDismissDelay(600);
         UIManager.put("ToolTip.font", GUI.TOOL_TIP_FONT);
+        UIManager.put("ToolTip.foreground", buttonText);
 
 
         this.setLayout(new BorderLayout(0, 40));

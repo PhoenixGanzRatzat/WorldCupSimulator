@@ -34,20 +34,19 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     private boolean initialized;
     private MatchCell[][] cells;
     private List<Match> matches;
-    private int currentRound;
-    private int currentRow;
 
     /**
      * Default constructor; initializes JPanel with BorderLayout, sets size,
-     * initializes matches, initializes init boolean, & calls createWindow()
+     * initializes matches, initializes init boolean, sets ToolTip attributes & calls createWindow()
      */
     public KnockoutPanel() {
         super(new GridBagLayout(), true);
         this.cells = new MatchCell[][]{new MatchCell[8], new MatchCell[4], new MatchCell[2], new MatchCell[2], new MatchCell[2]};
         this.setBackground(fifaBlue);
         this.initialized = false;
-        currentRound = 0;
-        currentRow = 0;
+        ToolTipManager.sharedInstance().setInitialDelay(0);
+        UIManager.put("ToolTip.font", GUI.TOOL_TIP_FONT);
+        UIManager.put("ToolTip.foreground", buttonText);
         createWindow();
     }
     /**
@@ -230,6 +229,12 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     /**
      * Creates an empty, transparent JPanel for use as a spacer and adds it to the target JPanel.
      * Intended to simplify repetitive use of GridBagConstraints by accepting only 6 parameters instead of 11
+     * @param target
+     * @param gX
+     * @param gY
+     * @param gH
+     * @param wX
+     * @param wY
      */
     private void addSpacer(JPanel target, int gX, int gY, int gH, double wX, double wY){
         JComponent spacer = wX == 0 ? (JComponent) Box.createVerticalStrut(1) : (JComponent) Box.createHorizontalStrut(1);
@@ -401,10 +406,20 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         /** Secondary BracketCell constructor taking only two parameters, calls
          * main constructor with preset height/width for images and flags.
          * Is the main constructor in use by KnockoutPanel.
+         * @param row GridBagConstraints.gridy of the cell in its parent Component
+         * @param round The Knockout Stage round the match in the cell is meant to represent.
          * */
         private MatchCell(int row, int round) {
             this(row, round, 70, 46, 40, 26);
         }
+        /** Main BracketCell constructor taking the full list of parameters.
+         * @param row GridBagConstraints.gridy of the cell in its parent Component
+         * @param round The Knockout Stage round the match in the cell is meant to represent.
+         * @param imageWidth
+         * @param imageHeight
+         * @param flagWidth
+         * @param flagHeight
+         * */
         private MatchCell(int row, int round, int imageWidth, int imageHeight, int flagWidth, int flagHeight) {
             super(new GridBagLayout(), true);
             this.row = row;
@@ -550,6 +565,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
                 this.teamLabel[i].setForeground(update);
                 this.scoreLabel[i].setForeground(update);
             }
+            if(isCellRevealed()) this.setToolTipText(formatMatchToolTip(this.match));
         }
         private ImageIcon createScaledFlagIcon(int flagIndex) {
             BufferedImage source = new BufferedImage(this.imageWidth, this.imageHeight, BufferedImage.TYPE_INT_ARGB);
@@ -565,6 +581,34 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             BufferedImage scaledSource = new BufferedImage(iconX, iconY, BufferedImage.TYPE_INT_ARGB);
             scaledSource.getGraphics().drawImage(scaledPreviewImage, 0, 0, null);
             return new ImageIcon(scaledSource);
+        }
+        private String formatMatchToolTip(Match match) {
+            String winnerScore;
+            String loserScore;
+            if (match.getTeam1Score() > match.getTeam2Score()) {
+                winnerScore = String.valueOf(match.getTeam1Score());
+                loserScore = String.valueOf(match.getTeam2Score());
+            } else if (match.getTeam1Score() < match.getTeam2Score()) {
+                winnerScore = String.valueOf(match.getTeam2Score());
+                loserScore = String.valueOf(match.getTeam1Score());
+            } else {
+                winnerScore = String.valueOf(match.getTeam2Score()); // scores are the same for draws
+                loserScore = String.valueOf(match.getTeam1Score());
+            }
+            String winnerDisplayName = match.getWinner().getName();
+            return String.format(
+                        "<html>" +
+                        "<p><u><b>" +
+                        "%s v. %s" +
+                        "</b></u>" +
+                        "<br>" +
+                        "Winner: %s" +
+                        "<br>" +
+                        "Score: %s - %s" +
+                        "<br>" +
+                        "Time: %s mins" +
+                        "</p></html>",
+                    match.getTeam1().getName(), match.getTeam2().getName(), winnerDisplayName, winnerScore, loserScore, match.getMinutes());
         }
     }
 }

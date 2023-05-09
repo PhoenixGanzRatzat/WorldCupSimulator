@@ -19,7 +19,7 @@ import static Frontend.StagePanel.*;
 public class GUI extends JFrame implements ActionListener {
 
     private WorldCupSimulator gameSim;
-    public final static Font TOOL_TIP_FONT = new Font("Default", Font.PLAIN, 12);
+    public final static Font TOOL_TIP_FONT = new Font("Arial Black", Font.PLAIN, 14);
 
     private JPanel cardPanel;
     private JPanel buttonPanel;
@@ -176,12 +176,14 @@ public class GUI extends JFrame implements ActionListener {
         } else if (e.getSource() == qualifyingButton) {
             panelString = "qual";
             stage = 1;
+            UIManager.put("ToolTip.background", buttonBackground);
         } else if (e.getSource() == groupButton) {
             panelString = "group";
             stage = 2;
         } else if (e.getSource() == knockoutButton) {
             panelString = "knock";
             stage = 3;
+            UIManager.put("ToolTip.background", fifaBlue.darker());
         } else {
             panelString = null;
             stage = 0;
