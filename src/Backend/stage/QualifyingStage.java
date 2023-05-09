@@ -8,56 +8,100 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Represents the Qualifying Stage of a tournament, simulating the FIFA World Cup qualification process.
+ * Extends the Stage class and contains a list of qualifier matches.
+ * This class provides methods for each round of the qualification stage, each with its own logic,
+ * as well as additional helper methods for sorting and arranging matches.
+ */
 public class QualifyingStage extends Stage {
     List<Match> QualifierMatches;
 
-    // Constructor
+    /**
+     * Constructs a QualifyingStage object with the specified list of teams.
+     *
+     * @param teams The list of teams participating in the qualifying stage.
+     */
     public QualifyingStage(List<Team> teams) {
         super(teams);
         QualifierMatches = new ArrayList<>();
     }
 
-
     /**
-     *
+     * Arranges matches for all rounds and regions in the qualification stage.
+     * Calls specific methods to arrange matches for each round and region.
      */
-    // Arrange matches for all rounds and regions
     @Override
     public void arrangeMatches() {
         // Arrange matches for each round and region
+
+        // AFC stands for Asian Football Confederation
+        // First Round AFC
         firstRoundResultAFC = firstRoundAFC();
+        // Second Round AFC
         secondRoundResultAFC = secondRoundAFC();
+        // Third Round AFC
         thirdRoundResultAFC = thirdRoundAFC();
+        // Fourth Round AFC
         fourthRoundResultAFC = fourthRoundAFC();
+
+        // CAF stands for Confederation of African Football
+        // First Round CAF
         firstRoundResultCAF = firstRoundCAF();
+        // Second Round CAF
         secondRoundResultCAF = secondRoundCAF();
+        // Third Round CAF
         thirdRoundResultCAF = thirdRoundCAF();
+
+        // CONCACAF stands for Confederation of North, Central America and Caribbean Association Football
+        // First Round CONCACAF
         firstRoundResultCONCACAF = firstRoundCONCACAF();
+        // Second Round CONCACAF
         secondRoundResultCONCACAF = secondRoundCONCACAF();
+        // Third Round CONCACAF
         thirdRoundResultCONCACAF = thirdRoundCONCACAF();
+        // Fourth Round CONCACAF
         fourthRoundResultCONCACAF = fourthRoundCONCACAF();
+        // Fifth Round CONCACAF
         fifthRoundResultCONCACAF = fifthRoundCONCACAF();
+
+        // CONMEBOL stands for South American Football Confederation
+        // First Round CONMEBOL
         firstRoundResultCONMEBOL = roundCONMEBOL();
+
+        // OFC stands for Oceania Football Confederation
+        // First Round OFC
         firstRoundResultOFC = firstRoundOFC();
+        // Second Round OFC
         secondRoundResultOFC = secondRoundOFC();
+        // Third Round OFC
         thirdRoundResultOFC = thirdRoundOFC();
+
+        // UEFA stands for Union of European Football Associations
+        // First Round UEFA
         firstRoundResultUEFA = firstRoundUEFA();
+        // Second Round UEFA
         secondRoundResultUEFA = secondRoundUEFA();
+
+        // Inter-confederation playoffs
         playoffResult = playInterConfederationPlayoffs();
     }
 
-    // Add all matches from the roundResults list to the QualifierMatches list
-    private void addAllMatches(List<RoundResult> roundResults) {
-        for (RoundResult roundResult : roundResults) {
-            QualifierMatches.addAll(roundResult.getRoundMatches());
-        }
-        rearrangeMatchDates(QualifierMatches,  6);
-    }
 
-    // Get the list of all qualified teams
+
+    /**
+     * Retrieves the list of all qualified teams.
+     * Creates a host team and adds it to the list.
+     * Adds the qualified teams from various rounds and regions to the list.
+     *
+     * @return The list of all qualified teams.
+     */
     public ArrayList<Team> qualifiedTeams(){
+        // Create a host team
         Team host = new Team("Russia", "RUS", Region.UEFA, 0);
         ArrayList<Team> qualifiedTeams = new ArrayList<>();
+
+        // Add the host and qualified teams from various rounds and regions
         qualifiedTeams.add(host);
         qualifiedTeams.addAll(thirdRoundResultAFC.getRoundTeams());
         qualifiedTeams.addAll(thirdRoundResultCAF.getRoundTeams());
@@ -70,6 +114,19 @@ public class QualifyingStage extends Stage {
         return qualifiedTeams;
     }
 
+
+    /**
+     * Assigns match dates to the provided list of matches based on certain constraints.
+     * Matches are scheduled with a specified start date, interval, and maximum number of matches per day.
+     * Matches are distributed evenly across allowed months, avoiding specific months if not allowed.
+     * Matches are assigned to dates such that each team has a maximum number of matches per day and overall.
+     * The match dates are updated in the Match objects, and the maps tracking matches per day and team match dates are updated.
+     *
+     * @param matches          The list of matches to assign dates to.
+     * @param startDate        The start date for scheduling matches.
+     * @param interval         The number of days between consecutive matches.
+     * @param maxMatchesPerDay The maximum number of matches allowed per day.
+     */
     public void assignDatesToRoundMatches(List<Match> matches, LocalDate startDate, int interval, int maxMatchesPerDay) {
         // Maps to store matches per day and team match dates
         Map<LocalDate, Integer> matchesPerDay = new HashMap<>();
@@ -116,7 +173,7 @@ public class QualifyingStage extends Stage {
                 boolean team1HasMatchOnDate = team1MatchDates.stream().anyMatch(date -> date.isEqual(finalMatchDate));
                 boolean team2HasMatchOnDate = team2MatchDates.stream().anyMatch(date -> date.isEqual(finalMatchDate));
 
-                /// Check if both teams don't have matches on the current date
+                // Check if both teams don't have matches on the current date
                 if (instanceMatchesOnDate < maxMatchesPerDay && allMatchesOnDate < 6 && !team1HasMatchOnDate && !team2HasMatchOnDate) {
                     // Set the match date and update the maps
                     match.setMatchDate(matchDate);
@@ -137,35 +194,50 @@ public class QualifyingStage extends Stage {
         }
     }
 
-    public void rearrangeMatchDates(List<Match> matches, int maxMatchesPerDay) {
-        // Maps to store matches per day
-        Map<LocalDate, Integer> matchesPerDay = new HashMap<>();
+    /**
+     * Performs the scheduling and simulation of matches for the provided groups in the round.
+     * Arranges home and away matches for each group.
+     * Assigns dates to the group matches.
+     * Simulates match results for all group matches.
+     * Returns a list of all group matches.
+     *
+     * @param groups          The list of groups containing teams.
+     * @param homeAndAway     A boolean value indicating whether to arrange home and away matches.
+     * @param startDate       The start date for scheduling matches.
+     * @param interval        The interval between matches in days.
+     * @param maxMatchesPerDay The maximum number of matches allowed per day.
+     * @return The list of all group matches.
+     */
+    private List<Match> scheduleAndSimulateMatches(List<List<Team>> groups, boolean homeAndAway, LocalDate startDate, int interval, int maxMatchesPerDay) {
+        // List to store all group matches
+        List<Match> allGroupMatches = new ArrayList<>();
 
-        // Loop through all matches
-        for (Match match : matches) {
-            LocalDate matchDate = match.getMatchDate();
-            boolean matchScheduled = false;
-            while (!matchScheduled) {
-                int matchesOnDate = matchesPerDay.getOrDefault(matchDate, 0);
-
-                // Check if there is room for another match on the current date
-                if (matchesOnDate < maxMatchesPerDay) {
-                    // Update the maps
-                    matchesPerDay.put(matchDate, matchesOnDate + 1);
-                    matchScheduled = true;
-                } else {
-                    // Move to the next date
-                    matchDate = matchDate.plusDays(1);
-                }
-            }
-            // Set the match date
-            match.setMatchDate(matchDate);
+        for (List<Team> group : groups) {
+            // Arrange home and away matches for the current group
+            List<Match> groupMatches = arrangeHomeAndAwayMatches(group, homeAndAway);
+            allGroupMatches.addAll(groupMatches);
         }
+
+        // Assign dates to the group matches
+        assignDatesToRoundMatches(allGroupMatches, startDate, interval, maxMatchesPerDay);
+
+        // Simulate match results for all group matches
+        for (Match match : allGroupMatches) {
+            match.simulateMatchResult();
+        }
+
+        return allGroupMatches;
     }
 
     /**
-     * Executes the first round of the AFC region, filtering teams ranked 35-46 and simulates matches.
-     * @return RoundResult with winning teams and matches.
+     * Executes the first round of the AFC qualification stage.
+     * Filters the teams belonging to the AFC region and ranked 35-46.
+     * Creates groups of teams.
+     * Schedules and simulates matches for each group.
+     * Determines the winner of each match based on the aggregate score.
+     * Returns a RoundResult object containing the winning teams and the matches.
+     *
+     * @return The RoundResult object representing the first round of the AFC qualification stage.
      */
     private RoundResult firstRoundAFC() {
         // Filter the teams for those belonging to the AFC region and ranked 35-46
@@ -174,24 +246,12 @@ public class QualifyingStage extends Stage {
                 .filter(team -> team.getRank() >= 35 && team.getRank() <= 46)
                 .collect(Collectors.toList());
 
-
+        // Create groups of teams
         List<List<Team>> groups = createGroups(firstRoundTeams, firstRoundTeams.size() / 2, 2);
         List<Team> winningTeams = new ArrayList<>();
-        List<Match> firstRoundMatches = new ArrayList<>();
 
-        for (List<Team> pair : groups) {
-            // Generate home and away matches for each pair
-            List<Match> pairedMatches = arrangeHomeAndAwayMatches(pair, true);
-            firstRoundMatches.addAll(pairedMatches);
-        }
-
-        // Assign dates to the first round matches
-        assignDatesToRoundMatches(firstRoundMatches, LocalDate.of(2015, 3, 12), 5, 6);
-
-        // Simulate the matches
-        for (Match match : firstRoundMatches) {
-            match.simulateMatchResult();
-        }
+        // Schedule and simulate matches for the groups
+        List<Match> firstRoundMatches = scheduleAndSimulateMatches(groups, true, LocalDate.of(2015, 3, 12), 5, 6);
 
         for (List<Team> group : groups) {
             // Get the matches for the current group
@@ -211,10 +271,13 @@ public class QualifyingStage extends Stage {
         return new RoundResult(winningTeams, firstRoundMatches);
     }
 
-
     /**
-     * Executes the second round of the AFC region, including top 34 teams and first round winners.
-     * @return RoundResult with qualifying teams and matches.
+     * Represents the second round of the AFC qualification stage.
+     * This method filters teams, divides them into groups, schedules and simulates matches,
+     * determines group winners and runners-up, selects the best runners-up, and identifies
+     * the qualified teams for the next round.
+     *
+     * @return The RoundResult object containing the qualified teams and all group matches.
      */
     private RoundResult secondRoundAFC() {
         // Get the top 34 teams and the 6 first round winners
@@ -223,6 +286,7 @@ public class QualifyingStage extends Stage {
                 .sorted(Comparator.comparing(Team::getRank))
                 .limit(34)
                 .collect(Collectors.toList());
+
         // Add the 6 first round winners
         secondRoundTeams.addAll(firstRoundResultAFC.getRoundTeams());
 
@@ -233,22 +297,7 @@ public class QualifyingStage extends Stage {
         List<List<Team>> groups = createGroups(secondRoundTeams, 8, 5);
         List<Team> groupWinners = new ArrayList<>();
         List<Team> groupRunnersUp = new ArrayList<>();
-        List<Match> allGroupMatches = new ArrayList<>();
-
-        // Iterate through each group
-        for (List<Team> group : groups) {
-            // Arrange home and away matches for the group
-            List<Match> secondRoundMatches = arrangeHomeAndAwayMatches(group, true);
-            allGroupMatches.addAll(secondRoundMatches);
-        }
-
-        // Assign dates to the second round matches
-        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2015, 6, 11), 3, 4);
-
-        // Simulate the matches
-        for (Match match : allGroupMatches) {
-            match.simulateMatchResult();
-        }
+        List<Match> allGroupMatches = scheduleAndSimulateMatches(groups, true, LocalDate.of(2015, 6, 11), 3, 4);
 
         for (List<Team> group : groups) {
 
@@ -270,32 +319,28 @@ public class QualifyingStage extends Stage {
         List<Team> qualifiedTeams = new ArrayList<>(groupWinners);
         qualifiedTeams.addAll(bestGroupRunnersUp);
 
+        // Return a RoundResult object containing the qualified teams and all group matches
         return new RoundResult(qualifiedTeams, allGroupMatches);
     }
+
+
     /**
-     * Conducts the third round in the AFC region, using the teams that passed the second round.
-     * @return RoundResult with qualified and third-placed teams plus matches.
+     * Executes the third round of the AFC qualification stage.
+     * Divides the teams from the second round into groups of six.
+     * Schedules and simulates matches for each group.
+     * Sorts the teams within each group based on their qualifier points in descending order.
+     * Selects the top two teams from each group as qualified teams.
+     * Selects the third-placed team from each group.
+     * Returns a RoundResult object containing the qualified teams, third-placed teams, and all group matches.
+     *
+     * @return The RoundResult object representing the third round of the AFC qualification stage.
      */
     private RoundResult thirdRoundAFC() {
+        // Divide the teams from the second round into groups of six
         List<List<Team>> thirdRoundGroups = createGroups(secondRoundResultAFC.getRoundTeams(), 2, 6);
         List<Team> qualifiedTeams = new ArrayList<>();
         List<Team> thirdPlacedTeams = new ArrayList<>();
-        List<Match> allGroupMatches = new ArrayList<>();
-
-        // Iterate through each group
-        for (List<Team> group : thirdRoundGroups) {
-            // Arrange home and away matches for the group
-            List<Match> secondRoundMatches = arrangeHomeAndAwayMatches(group, true);
-            allGroupMatches.addAll(secondRoundMatches);
-        }
-
-        // Assign dates to the matches with a 2-day interval and 6 matches per day
-        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2016, 9, 1), 11, 2);
-
-        // Simulate the matches
-        for (Match match : allGroupMatches) {
-            match.simulateMatchResult();
-        }
+        List<Match> allGroupMatches = scheduleAndSimulateMatches(thirdRoundGroups, true, LocalDate.of(2016, 9, 1), 11, 2);
 
         for (List<Team> group : thirdRoundGroups) {
             // Sort the teams in the group by their qualifier points in descending order
@@ -309,17 +354,23 @@ public class QualifyingStage extends Stage {
             thirdPlacedTeams.add(group.get(2));
         }
 
-        // return a ThirdRoundResult object with the third round matches and the third-placed teams
+        // Return a RoundResult object with the qualified teams, third-placed teams, and all group matches
         return new RoundResult(qualifiedTeams, thirdPlacedTeams, allGroupMatches);
     }
+
+
+
     /**
-     * Runs the fourth round (playoff) in the AFC region with two third-placed teams from the third round.
-     * @return RoundResult with the playoff winner and matches.
+     * Represents the fourth round of the AFC qualification stage.
+     * It involves a play-off between two third-placed teams from the third round groups.
+     * The winner of the play-off advances to the next round.
+     *
+     * @return The RoundResult object containing the play-off winner and the fourth round matches.
      */
     public RoundResult fourthRoundAFC() {
         // Two third-placed teams from the third round groups
-        Team team1 = getThirdRoundResultAFC().getPlayOffTeams().get(0);
-        Team team2 = getThirdRoundResultAFC().getPlayOffTeams().get(1);
+        Team team1 = getThirdRoundResultAFC().getPlayoffTeams().get(0);
+        Team team2 = getThirdRoundResultAFC().getPlayoffTeams().get(1);
 
         // Create home-and-away matches between the two teams
         List<Match> fourthRoundMatches = arrangeHomeAndAwayMatches(Arrays.asList(team1, team2), true);
@@ -335,11 +386,18 @@ public class QualifyingStage extends Stage {
         // Determine the winner of the play-off
         Team playOffWinner = determinePlayOffWinner(fourthRoundMatches);
 
+        // Return a RoundResult object containing the play-off winner and the fourth round matches
         return new RoundResult(Collections.singletonList(playOffWinner), fourthRoundMatches);
     }
+
+
     /**
-     * Executes the first round in the CAF region, filtering teams ranked 28-53 and simulates matches.
-     * @return RoundResult with winning teams and matches.
+     * Executes the first round of the CAF (Confederation of African Football) qualification stage.
+     * Teams with a rank between 28 and 53 (inclusive) are filtered from the available teams.
+     * The filtered teams are divided into groups, matches are scheduled and simulated,
+     * and the winners of each group are determined based on the aggregate score of their matches.
+     *
+     * @return a RoundResult object containing the winning teams and the matches played in the first round
      */
     public RoundResult firstRoundCAF() {
         // Filter teams with a rank between 28 and 53 (inclusive)
@@ -348,18 +406,12 @@ public class QualifyingStage extends Stage {
                 .filter(team -> team.getRank() >= 28 && team.getRank() <= 53)
                 .collect(Collectors.toList());
 
+        // Divide the teams into groups
         List<List<Team>> groups = createGroups(cafTeams, cafTeams.size() / 2, 2);
         List<Team> winningTeams = new ArrayList<>();
-        List<Match> firstRoundMatches = new ArrayList<>();
 
-        for (List<Team> pair : groups) {
-            // Generate home and away matches for each pair
-            List<Match> pairedMatches = arrangeHomeAndAwayMatches(pair, true);
-            firstRoundMatches.addAll(pairedMatches);
-        }
-
-        // Assign dates to the first round matches
-        assignDatesToRoundMatches(firstRoundMatches, LocalDate.of(2015, 10, 7), 1, 6);
+        // Schedule and simulate matches for the groups
+        List<Match> firstRoundMatches = scheduleAndSimulateMatches(groups, true, LocalDate.of(2015, 10, 7), 1, 6);
 
         for (List<Team> group : groups) {
             // Get the matches for the current group
@@ -371,44 +423,45 @@ public class QualifyingStage extends Stage {
             int team1Score = allRoundMatches.get(0).getTeam1Score() + allRoundMatches.get(1).getTeam2Score();
             int team2Score = allRoundMatches.get(0).getTeam2Score() + allRoundMatches.get(1).getTeam1Score();
             Team winner = (team1Score > team2Score) ? group.get(0) : group.get(1);
+
             // Add the winner to the winningTeams list
             winningTeams.add(winner);
         }
 
-
-        // Return a RoundResult object containing the winners and the matches
+        // Return a RoundResult object containing the winning teams and the matches
         return new RoundResult(winningTeams, firstRoundMatches);
     }
+
+
     /**
-     * Simulates the second round of the CAF region, creating groups, simulating matches, and determining winners.
-     * @return the result of the second round in the CAF region.
+     * Executes the second round of the CAF qualification stage.
+     * Filters the teams belonging to the CAF region and limits the selection to the top 27 teams.
+     * Adds the winners from the first round to the CAF teams.
+     * Creates groups by dividing the CAF teams into pairs, aiming for an equal number of teams in each group.
+     * Schedules and simulates matches for each group.
+     * Determines the winner of each match based on the aggregate score.
+     * Returns a RoundResult object containing the winning teams and the matches.
+     *
+     * @return The RoundResult object representing the second round of the CAF qualification stage.
      */
     public RoundResult secondRoundCAF() {
+        // Filter the teams for those belonging to the CAF region and limit to the top 27 teams
         List<Team> cafTeams = getTeams().stream()
                 .filter(team -> team.getRegion() == Backend.Region.CAF)
                 .sorted(Comparator.comparing(Team::getRank))
                 .limit(27)
                 .collect(Collectors.toList());
-        // Add the 6 first round winners
+
+        // Add the 6 first round winners to the CAF teams
         cafTeams.addAll(firstRoundResultCAF.getRoundTeams());
 
+        // Create groups by dividing the CAF teams into pairs, aiming for an equal number of teams in each group
         List<List<Team>> groups = createGroups(cafTeams, cafTeams.size() / 2, 2);
-        List<Match> secondRoundMatches = new ArrayList<>();
+
+        // Schedule and simulate matches for the groups
+        List<Match> secondRoundMatches = scheduleAndSimulateMatches(groups, true, LocalDate.of(2015, 11, 9), 1, 6);
+
         List<Team> winningTeams = new ArrayList<>();
-
-        for (List<Team> pair : groups) {
-            // Generate home and away matches for each pair
-            List<Match> pairedMatches = arrangeHomeAndAwayMatches(pair, true);
-            secondRoundMatches.addAll(pairedMatches);
-        }
-
-        // Assign dates to the first round matches
-        assignDatesToRoundMatches(secondRoundMatches, LocalDate.of(2015, 11, 9), 1, 6);
-
-        // Simulate the matches
-        for (Match match : secondRoundMatches) {
-            match.simulateMatchResult();
-        }
 
         for (List<Team> group : groups) {
             // Get the matches for the current group
@@ -420,54 +473,57 @@ public class QualifyingStage extends Stage {
             int team1Score = allRoundMatches.get(0).getTeam1Score() + allRoundMatches.get(1).getTeam2Score();
             int team2Score = allRoundMatches.get(0).getTeam2Score() + allRoundMatches.get(1).getTeam1Score();
             Team winner = (team1Score > team2Score) ? group.get(0) : group.get(1);
+
             // Add the winner to the winningTeams list
             winningTeams.add(winner);
         }
 
-        // Return a RoundResult object containing the winners and the matches
+        // Return a RoundResult object containing the winning teams and the matches in the second round
         return new RoundResult(winningTeams, secondRoundMatches);
     }
+
+
+
     /**
-     * Simulates the third round of the CAF region, creating groups, simulating matches, and determining group winners.
-     * @return the result of the third round in the CAF region.
+     * Executes the third round of the CAF qualification stage.
+     * Divides the teams into eight groups of five teams.
+     * Schedules and simulates matches for each group.
+     * Determines the group winners based on the qualifier points.
+     * Returns a RoundResult object containing the qualified teams and the matches.
+     *
+     * @return The RoundResult object representing the third round of the CAF qualification stage.
      */
     public RoundResult thirdRoundCAF() {
-
         // Divide the teams into eight groups of five teams
         List<List<Team>> groups = createGroups(secondRoundResultCAF.getRoundTeams(), 5, 4);
         List<Team> groupWinners = new ArrayList<>();
-        List<Match> allGroupMatches = new ArrayList<>();
-
-        // Iterate through each group
-        for (List<Team> group : groups) {
-            // Arrange home and away matches for the group
-            List<Match> secondRoundMatches = arrangeHomeAndAwayMatches(group, true);
-            allGroupMatches.addAll(secondRoundMatches);
-        }
-        // Assign dates to the second round matches
-        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2016, 10, 7), 9, 3);
-
-        // Simulate the matches
-        for (Match match : allGroupMatches) {
-            match.simulateMatchResult();
-        }
+        List<Match> allGroupMatches = scheduleAndSimulateMatches(groups, true, LocalDate.of(2016, 10, 7), 9, 3);
 
         for (List<Team> group : groups) {
+
             // Sort the teams in the group by their qualifier points in descending order
             group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
-            // Add the group winner and runner-up to the respective lists
+            // Add the group winner to the groupWinners list
             groupWinners.add(group.get(0));
         }
 
-        // Combine the winners and the best runners-up
+        // Combine the group winners to form the list of qualified teams
         List<Team> qualifiedTeams = new ArrayList<>(groupWinners);
 
+        // Return a RoundResult object containing the qualified teams and all group matches
         return new RoundResult(qualifiedTeams, allGroupMatches);
     }
+
+
     /**
-     * Simulates the first round of the CONCACAF region, creating groups, simulating matches, and determining winners.
-     * @return the result of the first round in the CONCACAF region.
+     * Executes the first round of the CONCACAF qualification stage.
+     * Filters the teams belonging to the CONCACAF region and ranked 22-35.
+     * Pairs the teams into groups of two and schedules and simulates matches for each group.
+     * Determines the winner of each match based on the aggregate score.
+     * Returns a RoundResult object containing the winning teams and the matches.
+     *
+     * @return The RoundResult object representing the first round of the CONCACAF qualification stage.
      */
     private RoundResult firstRoundCONCACAF() {
         // Filter the teams for those belonging to the CONCACAF region and ranked 22-35
@@ -479,24 +535,9 @@ public class QualifyingStage extends Stage {
         // Pair the teams into groups of two
         List<List<Team>> groups = createGroups(concacafTeams, concacafTeams.size() / 2, 2);
 
-        List<Match> firstRoundMatches = new ArrayList<>();
+        // Schedule and simulate matches for the groups
+        List<Match> firstRoundMatches = scheduleAndSimulateMatches(groups, true, LocalDate.of(2015, 3, 1), 4, 2);
         List<Team> winningTeams = new ArrayList<>();
-
-        // Iterate through each group
-        for (List<Team> group : groups) {
-            // Arrange home and away matches for the group
-            List<Match> pairMatches = arrangeHomeAndAwayMatches(group, true);
-            firstRoundMatches.addAll(pairMatches);
-        }
-
-        // Assign dates to the second round matches
-        assignDatesToRoundMatches(firstRoundMatches, LocalDate.of(2015, 3, 1), 4, 2);
-
-        // Simulate the matches
-        for (Match match : firstRoundMatches) {
-            match.simulateMatchResult();
-        }
-
 
         for (List<Team> group : groups) {
             // Get the matches for the current group
@@ -515,40 +556,32 @@ public class QualifyingStage extends Stage {
         // Return a RoundResult object containing the winners and the matches
         return new RoundResult(winningTeams, firstRoundMatches);
     }
+
     /**
-     * Simulates the second round of the CONCACAF region, creating groups, simulating matches, and determining winners.
-     * @return the result of the second round in the CONCACAF region.
+     * Executes the second round of the CONCACAF qualification stage.
+     * Filters the teams belonging to the CONCACAF region and ranked 9-21.
+     * Pairs the teams into groups of two and schedules and simulates matches for each group.
+     * Determines the winner of each match based on the aggregate score.
+     * Returns a RoundResult object containing the winning teams and the matches.
+     *
+     * @return The RoundResult object representing the second round of the CONCACAF qualification stage.
      */
     private RoundResult secondRoundCONCACAF() {
-        // Filter the teams for those belonging to the CONCACAF region and ranked 22-35
+        // Filter the teams for those belonging to the CONCACAF region and ranked 9-21
         List<Team> concacafTeams = getTeams().stream()
                 .filter(team -> team.getRegion() == Region.CONCACAF)
                 .filter(team -> team.getRank() >= 9 && team.getRank() <= 21)
                 .collect(Collectors.toList());
 
+        // Add the teams from the first round
         concacafTeams.addAll(getFirstRoundResultCONCACAF().getRoundTeams());
-
-
 
         // Pair the teams into groups of two
         List<List<Team>> groups = createGroups(concacafTeams, concacafTeams.size() / 2, 2);
 
-        List<Match> secondRoundMatches = new ArrayList<>();
+        // Schedule and simulate matches for the groups
+        List<Match> secondRoundMatches = scheduleAndSimulateMatches(groups, true, LocalDate.of(2015, 6, 1), 3, 2);
         List<Team> winningTeams = new ArrayList<>();
-
-        for (List<Team> pair : groups) {
-            // Generate home and away matches for each pair
-            List<Match> pairedMatches = arrangeHomeAndAwayMatches(pair, true);
-            secondRoundMatches.addAll(pairedMatches);
-        }
-
-        // Assign dates to the first round matches
-        assignDatesToRoundMatches(secondRoundMatches, LocalDate.of(2015, 6, 1), 3, 2);
-
-        // Simulate the matches
-        for (Match match : secondRoundMatches) {
-            match.simulateMatchResult();
-        }
 
         for (List<Team> group : groups) {
             // Get the matches for the current group
@@ -567,10 +600,14 @@ public class QualifyingStage extends Stage {
         // Return a RoundResult object containing the winners and the matches
         return new RoundResult(winningTeams, secondRoundMatches);
     }
+
     /**
-     * Simulates the third round of the CONCACAF region, creating pairs of teams from specific ranks and
-     * from the previous round's winners, arranging matches, and determining winners based on aggregate scores.
-     * @return the result of the third round in the CONCACAF region.
+     * Executes the third round of the CONCACAF (Confederation of North, Central America and Caribbean Association Football) qualification stage.
+     * Teams belonging to the CONCACAF region and ranked 7-8 are filtered from the available teams.
+     * The filtered teams are paired into groups, matches are scheduled and simulated,
+     * and the winners of each group are determined based on the aggregate score of their matches.
+     *
+     * @return a RoundResult object containing the winning teams and the matches played in the third round
      */
     private RoundResult thirdRoundCONCACAF() {
         // Filter the teams for those belonging to the CONCACAF region and ranked 7-8
@@ -579,26 +616,13 @@ public class QualifyingStage extends Stage {
                 .filter(team -> team.getRank() >= 7 && team.getRank() <= 8)
                 .collect(Collectors.toList());
 
+        // Add the teams from the second round of the CONCACAF qualification
         concacafTeams.addAll(getSecondRoundResultCONCACAF().getRoundTeams());
 
         // Pair the teams into groups of two
         List<List<Team>> groups = createGroups(concacafTeams, concacafTeams.size() / 2, 2);
-
-        List<Match> thirdRoundMatches = new ArrayList<>();
+        List<Match> thirdRoundMatches = scheduleAndSimulateMatches(groups, true, LocalDate.of(2015, 9, 1), 5, 2);
         List<Team> winningTeams = new ArrayList<>();
-
-        for (List<Team> pair : groups) {
-            // Generate home and away matches for each pair
-            List<Match> pairedMatches = arrangeHomeAndAwayMatches(pair, true);
-            thirdRoundMatches.addAll(pairedMatches);
-        }
-
-        // Assign dates to the first round matches
-        assignDatesToRoundMatches(thirdRoundMatches, LocalDate.of(2015, 9, 1), 5, 2);
-        // Simulate the matches
-        for (Match match : thirdRoundMatches) {
-            match.simulateMatchResult();
-        }
 
         for (List<Team> group : groups) {
             // Get the matches for the current group
@@ -610,160 +634,140 @@ public class QualifyingStage extends Stage {
             int team1Score = allRoundMatches.get(0).getTeam1Score() + allRoundMatches.get(1).getTeam2Score();
             int team2Score = allRoundMatches.get(0).getTeam2Score() + allRoundMatches.get(1).getTeam1Score();
             Team winner = (team1Score > team2Score) ? group.get(0) : group.get(1);
+
             // Add the winner to the winningTeams list
             winningTeams.add(winner);
         }
 
-        // Return a RoundResult object containing the winners and the matches
+        // Return a RoundResult object containing the winning teams and the matches
         return new RoundResult(winningTeams, thirdRoundMatches);
     }
+
+
     /**
-     * Simulates the fifth round of the CONCACAF region, creating a group from the previous round's winners,
-     * arranging matches, and determining winners and the fourth-placed teams based on points.
-     * @return the result of the fifth round in the CONCACAF region, including the fourth-placed team.
+     * Executes the fourth round of the CONCACAF (Confederation of North, Central America and Caribbean Association Football) qualification stage.
+     * Teams belonging to the CONCACAF region and ranked 1-6, as well as the qualified teams from the third round, are filtered from the available teams.
+     * The filtered teams are divided into groups, matches are scheduled and simulated,
+     * and the winners of each group are determined based on their qualifier points.
+     *
+     * @return a RoundResult object containing the qualified teams and the matches played in the fourth round
      */
     private RoundResult fourthRoundCONCACAF() {
-        // Filter the teams for those belonging to the CONCACAF region and ranked 7-8
+        // Filter the teams for those belonging to the CONCACAF region and ranked 1-6
         List<Team> concacafTeams = getTeams().stream()
                 .filter(team -> team.getRegion() == Region.CONCACAF)
                 .filter(team -> team.getRank() >= 1 && team.getRank() <= 6)
                 .collect(Collectors.toList());
 
+        // Add the teams that qualified from the third round
         concacafTeams.addAll(getThirdRoundResultCONCACAF().getRoundTeams());
 
-        // Pair the teams into groups of two
+        // Divide the teams into groups
         List<List<Team>> groups = createGroups(concacafTeams, 3, 4);
-
         List<Team> qualifiedTeams = new ArrayList<>();
-        List<Match> allGroupMatches = new ArrayList<>();
 
-        // Iterate through each group
-        for (List<Team> group : groups) {
-            // Arrange home and away matches for the group
-            List<Match> pairedMatches = arrangeHomeAndAwayMatches(group, true);
-            allGroupMatches.addAll(pairedMatches);
-        }
-
-        // Assign dates to the second round matches
-        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2015, 11, 1), 3, 2);
-
-        // Simulate the matches
-        for (Match match : allGroupMatches) {
-            match.simulateMatchResult();
-        }
+        // Schedule and simulate matches for the groups
+        List<Match> allGroupMatches = scheduleAndSimulateMatches(groups, true, LocalDate.of(2015, 11, 1), 3, 2);
 
         for (List<Team> group : groups) {
+
             // Sort the teams in the group by their qualifier points in descending order
             group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
-            // Add the group winner and runner-up to the respective lists
+            // Add the top teams to the qualifiedTeams list
             qualifiedTeams.add(group.get(0));
             qualifiedTeams.add(group.get(1));
         }
-        // return a FourthRoundResult object with the third round matches
+
+        // Return a RoundResult object containing the qualified teams and the matches
         return new RoundResult(qualifiedTeams, allGroupMatches);
     }
+
+
     /**
-     * Simulates the qualifier round of the CONMEBOL region, creating a group of all teams, arranging matches,
-     * and determining winners and the fifth-placed team based on points.
-     * @return the result of the CONMEBOL round, including the fifth-placed team.
+     * Executes the fifth round of the CONCACAF (Confederation of North, Central America and Caribbean Association Football) qualification stage.
+     * The teams from the fourth round are divided into groups, matches are scheduled and simulated,
+     * and the qualified teams and fourth-placed teams are determined based on their performance in the matches.
+     *
+     * @return a RoundResult object containing the qualified teams, fourth-placed teams, and the matches played in the fifth round
      */
     private RoundResult fifthRoundCONCACAF() {
-
-        // Pair the teams into groups of two
+        // Divide the teams from the fourth round into groups
         List<List<Team>> groups = createGroups(getFourthRoundResultCONCACAF().getRoundTeams(), 1, 6);
-
-        List<Match> fifthRoundMatches = new ArrayList<>();
         List<Team> qualifiedTeams = new ArrayList<>();
         List<Team> fourthPlacedTeams = new ArrayList<>();
-        List<Match> allGroupMatches = new ArrayList<>();
 
-        // Iterate through each group
-        for (List<Team> group : groups) {
-            // Arrange home and away matches for the group
-            List<Match> secondRoundMatches = arrangeHomeAndAwayMatches(group, true);
-            allGroupMatches.addAll(secondRoundMatches);
-        }
-
-        // Assign dates to the second round matches
-        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2016, 11, 2), 10, 2);
-
-        // Simulate the matches
-        for (Match match : allGroupMatches) {
-            match.simulateMatchResult();
-        }
+        // Schedule and simulate matches for the groups
+        List<Match> allGroupMatches = scheduleAndSimulateMatches(groups, true, LocalDate.of(2016, 11, 2), 10, 2);
 
         for (List<Team> group : groups) {
+
             // Sort the teams in the group by their qualifier points in descending order
             group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
-            // Add the group winner and runner-up to the respective lists
+            // Add the top teams to the qualified lists
             qualifiedTeams.add(group.get(0));
             qualifiedTeams.add(group.get(1));
             qualifiedTeams.add(group.get(2));
 
+            // Add the fourth placed teams to the respective lists
             fourthPlacedTeams.add(group.get(3));
-
-
         }
 
-        // return a FourthRoundResult object with the third round matches and the third-placed teams
-        return new RoundResult(qualifiedTeams,fourthPlacedTeams, allGroupMatches);
+        // Return a RoundResult object containing the qualified teams, fourth-placed teams, and the matches
+        return new RoundResult(qualifiedTeams, fourthPlacedTeams, allGroupMatches);
     }
+
+
     /**
-     * Simulates the qualifier round of the CONMEBOL region. All teams are grouped together, and matches are arranged
-     * both at home and away. The winners and fifth-placed team are determined based on points.
-     * @return The result of the qualifier round in the CONMEBOL region, including the fifth-placed team.
+     * Executes the round of the CONMEBOL (South American Football Confederation) qualification stage.
+     * All teams belonging to the CONMEBOL region are selected.
+     * The selected teams are divided into a single group of 10 teams.
+     * Matches are scheduled and simulated for the group, and the qualified teams and fifth-placed teams are determined.
+     *
+     * @return a RoundResult object containing the qualified teams, fifth-placed teams, and the matches played in the round
      */
     public RoundResult roundCONMEBOL() {
+        // Filter teams belonging to the CONMEBOL region
         List<Team> conmebolTeams = getTeams().stream()
                 .filter(team -> team.getRegion() == Region.CONMEBOL)
                 .collect(Collectors.toList());
 
+        // Divide the teams into a single group
         List<List<Team>> groups = createGroups(conmebolTeams, 1, 10);
 
-        List<Match> allGroupMatches = new ArrayList<>();
+        // Schedule and simulate matches for the group
+        List<Match> allGroupMatches = scheduleAndSimulateMatches(groups, true, LocalDate.of(2015, 10, 8), 10, 3);
         List<Team> qualifiedTeams = new ArrayList<>();
         List<Team> fifthPlacedTeams = new ArrayList<>();
 
-        // Iterate through each group
         for (List<Team> group : groups) {
-            // Arrange home and away matches for the group
-            List<Match> secondRoundMatches = arrangeHomeAndAwayMatches(group, true);
-            allGroupMatches.addAll(secondRoundMatches);
-        }
 
-        // Assign dates to the second round matches
-        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2015, 10, 8), 10, 3);
-
-        // Simulate the matches
-        for (Match match : allGroupMatches) {
-            match.simulateMatchResult();
-        }
-
-
-        for (List<Team> group : groups) {
             // Sort the teams in the group by their qualifier points in descending order
             group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
-            // Add the group winner and runner-up to the respective lists
+            // Add the group winner, runner-up, and third-placed teams to the qualifiedTeams list
             qualifiedTeams.add(group.get(0));
             qualifiedTeams.add(group.get(1));
             qualifiedTeams.add(group.get(2));
             qualifiedTeams.add(group.get(3));
 
+            // Add the fifth-placed team to the fifthPlacedTeams list
             fifthPlacedTeams.add(group.get(4));
-
-
         }
 
-        // return a FourthRoundResult object with the third round matches and the third-placed teams
-        return new RoundResult(qualifiedTeams,fifthPlacedTeams, allGroupMatches);
+        // Return a RoundResult object containing the qualified teams, fifth-placed teams, and the matches
+        return new RoundResult(qualifiedTeams, fifthPlacedTeams, allGroupMatches);
     }
+
+
     /**
-     * Simulates the first round of the OFC region. Teams from certain countries are grouped in pairs, and matches are
-     * arranged both at home and away. Winners are determined based on aggregate scores.
-     * @return The result of the first round in the OFC region, including the winning teams.
+     * Executes the first round of the OFC (Oceania Football Confederation) qualification stage.
+     * Teams belonging to the OFC region are filtered based on their names.
+     * The filtered teams are divided into groups, matches are scheduled and simulated,
+     * and the winners of each group are determined based on the aggregate score of their matches.
+     *
+     * @return a RoundResult object containing the winning teams and the matches played in the first round
      */
     private RoundResult firstRoundOFC() {
         // Filter the teams for those belonging to the OFC region
@@ -772,23 +776,10 @@ public class QualifyingStage extends Stage {
                 .filter(team -> Arrays.asList("American Samoa", "Cook Islands", "Samoa", "Tonga").contains(team.getName()))
                 .collect(Collectors.toList());
 
+        // Divide the teams into groups
         List<List<Team>> groups = createGroups(ofcTeams, ofcTeams.size() / 2, 2);
-        List<Match> firstRoundMatches = new ArrayList<>();
+        List<Match> firstRoundMatches = scheduleAndSimulateMatches(groups, true, LocalDate.of(2015, 9, 1), 2, 2);
         List<Team> winningTeams = new ArrayList<>();
-
-        for (List<Team> pair : groups) {
-            // Generate home and away matches for each pair
-            List<Match> pairedMatches = arrangeHomeAndAwayMatches(pair, true);
-            firstRoundMatches.addAll(pairedMatches);
-        }
-
-        // Assign dates to the first round matches
-        assignDatesToRoundMatches(firstRoundMatches, LocalDate.of(2015, 9, 1), 2, 2);
-
-        // Simulate match results
-        for (Match match : firstRoundMatches) {
-            match.simulateMatchResult();
-        }
 
         for (List<Team> group : groups) {
             // Get the matches for the current group
@@ -800,95 +791,76 @@ public class QualifyingStage extends Stage {
             int team1Score = allRoundMatches.get(0).getTeam1Score() + allRoundMatches.get(1).getTeam2Score();
             int team2Score = allRoundMatches.get(0).getTeam2Score() + allRoundMatches.get(1).getTeam1Score();
             Team winner = (team1Score > team2Score) ? group.get(0) : group.get(1);
+
             // Add the winner to the winningTeams list
             winningTeams.add(winner);
         }
 
-        // Return a RoundResult object containing the winner and the matches
+        // Return a RoundResult object containing the winning teams and the matches
         return new RoundResult(winningTeams, firstRoundMatches);
     }
+
+
     /**
-     * Simulates the second round of the OFC region. Teams from certain countries and winners from the first round are
-     * grouped, and matches are arranged both at home and away. The top three teams from each group are determined
-     * based on points.
-     * @return The result of the second round in the OFC region, including the qualified teams.
+     * Executes the second round of the OFC (Oceania Football Confederation) qualification stage.
+     * Teams belonging to the OFC region are filtered based on their names.
+     * The filtered teams are combined with the teams from the first round of OFC qualification.
+     * The combined teams are divided into groups, matches are scheduled and simulated,
+     * and the top teams from each group are selected as qualified teams.
+     *
+     * @return a RoundResult object containing the qualified teams and the matches played in the second round
      */
     public RoundResult secondRoundOFC() {
+        // Filter teams belonging to the OFC region based on their names
         List<Team> ofcTeams = getTeams().stream()
                 .filter(team -> team.getRegion() == Region.OFC)
-                .filter(team -> Arrays.asList("Fiji", "New Caledonia", "New Zealand", "Papua New Guinea", "Solomon Islands", "Tahiti", "Vanuatu" ).contains(team.getName()))
+                .filter(team -> Arrays.asList("Fiji", "New Caledonia", "New Zealand", "Papua New Guinea", "Solomon Islands", "Tahiti", "Vanuatu").contains(team.getName()))
                 .collect(Collectors.toList());
 
+        // Combine the OFC teams with the teams from the first round of OFC qualification
         ofcTeams.addAll(getFirstRoundResultOFC().getRoundTeams());
 
+        // Divide the teams into groups
         List<List<Team>> groups = createGroups(ofcTeams, 2, 4);
-
-        List<Match> allGroupMatches = new ArrayList<>();
+        List<Match> allGroupMatches = scheduleAndSimulateMatches(groups, true, LocalDate.of(2016, 6, 1), 2, 3);
         List<Team> qualifiedTeams = new ArrayList<>();
-
-        // Iterate through each group
-        for (List<Team> group : groups) {
-            // Arrange home and away matches for the group
-            List<Match> groupMatches = arrangeHomeAndAwayMatches(group, true);
-            allGroupMatches.addAll(groupMatches);
-        }
-
-        // Assign dates to the second round matches
-        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2016, 6, 1), 2, 3);
-
-        // Simulate the matches
-        for (Match match : allGroupMatches) {
-            match.simulateMatchResult();
-        }
-
 
         for (List<Team> group : groups) {
 
             // Sort the teams in the group by their qualifier points in descending order
             group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
-            // Add the top two teams from each group to the qualified teams
+            // Add the top teams from each group to the qualified teams
             qualifiedTeams.add(group.get(0));
             qualifiedTeams.add(group.get(1));
             qualifiedTeams.add(group.get(2));
-
         }
 
-        // return a FourthRoundResult object with the third round matches and the third-placed teams
+        // Return a RoundResult object containing the qualified teams and the matches
         return new RoundResult(qualifiedTeams, allGroupMatches);
     }
+
     /**
-     * Simulates the third round of the OFC region. Winners from the second round are grouped, and matches are
-     * arranged both at home and away. The winners of each group play a playoff match, with the overall winner
-     * determined based on aggregate scores.
-     * @return The result of the third round in the OFC region, including the overall winner.
+     * Executes the third round of the OFC (Oceania Football Confederation) qualification stage.
+     * The second round result is used to create groups, matches are scheduled and simulated,
+     * and the group winners compete in a home-and-away playoff.
+     * The winner of the playoff is determined and returned along with all the matches played in the round.
+     *
+     * @return a RoundResult object containing the playoff winner and all matches played in the third round
      */
     public RoundResult thirdRoundOFC() {
+        // Create groups from the teams in the second round result
         List<List<Team>> groups = createGroups(getSecondRoundResultOFC().getRoundTeams(), 2, 3);
 
-        List<Match> allGroupMatches = new ArrayList<>();
+        // Schedule and simulate matches for the groups
+        List<Match> allGroupMatches = scheduleAndSimulateMatches(groups, true, LocalDate.of(2016, 11, 7), 23, 2);
         List<Team> groupWinners = new ArrayList<>();
-
-        // Iterate through each group
-        for (List<Team> group : groups) {
-            // Arrange home and away matches for the group
-            List<Match> secondRoundMatches = arrangeHomeAndAwayMatches(group, true);
-            allGroupMatches.addAll(secondRoundMatches);
-        }
-
-        // Assign dates to the second round matches
-        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2016, 11, 7), 23, 2);
-
-        // Simulate the matches
-        for (Match match : allGroupMatches) {
-            match.simulateMatchResult();
-        }
 
         for (List<Team> group : groups) {
             // Sort the teams in the group by their qualifier points in descending order
             group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
-            // Add the group winner and runner-up to the respective lists
+            // Add the group winner to the groupWinners list
             groupWinners.add(group.get(0));
         }
 
@@ -907,23 +879,29 @@ public class QualifyingStage extends Stage {
         homeMatch.simulateMatchResult();
         awayMatch.simulateMatchResult();
 
+        // Add the play-off matches to the list of all matches
         playOffMatches.add(homeMatch);
         playOffMatches.add(awayMatch);
 
         // Determine the winner of the play-off
         Team playOffWinner = determinePlayOffWinner(playOffMatches);
 
-        // Combine third round matches and play-off matches
+        // Combine all group matches and play-off matches
         List<Match> allMatches = new ArrayList<>(allGroupMatches);
         allMatches.addAll(playOffMatches);
 
         // Return a RoundResult object containing the play-off winner and all matches
         return new RoundResult(Collections.singletonList(playOffWinner), allMatches);
     }
+
     /**
-     * Simulates the first round of the UEFA region. All UEFA teams are grouped, and matches are arranged both at
-     * home and away. The winners and the top eight runners-up are determined based on points.
-     * @return The result of the first round in the UEFA region, including the group winners and top eight runners-up.
+     * Executes the first round of the UEFA (Union of European Football Associations) qualification stage.
+     * All teams belonging to the UEFA region are included in the qualification process.
+     * The teams are divided into nine groups, consisting of seven groups with six teams each
+     * and two groups with five teams each. Matches are scheduled and simulated for each group,
+     * and the winners and best runners-up from each group are determined based on their qualifier points.
+     *
+     * @return a RoundResult object containing the group winners, best runners-up, and the matches played in the first round
      */
     public RoundResult firstRoundUEFA() {
         List<Team> uefaTeams = getTeams().stream()
@@ -938,29 +916,12 @@ public class QualifyingStage extends Stage {
         List<List<Team>> groups = new ArrayList<>(groupsOfSix);
         groups.addAll(groupsOfFive);
 
-        List<Match> allGroupMatches = new ArrayList<>();
+        // Schedule and simulate matches for the groups
+        List<Match> allGroupMatches = scheduleAndSimulateMatches(groups, true, LocalDate.of(2016, 9, 4), 2, 3);
         List<Team> groupWinners = new ArrayList<>();
         List<Team> groupRunnersUp = new ArrayList<>();
 
-        // Iterate through each group
         for (List<Team> group : groups) {
-            // Arrange home and away matches for the group
-            List<Match> secondRoundMatches = arrangeHomeAndAwayMatches(group, true);
-            allGroupMatches.addAll(secondRoundMatches);
-        }
-
-        // Assign dates to the second round matches
-        assignDatesToRoundMatches(allGroupMatches, LocalDate.of(2016, 9, 4), 2, 3);
-
-        // Simulate the matches
-        for (Match match : allGroupMatches) {
-            match.simulateMatchResult();
-        }
-
-
-
-        for (List<Team> group : groups) {
-
             // Sort the teams in the group by their qualifier points in descending order
             group.sort((t1, t2) -> Integer.compare(t2.getMostRecentScore(), t1.getMostRecentScore()));
 
@@ -972,29 +933,29 @@ public class QualifyingStage extends Stage {
         // Get the eight best group runners-up
         List<Team> bestGroupRunnersUp = groupRunnersUp.subList(0, 8);
 
+        // Return a RoundResult object containing the group winners, best runners-up, and the matches
         return new RoundResult(groupWinners, bestGroupRunnersUp, allGroupMatches);
     }
+
+
     /**
-     * Simulates the second round of the UEFA region. The top eight runners-up from the first round are grouped in pairs,
-     * and matches are arranged both at home and away. Winners are determined based on aggregate scores.
-     * @return The result of the second round in the UEFA region, including the winning teams.
+     * Executes the second round of the UEFA (Union of European Football Associations) qualification stage.
+     * The eight best runners-up from the first round are retrieved.
+     * The runners-up are divided into groups, matches are scheduled and simulated,
+     * and the winners of each group are determined based on the aggregate score of their matches.
+     *
+     * @return a RoundResult object containing the winning teams and the matches played in the second round
      */
     private RoundResult secondRoundUEFA() {
         // Get the eight best runners-up from the first round
-        List<Team> runnersUp = getFirstRoundResultUEFA().getPlayOffTeams();
+        List<Team> runnersUp = getFirstRoundResultUEFA().getPlayoffTeams();
 
+        // Divide the runners-up into groups
         List<List<Team>> groups = createGroups(runnersUp, runnersUp.size() / 2, 2);
         List<Team> winningTeams = new ArrayList<>();
-        List<Match> firstRoundMatches = new ArrayList<>();
 
-        for (List<Team> pair : groups) {
-            // Generate home and away matches for each pair
-            List<Match> pairedMatches = arrangeHomeAndAwayMatches(pair, true);
-            firstRoundMatches.addAll(pairedMatches);
-        }
-
-        // Assign dates to the second round matches
-        assignDatesToRoundMatches(firstRoundMatches, LocalDate.of(2017, 11, 9), 2, 2);
+        // Schedule and simulate matches for the groups
+        List<Match> firstRoundMatches = scheduleAndSimulateMatches(groups, true, LocalDate.of(2017, 11, 9), 2, 2);
 
         for (List<Team> group : groups) {
             // Get the matches for the current group
@@ -1011,17 +972,27 @@ public class QualifyingStage extends Stage {
             winningTeams.add(winner);
         }
 
-
-        // Return a RoundResult object containing the winners and the matches
+        // Return a RoundResult object containing the winning teams and the matches
         return new RoundResult(winningTeams, firstRoundMatches);
     }
 
+
+    /**
+     * Plays the inter-confederation playoffs to determine the additional World Cup qualifiers.
+     * Teams from different confederations participate in the playoffs.
+     * The playoff teams are retrieved from various rounds of the qualification stage.
+     * Matches are simulated between the teams, and the winners are determined.
+     *
+     * @return a RoundResult object containing the World Cup qualifiers and the playoff matches played
+     */
     public RoundResult playInterConfederationPlayoffs() {
+        // Retrieve the playoff teams from different confederations
         List<Team> playoffTeams = new ArrayList<>();
         playoffTeams.addAll(getFourthRoundResultAFC().getRoundTeams());
-        playoffTeams.addAll(getFifthRoundResultCONCACAF().getPlayOffTeams());
-        playoffTeams.addAll(getFirstRoundResultCONMEBOL().getPlayOffTeams());
+        playoffTeams.addAll(getFifthRoundResultCONCACAF().getPlayoffTeams());
+        playoffTeams.addAll(getFirstRoundResultCONMEBOL().getPlayoffTeams());
         playoffTeams.addAll(getThirdRoundResultOFC().getRoundTeams());
+
         List<Team> worldCupQualifiers = new ArrayList<>();
         List<Match> playOffMatches = new ArrayList<>();
 
@@ -1029,6 +1000,7 @@ public class QualifyingStage extends Stage {
         playOffMatches.addAll(playPlayoffMatch(playoffTeams.get(0), playoffTeams.get(1)));
         playOffMatches.addAll(playPlayoffMatch(playoffTeams.get(2), playoffTeams.get(3)));
 
+        // Assign dates to the playoff matches starting from November 10, 2017, with an interval of 2 days and a maximum of 1 match per day
         assignDatesToRoundMatches(playOffMatches, LocalDate.of(2017, 11, 10), 2, 1);
 
         // Simulate the matches
@@ -1036,6 +1008,7 @@ public class QualifyingStage extends Stage {
             match.simulateMatchResult();
         }
 
+        // Determine the winners of the playoffs
         Team afcVsConcacafWinner = determinePlayOffWinner(playOffMatches.subList(0, 2));
         Team conmebolVsOfcWinner = determinePlayOffWinner(playOffMatches.subList(2, 4));
 
@@ -1043,21 +1016,41 @@ public class QualifyingStage extends Stage {
         worldCupQualifiers.add(afcVsConcacafWinner);
         worldCupQualifiers.add(conmebolVsOfcWinner);
 
+        // Return a RoundResult object containing the World Cup qualifiers and the playoff matches
         return new RoundResult(worldCupQualifiers, playOffMatches);
     }
 
 
+
+    /**
+     * Simulates a playoff match between two teams.
+     * Creates a home match and an away match between the two teams.
+     * The winner of the playoff match is determined using the determinePlayOffWinner method.
+     *
+     * @param team1 the first team in the playoff match
+     * @param team2 the second team in the playoff match
+     * @return a list of two matches representing the home and away matches of the playoff
+     */
     public List<Match> playPlayoffMatch(Team team1, Team team2) {
+        // Create a home match and an away match between the two teams
         Match homeMatch = new Match(team1, team2);
         Match awayMatch = new Match(team2, team1);
 
         // Determine the winner using the determinePlayOffWinner method
         List<Match> playOffMatches = Arrays.asList(homeMatch, awayMatch);
+
         return playOffMatches;
     }
 
-
-
+    /**
+     * Determines the winner of a playoff round based on the results of the playoff matches.
+     * The home team and away team goals are compared to determine the winner.
+     * If the goals are tied, the away goals rule is used.
+     * If the away goals are also tied, a random winner is chosen through a penalty shootout.
+     *
+     * @param playOffMatches the list of playoff matches
+     * @return the winning team of the playoff round
+     */
     private Team determinePlayOffWinner(List<Match> playOffMatches) {
         int homeTeamGoals = playOffMatches.get(0).getTeam1Score() + playOffMatches.get(1).getTeam2Score();
         int awayTeamGoals = playOffMatches.get(0).getTeam1Score() + playOffMatches.get(1).getTeam1Score();
@@ -1084,13 +1077,19 @@ public class QualifyingStage extends Stage {
         }
 
         // If the teams are still tied, use a penalty shootout to determine the winner
-        // (This is a simplified example, you can implement a more realistic penalty shootout if you prefer)
         return Math.random() > 0.5 ? homeTeam : awayTeam;
     }
 
 
-
-
+    /**
+     * Creates groups of teams from a given list, based on the specified number of groups and group size.
+     *
+     * @param teams          The list of teams to be divided into groups.
+     * @param numberOfGroups The desired number of groups.
+     * @param groupSize      The size of each group.
+     * @return A list of lists representing the groups of teams.
+     * @throws IllegalArgumentException if there are not enough teams to create the specified number of groups.
+     */
     private List<List<Team>> createGroups(List<Team> teams, int numberOfGroups, int groupSize) {
         List<List<Team>> groups = new ArrayList<>();
 
@@ -1109,6 +1108,7 @@ public class QualifyingStage extends Stage {
 
         return groups;
     }
+
 
 
 
@@ -1140,121 +1140,265 @@ public class QualifyingStage extends Stage {
         return matches;
     }
 
+    //Represents the results of the AFC qualification stage.
     private RoundResult firstRoundResultAFC, secondRoundResultAFC, thirdRoundResultAFC, fourthRoundResultAFC;
+
+    //Represents the results of the CAF qualification stage.
     private RoundResult firstRoundResultCAF, secondRoundResultCAF, thirdRoundResultCAF;
 
+    //Represents the results of the CONCACAF qualification stage.
     private RoundResult firstRoundResultCONCACAF, secondRoundResultCONCACAF, thirdRoundResultCONCACAF,
             fourthRoundResultCONCACAF, fifthRoundResultCONCACAF;
+    //Represents the results of the CONMEBOL qualification stage.
     private RoundResult firstRoundResultCONMEBOL;
 
+    //Represents the results of the OFC qualification stage.
     private RoundResult firstRoundResultOFC, secondRoundResultOFC, thirdRoundResultOFC;
 
+    //Represents the results of the UEFA qualification stage.
     private RoundResult firstRoundResultUEFA, secondRoundResultUEFA;
 
+    //Represents the results of the Play-off qualification stage.
     private RoundResult playoffResult;
 
 
+    /**
+     * Retrieves the playoff round result.
+     *
+     * @return The RoundResult object representing the playoff round.
+     */
     public RoundResult getPlayoffResult() {
         return playoffResult;
     }
 
+    /**
+     * Retrieves the result of the first round in AFC qualification.
+     *
+     * @return The RoundResult object representing the first round in AFC qualification.
+     */
     public RoundResult getFirstRoundResultAFC() {
         return firstRoundResultAFC;
     }
+
+    /**
+     * Retrieves the result of the second round in AFC qualification.
+     *
+     * @return The RoundResult object representing the second round in AFC qualification.
+     */
     public RoundResult getSecondRoundResultAFC() {
         return secondRoundResultAFC;
     }
+
+    /**
+     * Retrieves the result of the third round in AFC qualification.
+     *
+     * @return The RoundResult object representing the third round in AFC qualification.
+     */
     public RoundResult getThirdRoundResultAFC() {
         return thirdRoundResultAFC;
     }
+
+    /**
+     * Retrieves the result of the fourth round in AFC qualification.
+     *
+     * @return The RoundResult object representing the fourth round in AFC qualification.
+     */
     public RoundResult getFourthRoundResultAFC() {
         return fourthRoundResultAFC;
     }
 
+    /**
+     * Retrieves the result of the first round in CAF qualification.
+     *
+     * @return The RoundResult object representing the first round in CAF qualification.
+     */
     public RoundResult getFirstRoundResultCAF() {
         return firstRoundResultCAF;
     }
 
+    /**
+     * Retrieves the result of the second round in CAF qualification.
+     *
+     * @return The RoundResult object representing the second round in CAF qualification.
+     */
     public RoundResult getSecondRoundResultCAF() {
         return secondRoundResultCAF;
     }
 
+    /**
+     * Retrieves the result of the third round in CAF qualification.
+     *
+     * @return The RoundResult object representing the third round in CAF qualification.
+     */
     public RoundResult getThirdRoundResultCAF() {
         return thirdRoundResultCAF;
     }
 
+    /**
+     * Retrieves the result of the first round in CONCACAF qualification.
+     *
+     * @return The RoundResult object representing the first round in CONCACAF qualification.
+     */
     public RoundResult getFirstRoundResultCONCACAF() {
         return firstRoundResultCONCACAF;
     }
 
+    /**
+     * Retrieves the result of the second round in CONCACAF qualification.
+     *
+     * @return The RoundResult object representing the second round in CONCACAF qualification.
+     */
     public RoundResult getSecondRoundResultCONCACAF() {
         return secondRoundResultCONCACAF;
     }
 
+    /**
+     * Retrieves the result of the third round in CONCACAF qualification.
+     *
+     * @return The RoundResult object representing the third round in CONCACAF qualification.
+     */
     public RoundResult getThirdRoundResultCONCACAF() {
         return thirdRoundResultCONCACAF;
     }
 
+    /**
+     * Retrieves the result of the fourth round in CONCACAF qualification.
+     *
+     * @return The RoundResult object representing the fourth round in CONCACAF qualification.
+     */
     public RoundResult getFourthRoundResultCONCACAF() {
         return fourthRoundResultCONCACAF;
     }
 
+    /**
+     * Retrieves the result of the fifth round in CONCACAF qualification.
+     *
+     * @return The RoundResult object representing the fifth round in CONCACAF qualification.
+     */
     public RoundResult getFifthRoundResultCONCACAF() {
         return fifthRoundResultCONCACAF;
     }
 
+    /**
+     * Retrieves the result of the first round in CONMEBOL qualification.
+     *
+     * @return The RoundResult object representing the first round in CONMEBOL qualification.
+     */
     public RoundResult getFirstRoundResultCONMEBOL() {
         return firstRoundResultCONMEBOL;
     }
 
+    /**
+     * Retrieves the result of the First round in OFC qualification.
+     *
+     * @return The RoundResult object representing the first round in OFC qualification.
+     */
     public RoundResult getFirstRoundResultOFC() {
         return firstRoundResultOFC;
     }
 
+    /**
+     * Retrieves the result of the second round in OFC qualification.
+     *
+     * @return The RoundResult object representing the second round in OFC qualification.
+     */
     public RoundResult getSecondRoundResultOFC() {
         return secondRoundResultOFC;
     }
 
+    /**
+     * Retrieves the result of the third round in OFC qualification.
+     *
+     * @return The RoundResult object representing the third round in OFC qualification.
+     */
     public RoundResult getThirdRoundResultOFC() {
         return thirdRoundResultOFC;
     }
 
+    /**
+     * Retrieves the result of the first round in UEFA qualification.
+     *
+     * @return The RoundResult object representing the first round in UEFA qualification.
+     */
     public RoundResult getFirstRoundResultUEFA() {
         return firstRoundResultUEFA;
     }
 
+    /**
+     * Retrieves the result of the second round in UEFA qualification.
+     *
+     * @return The RoundResult object representing the second round in UEFA qualification.
+     */
     public RoundResult getSecondRoundResultUEFA() {
         return secondRoundResultUEFA;
     }
 
-    //Class to retrieve the teams and matches from a round
+    /**
+     * Represents the result of a round in the qualification stage.
+     * Provides access to the teams and matches of the round.
+     */
     public class RoundResult {
         private List<Team> roundTeams;
         private List<Team> playoffTeams;
         private List<Match> roundMatches;
 
+        /**
+         * Constructs a RoundResult object with the winners, playoff teams, and matches of the round.
+         *
+         * @param winners      The list of teams that won the round.
+         * @param playoffTeams The list of teams that advanced to the playoffs.
+         * @param matches      The list of matches played in the round.
+         */
         public RoundResult(List<Team> winners, List<Team> playoffTeams, List<Match> matches) {
             this.roundTeams = winners;
             this.playoffTeams = playoffTeams;
             this.roundMatches = matches;
         }
+
+        /**
+         * Constructs a RoundResult object with the winners and matches of the round.
+         *
+         * @param winners The list of teams that won the round.
+         * @param matches The list of matches played in the round.
+         */
         public RoundResult(List<Team> winners, List<Match> matches) {
             this.roundTeams = winners;
             this.roundMatches = matches;
         }
 
-        public List<Team> getPlayOffTeams() {
+        /**
+         * Retrieves the list of playoff teams from the round.
+         *
+         * @return The list of playoff teams.
+         */
+        public List<Team> getPlayoffTeams() {
+
             return playoffTeams;
         }
 
+        /**
+         * Sets the list of playoff teams for the round.
+         *
+         * @param playoffTeams The list of playoff teams.
+         */
         public void setPlayoffTeams(List<Team> playoffTeams) {
             this.playoffTeams = playoffTeams;
         }
 
+        /**
+         * Retrieves the list of teams that won the round.
+         *
+         * @return The list of winning teams.
+         */
         public List<Team> getRoundTeams() {
             return roundTeams;
         }
 
+        /**
+         * Retrieves the list of matches played in the round.
+         *
+         * @return The list of matches.
+         */
         public List<Match> getRoundMatches() {
             return roundMatches;
         }
