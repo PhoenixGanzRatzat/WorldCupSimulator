@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
  * <ul>
  * <p>Each of these rounds are represented as a list of matches.</p>
  *
+ * @author Tre Logan
  */
 public class KnockoutStage extends Stage {
 
@@ -46,6 +47,8 @@ public class KnockoutStage extends Stage {
      */
     public KnockoutStage(List<Team> teams) {
         super(teams);
+        if (isTeamListNotSizedProperly(teams))
+            throw new TeamListNotSizedProperlyException("Can't create matches from an oddly counted, or empty, list of teams.");
         roundOfSixteenMatches = new ArrayList<>();
         quarterfinalsMatches = new ArrayList<>();
         semifinalsMatches = new ArrayList<>();
@@ -53,8 +56,6 @@ public class KnockoutStage extends Stage {
 
     @Override
     public void arrangeMatches() {
-        if (isTeamListNotSizedProperly(getTeams()))
-            throw new TeamListNotSizedProperlyException("Can't create matches from an oddly counted, or empty, list of teams.");
         roundOfSixteenMatches = createMatchesFromTeams(getTeams());
     }
 
@@ -82,11 +83,7 @@ public class KnockoutStage extends Stage {
     private List<Match> createMatchesFromTeams(List<Team> teams) {
         List<Match> matches = new ArrayList<>();
         List<LocalDate> matchDates = getMatchDatesFromNumberOfTeams(teams.size());
-        for (int i = 0; i < teams.size(); i += 2) {
-            LocalDate matchDate = teams.size() <= NUM_TEAMS_IN_SEMIFINALS ? matchDates.get(i / 2) : matchDates.get(i / 4);
-            Match match = new Match(teams.get(i), teams.get(i + 1), matchDate, true);
-            matches.add(match);
-        }
+        createMatchesAndPopulateMatchList(matches, teams, matchDates);
         return matches;
     }
 
@@ -107,6 +104,20 @@ public class KnockoutStage extends Stage {
                 return Collections.singletonList(LocalDate.of(WORLD_CUP_YEAR, Month.JULY.getValue(), 15));
         }
         return Collections.emptyList();
+    }
+
+    /**
+     * Creates matches using the provided list of teams and dates, populating the given list of matches in the process.
+     * @param matches The match list to populate.
+     * @param teams The teams used to created matches.
+     * @param matchDates The list of dates to get applied to matches depending on team list size and index.
+     */
+    private void createMatchesAndPopulateMatchList(List<Match> matches, List<Team> teams, List<LocalDate> matchDates) {
+        for (int i = 0; i < teams.size(); i += 2) {
+            LocalDate matchDate = teams.size() <= NUM_TEAMS_IN_SEMIFINALS ? matchDates.get(i / 2) : matchDates.get(i / 4);
+            Match match = new Match(teams.get(i), teams.get(i + 1), matchDate);
+            matches.add(match);
+        }
     }
 
     private List<LocalDate> getMatchDatesForRoundOfSixteen() {
@@ -236,6 +247,10 @@ public class KnockoutStage extends Stage {
         return finalsMatch;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public List<Match> getMatches() {
         List<Match> allMatches = new ArrayList<>();

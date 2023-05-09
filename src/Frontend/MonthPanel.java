@@ -266,14 +266,14 @@ public class MonthPanel extends JPanel {
         private void addMatch(Match match) {
             this.matches.add(match);
 
-            JLabel leftFlag = loadFlagLabel(match.getTeam1().getAbbv());
+            JLabel leftFlag = loadFlagLabel(match.getTeam1().getAbbreviation());
             leftFlag.setToolTipText(match.getTeam1().getName());
-            JLabel rightFlag = loadFlagLabel(match.getTeam2().getAbbv());
+            JLabel rightFlag = loadFlagLabel(match.getTeam2().getAbbreviation());
             rightFlag.setToolTipText(match.getTeam2().getName());
 
 
             //add a mouseover to display JPopupMenu
-            JLabel matchLabel = new JLabel(String.format("%s v. %s", match.getTeam1().getAbbv(), match.getTeam2().getAbbv()), JLabel.CENTER);
+            JLabel matchLabel = new JLabel(String.format("%s v. %s", match.getTeam1().getAbbreviation(), match.getTeam2().getAbbreviation()), JLabel.CENTER);
             matchLabel.setToolTipText(formatMatchToolTip(match));
 
 
