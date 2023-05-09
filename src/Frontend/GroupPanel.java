@@ -26,6 +26,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -732,28 +733,13 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
 
         /* Function Panel */
         JButton nextRoundSelectedGroupBTN = new JButton("Next round in group " + selectedGroup);
-        nextRoundSelectedGroupBTN.addActionListener(this);
-        nextRoundSelectedGroupBTN.setBackground(buttonBackground);
-        nextRoundSelectedGroupBTN.setForeground(buttonText);
-        nextRoundSelectedGroupBTN.setFocusPainted(false);
-        nextRoundSelectedGroupBTN.setPreferredSize(new Dimension(250, 30));
-        nextRoundSelectedGroupBTN.setFont(new Font("Arial", Font.BOLD, 16));
+        setButtonLook(nextRoundSelectedGroupBTN);
 
         JButton nextRoundAllGroupsBTN = new JButton("Next round for all groups");
-        nextRoundAllGroupsBTN.addActionListener(this);
-        nextRoundAllGroupsBTN.setBackground(buttonBackground);
-        nextRoundAllGroupsBTN.setForeground(buttonText);
-        nextRoundAllGroupsBTN.setFocusPainted(false);
-        nextRoundAllGroupsBTN.setPreferredSize(new Dimension(250, 30));
-        nextRoundAllGroupsBTN.setFont(new Font("Arial", Font.BOLD, 16));
+        setButtonLook(nextRoundAllGroupsBTN);
 
         JButton completeStageBTN = new JButton("Complete Stage");
-        completeStageBTN.addActionListener(this);
-        completeStageBTN.setBackground(buttonBackground);
-        completeStageBTN.setForeground(buttonText);
-        completeStageBTN.setFocusPainted(false);
-        completeStageBTN.setPreferredSize(new Dimension(250, 30));
-        completeStageBTN.setFont(new Font("Arial", Font.BOLD, 16));
+        setButtonLook(completeStageBTN);
 
         // compose function panel
         functionPanel.add(nextRoundSelectedGroupBTN);
@@ -768,6 +754,16 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         initGroupPanelsWithTeams();
 
         initialized = true;
+    }
+
+    private void setButtonLook(JButton button) {
+        button.addActionListener(this);
+        button.setBackground(buttonBackground);
+        button.setForeground(buttonText);
+        button.setFocusPainted(false);
+        button.setPreferredSize(new Dimension(250, 30));
+        button.setFont(new Font("Arial", Font.BOLD, 16));
+        button.setBorder(new BevelBorder(BevelBorder.RAISED));
     }
 
     @Override
