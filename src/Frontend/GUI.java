@@ -72,7 +72,6 @@ public class GUI extends JFrame implements ActionListener {
         GridBagConstraints layoutConstraints = new GridBagConstraints();
         JLabel fifaLogoLabel;
         JLabel subHeaderLabel;
-        JPanel qualifyingButtonPanel;
 
         startButton.setText("Start Simulation");
         qualifyingButton.setText("Qualifying Stage");
@@ -99,11 +98,6 @@ public class GUI extends JFrame implements ActionListener {
         buttonPanel.add(qualifyingButton);
         buttonPanel.add(groupButton);
         buttonPanel.add(knockoutButton);
-
-//        qualifyingButtonPanel = new JPanel();
-//        qualifyingButtonPanel.add(qualifyingButton);
-//        qualifyingButtonPanel.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND)));
-//        buttonPanel.add(qualifyingButtonPanel);
 
         layoutConstraints.insets = new Insets(10, 10, 10, 10);
         layoutConstraints.weightx = 1;
@@ -149,13 +143,19 @@ public class GUI extends JFrame implements ActionListener {
         setVisible(true);
     }
 
+    /**
+     *
+     * @param button
+     * @param foreground
+     * @param background
+     */
     private void setButtonLook(JButton button, Color foreground, Color background) {
         button.setFocusPainted(false);
         button.setForeground(foreground);
         button.setBackground(background);
         button.setFont(new Font("Arial Black", Font.PLAIN, 14));
         button.setBorder(new BevelBorder(BevelBorder.RAISED));
-        button.setPreferredSize(new Dimension(150, 50));
+        button.setPreferredSize(new Dimension(150, 35));
     }
 
     /**
