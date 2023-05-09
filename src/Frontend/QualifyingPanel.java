@@ -194,7 +194,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             con2.setX(Spring.sum(Spring.constant(Toolkit.getDefaultToolkit().getScreenSize().width/4), con1.getConstraint(SpringLayout.EAST)));
 
             SpringLayout.Constraints con3 = layout.getConstraints(header3);
-            con3.setX(Spring.sum(Spring.constant(Toolkit.getDefaultToolkit().getScreenSize().width/2),
+            con3.setX(Spring.sum(Spring.constant(Toolkit.getDefaultToolkit().getScreenSize().width/3),
                     con2.getConstraint(SpringLayout.EAST)));
 
 
