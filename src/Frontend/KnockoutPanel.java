@@ -34,6 +34,8 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     private boolean initialized;
     private MatchCell[][] cells;
     private List<Match> matches;
+    private int currentRound;
+    private int currentRow;
 
     /**
      * Default constructor; initializes JPanel with BorderLayout, sets size,
@@ -44,6 +46,8 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         this.cells = new MatchCell[][]{new MatchCell[8], new MatchCell[4], new MatchCell[2], new MatchCell[2], new MatchCell[2]};
         this.setBackground(fifaBlue);
         this.initialized = false;
+        currentRound = 0;
+        currentRow = 0;
         createWindow();
     }
     /**
@@ -177,9 +181,9 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         bracket.weightx = 0.1;
         bracket.weighty = 0.1;
         this.add(knockoutButtons, bracket);
-        nextMatch.setVisible(false);
-        nextRound.setVisible(false);
-        skipAll.setVisible(false);
+        //nextMatch.setVisible(false);
+        //nextRound.setVisible(false);
+        //skipAll.setVisible(false);
         // remainder of method is spacers between cells
         //
         // 1x18 horizontal: four each padding the two groups of four outermost columns of cells (8x total)
@@ -237,26 +241,22 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
 
         target.add(spacer, new GridBagConstraints(gX,gY,1,gH,wX,wY,10,1,(new Insets(0,0,0,0)),0,0));
     }
-    /*public void nextMatch() {
-        boolean notDone = true;
-        for (int i = 0; i < cells[currentRound].length; i++) {
-            MatchCell cell = cells[currentRound][i];
-            System.out.println("hi");
-            if (!cell.isCellRevealed() && notDone) {
-                cell.setCellRevealed(true);
-                return;
+    public void nextMatch(boolean skip) {
+        for (MatchCell[] column : cells)
+            for (MatchCell cell : column) {
+                if (!cell.isCellRevealed()) {
+                    cell.setCellRevealed(true);
+                    if(!skip || cell.equals(column[column.length-1])) return;
+                }
             }
-        }
     }
-    public void nextRound() {
-        for(MatchCell[] column : cells) for(MatchCell cell : column){
-            if(!cell.isCellRevealed()){
-                cell.setCellRevealed(true);
-                break;
-            }
-        }
+    public void nextRound(boolean skip) {
+        do{
+            nextMatch(true);
+            if (cells[WINNER][1].isCellRevealed()) skip = false;
+        }while(skip);
     }
-    public void skipAll(){for(MatchCell[] column : cells) for(MatchCell cell : column) if(!cell.isCellRevealed()) cell.setCellRevealed(true);}*/
+    public void skipAll(){nextRound(true);}
     private List<Line2D.Double> createStripes(){
         List<Line2D.Double> stripes = new ArrayList<>();
         double[] columns = new double[5];
@@ -349,11 +349,15 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     public void actionPerformed(ActionEvent e) {
         switch(e.getActionCommand()){
             case "match" :
-                //nextMatch();
+                nextMatch(false);
+                System.out.println("clicked button");
+                break;
             case "round" :
-                //nextRound();
+                nextRound(false);
+                break;
             case "skip" :
-                //skipAll();
+                skipAll();
+                break;
         }
 
     }
@@ -409,7 +413,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             this.imageHeight = imageHeight;
             this.flagWidth = flagWidth;
             this.flagHeight = flagHeight;
-            this.cellRevealed = true;
+            this.cellRevealed = false;
             this.cellFont = new Font ("Arial Black", Font.PLAIN, 14);
             this.champ = new JLabel();
             this.flagPath = new String[isMatch()? 2:1];
@@ -528,7 +532,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             this.setTeamName(isMatch()? new String[]{team[0].getAbbreviation(), team[1].getAbbreviation()} : new String[]{team[0].getAbbreviation()} );
             this.setScoreValue(isMatch()? new int[]{match.getTeam1Score(), match.getTeam2Score()} : new int[]{team[0].equals(match.getTeam1())? match.getTeam1Score() : match.getTeam2Score()});
             updateLabels();
-            setCellRevealed(true);
+            setCellRevealed(false);
         }
         private void setTeamName(String[] teamAbbv) {
             this.teamName = teamAbbv;
@@ -537,14 +541,14 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             this.scoreValue = score;
         }
         private void updateLabels() {
-            Color hidden = new Color(0, 0, 0, 0);
+            Color update = isCellRevealed()? buttonText : new Color(0, 0, 0, 0);
             for(int i = 0; i < (isMatch() ? 2:1); i++) {
-                flagPath[i] = "Assets" + File.separator + "Images"  + File.separator + "smallFlags" + File.separator + ((teamName[i].equals("???") || !isCellRevealed())? ("BLANK.png") : (team[i].getAbbreviation() + ".png"));
-                flag[i].setIcon(createScaledFlagIcon(i));
-                teamLabel[i].setText(teamName[i]);
-                scoreLabel[i].setText(String.valueOf(scoreValue[i]));
-                teamLabel[i].setForeground(isCellRevealed()? buttonText : hidden);
-                scoreLabel[i].setForeground(isCellRevealed()? buttonText : hidden);
+                this.flagPath[i] = "Assets" + File.separator + "Images"  + File.separator + "smallFlags" + File.separator + ((teamName[i].equals("???") || !isCellRevealed())? ("BLANK.png") : (team[i].getAbbreviation() + ".png"));
+                this.flag[i].setIcon(createScaledFlagIcon(i));
+                this.teamLabel[i].setText(teamName[i]);
+                this.scoreLabel[i].setText(String.valueOf(scoreValue[i]));
+                this.teamLabel[i].setForeground(update);
+                this.scoreLabel[i].setForeground(update);
             }
         }
         private ImageIcon createScaledFlagIcon(int flagIndex) {
