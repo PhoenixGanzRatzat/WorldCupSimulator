@@ -41,7 +41,6 @@ public class GUI extends JFrame implements ActionListener {
         buttonPanel = new JPanel(new FlowLayout());
 
         startPanel = new JPanel(new GridBagLayout());
-        //qualifyingPanel = new QualifyingPanel(gameSim.stageMatches(1), gameSim.getTeams());
         qualifyingPanel = new QualifyingPanel();
 
         // TODO: give group panel the matches/teams
@@ -144,10 +143,10 @@ public class GUI extends JFrame implements ActionListener {
         cardPanel.add(knockoutPanel, "knock");
 
         setTitle("World Cup Simulator");
-        setSize(1600, 900);
-        setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - 1600) / 2, (Toolkit.getDefaultToolkit().getScreenSize().height - 900) / 2);
-        setMinimumSize(new Dimension(1024, 768));
-        setExtendedState(MAXIMIZED_BOTH);
+        setLocation((Toolkit.getDefaultToolkit().getScreenSize().width-1600)/2, (Toolkit.getDefaultToolkit().getScreenSize().height-900)/2);
+        //setExtendedState(MAXIMIZED_BOTH);
+        this.setMinimumSize(new Dimension((int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth()/1.2), (int)(Toolkit.getDefaultToolkit().getScreenSize().getHeight()/1.2)));
+        this.setSize(new Dimension((int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth()/1.2), (int)(Toolkit.getDefaultToolkit().getScreenSize().getHeight()/1.2)));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
     }
