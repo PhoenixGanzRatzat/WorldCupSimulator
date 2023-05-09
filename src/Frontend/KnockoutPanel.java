@@ -513,7 +513,6 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             return teamLabel;
         }
         private void setCellRevealed(boolean isRevealed) {
-            System.out.println("hello");
             cellRevealed = isRevealed;
             updateLabels();
         }
