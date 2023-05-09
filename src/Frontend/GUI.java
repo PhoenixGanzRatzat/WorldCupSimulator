@@ -144,7 +144,7 @@ public class GUI extends JFrame implements ActionListener {
     }
 
     /**
-     *
+     * Configures GUI buttons to have a common look and feel
      * @param button
      * @param foreground
      * @param background
@@ -189,6 +189,12 @@ public class GUI extends JFrame implements ActionListener {
         moveToStage(panelString, stage);
     }
 
+    /**
+     * Handles changing cards in the cardPanel, and ensures that panels do not get initialized more than once, and that
+     * previous stage panels are complete.
+     * @param panelString
+     * @param stage
+     */
     private void moveToStage(String panelString, int stage) {
         if (stage == 1) {
             checkIfPanelNeedsInit(qualifyingPanel, stage);
@@ -210,6 +216,11 @@ public class GUI extends JFrame implements ActionListener {
         }
     }
 
+    /**
+     * Checks to see if panel is initialized, and initializes if not.
+     * @param panel
+     * @param stage
+     */
     private void checkIfPanelNeedsInit(StagePanel panel, int stage) {
        if (!panel.checkIfInitialized()){
            panel.initPanel(gameSim.stageMatches(stage), gameSim.getTeams());
