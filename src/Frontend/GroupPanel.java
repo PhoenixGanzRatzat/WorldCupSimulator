@@ -18,6 +18,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
@@ -459,7 +460,9 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     private void initFlags() throws IOException {
         for(Team team : this.teams) {
             String abbv = team.getAbbreviation();
-            BufferedImage flag = ImageIO.read(new File("Assets" + File.separator + "Images" + File.separator + "smallFlags" + File.separator +  abbv + ".png"));
+            InputStream dataFileStream = getClass().getClassLoader().getResourceAsStream(abbv + ".png");
+            Objects.requireNonNull(dataFileStream);
+            BufferedImage flag = ImageIO.read(dataFileStream);
             flags.put(abbv, flag);
         }
     }

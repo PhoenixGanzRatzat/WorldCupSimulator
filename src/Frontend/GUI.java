@@ -3,14 +3,13 @@ package Frontend;
 import Backend.WorldCupSimulator;
 
 import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageInputStream;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Objects;
 
 import static Frontend.StagePanel.*;
@@ -106,7 +105,7 @@ public class GUI extends JFrame implements ActionListener {
         layoutConstraints.weighty = 1;
 
         try {
-            InputStream dataFileStream = getClass().getClassLoader().getResourceAsStream("Assets" +File.separator+"Images"+File.separator+"FIFA_logo.png");
+            InputStream dataFileStream = getClass().getClassLoader().getResourceAsStream("FIFA_logo.png");
             Objects.requireNonNull(dataFileStream);
             fifaLogoLabel = new JLabel(new ImageIcon(ImageIO.read(dataFileStream)));
         } catch (Exception e) {

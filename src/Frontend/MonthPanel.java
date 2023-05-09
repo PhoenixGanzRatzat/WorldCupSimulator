@@ -239,7 +239,9 @@ public class MonthPanel extends JPanel {
             InputStream imgFile = getClass().getClassLoader().getResourceAsStream("Assets" + File.separator + "Images" + File.separator + "smallFlags" + File.separator + teamAbbv + ".png");
             BufferedImage bufferedImage = null;
             try {
-                bufferedImage = ImageIO.read(imgFile);
+                InputStream dataFileStream = getClass().getClassLoader().getResourceAsStream(teamAbbv + ".png");
+                Objects.requireNonNull(dataFileStream);
+                bufferedImage = ImageIO.read(dataFileStream);
                 flagIcon.setIcon(getScaledIconFromImage(bufferedImage));
             } catch (Exception e) {
                 System.err.printf("can't find flag for %s\n", teamAbbv);

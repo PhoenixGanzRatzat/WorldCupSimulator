@@ -49,7 +49,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      * A HashMap of flag images, used to access those images with the
      * team abbreviation
      */
-    private HashMap<String, BufferedImage> flags;
+    private HashMap<String, Image> flags;
     /**
      * A list of all matches played in the qualifying round
      */
@@ -352,7 +352,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             initFlags();
         }
         catch (IOException e) {
-            System.err.println(e.getMessage());
+            System.err.println("Couldn't load flag");
         }
 
         initMonthPanel(matches);
@@ -427,17 +427,13 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      * @throws IOException
      */
     private void initFlags() throws IOException {
-        flags = new HashMap<String, BufferedImage>();
+        flags = new HashMap<String, Image>();
         for(Team team : this.teams) {
             String abbv = team.getAbbreviation();
-            BufferedImage flag = null;
-            try {
-                InputStream dataFileStream = getClass().getClassLoader().getResourceAsStream("Assets" + File.separator + "Images" + File.separator + "smallFlags" + File.separator + abbv + ".png");
-                Objects.requireNonNull(dataFileStream);
-                flag = ImageIO.read(dataFileStream);
-            } catch (Exception e) {
-                throw new IOException("Couldn't load flag for team " + abbv + " (" + team.getName() + ")", e);
-            }
+            BufferedImage flag;
+            InputStream dataFileStream = getClass().getClassLoader().getResourceAsStream(abbv + ".png");
+            Objects.requireNonNull(dataFileStream);
+            flag = ImageIO.read(dataFileStream);
             flags.put(abbv, flag);
         }
     }

@@ -559,7 +559,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         private void updateLabels() {
             Color update = isCellRevealed()? buttonText : new Color(0, 0, 0, 0);
             for(int i = 0; i < (isMatch() ? 2:1); i++) {
-                this.flagPath[i] = "Assets" + File.separator + "Images"  + File.separator + "smallFlags" + File.separator + ((teamName[i].equals("???") || !isCellRevealed())? ("BLANK.png") : (team[i].getAbbreviation() + ".png"));
+                this.flagPath[i] = ((teamName[i].equals("???") || !isCellRevealed())? ("BLANK.png") : (teamName[i] + ".png"));
                 this.flag[i].setIcon(createScaledFlagIcon(i));
                 this.teamLabel[i].setText(teamName[i]);
                 this.scoreLabel[i].setText(String.valueOf(scoreValue[i]));
