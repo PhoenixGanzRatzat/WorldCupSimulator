@@ -27,6 +27,8 @@ import java.util.HashMap;
 
 public class QualifyingPanel extends JPanel implements StagePanel {
 
+    private int[] monthInts = new int[5];
+
     /**
      * Various colors that this class uses
      */
@@ -85,12 +87,18 @@ public class QualifyingPanel extends JPanel implements StagePanel {
     private boolean initialized;
 
     /**
-     The default constructor for QualifyingPanel.
-     Initializes the regions array with strings and creates a MonthPanel.
+    The default constructor for QualifyingPanel.
+    Initializes the regions array with strings and creates a MonthPanel.
      */
     public QualifyingPanel () {
 
         month = new MonthPanel();
+
+        monthInts[0] = 3;
+        monthInts[1] = 6;
+        monthInts[2] = 9;
+        monthInts[3] = 10;
+        monthInts[4] = 11;
 
         regions[0] = "AFC";
         regions[1] = "CAF";
@@ -120,7 +128,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      */
     public void initMonthPanel(List<Match> matches) {
 
-        month.setToMonth(curYear, curMonth);
+        month.setToMonth(curYear, monthInts[curMonth]);
         month.setMatchesOnDayPanels(matches);
         month.setPreferredSize(new Dimension(800, 600));
 
@@ -157,22 +165,22 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
 
     /**
-     Places the results of the qualifying round into tabs, with the results
-     sorted by region. Each tab is set up with a SpringLayout and displays the results
-     in columns.
+    Places the results of the qualifying round into tabs, with the results
+    sorted by region. Each tab is set up with a SpringLayout and displays the results
+    in columns.
      */
     public void fillResults() {
         SpringLayout layout = new SpringLayout();
 
         for(int i = 1; i < cards.length + 1; i++) {
 
-            JLabel header1 = new JLabel("RANK:");
-            JLabel header2 = new JLabel ("TEAM:");
-            JLabel header3 = new JLabel("TOTAL POINTS:");
+          JLabel header1 = new JLabel("RANK:");
+          JLabel header2 = new JLabel ("TEAM:");
+          JLabel header3 = new JLabel("TOTAL POINTS:");
 
-            header1.setFont(new Font("Arial Black", Font.BOLD, 16));
-            header2.setFont(new Font("Arial Black", Font.BOLD, 16));
-            header3.setFont(new Font("Arial Black", Font.BOLD, 16));
+          header1.setFont(new Font("Arial Black", Font.BOLD, 16));
+          header2.setFont(new Font("Arial Black", Font.BOLD, 16));
+          header3.setFont(new Font("Arial Black", Font.BOLD, 16));
 
             tabPane.removeTabAt(i);
 
@@ -199,7 +207,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
 
             ArrayList<Team> sortedArr = new ArrayList<Team>();
-            LocalDate getPointsFrom = java.time.LocalDate.of(curYear, curMonth, 1);
+            LocalDate getPointsFrom = java.time.LocalDate.of(curYear, monthInts[curMonth], 1);
             getPointsFrom = getPointsFrom.withDayOfMonth(getPointsFrom.lengthOfMonth());
 
             for(Team team : teams) {
@@ -258,7 +266,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
                 SpringLayout.Constraints cTemp = layout.getConstraints(tempPanel);
                 cTemp.setY(Spring.sum(Spring.constant(30 * (sortedArr.indexOf(team) + 1)),
-                        con1.getConstraint(SpringLayout.SOUTH)));
+                                con1.getConstraint(SpringLayout.SOUTH)));
 
                 SpringLayout.Constraints cRank = layout.getConstraints(teamRank);
                 cRank.setX(Spring.constant(10));
@@ -294,7 +302,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
 
         }
-    }
+   }
 
     /**
      * Returns true if the qualifying round has been completed, and false otherwise.
@@ -338,7 +346,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
         this.matches = matches;
         this.teams = teamList;
-        curMonth = earliestMatchDate.getMonthValue();
+        monthInts[curMonth] = earliestMatchDate.getMonthValue();
         curYear = earliestMatchDate.getYear();
         tabPane =  new JTabbedPane();
         tabPane.setOpaque(true);
@@ -385,33 +393,33 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
             switch(command) {
                 case "next": curMonth++;
-                    break;
+                break;
                 case "back": curMonth--;
-                    break;
+                break;
                 default: System.out.println("error message");
             }
 
-            if(curMonth > 12) {
-                curMonth = 1;
+            if(curMonth > 4) {
+                curMonth = 0;
                 curYear++;
             }
-            if(curMonth < 1 || curYear > 2018) {
-                curMonth = 12;
+            if(curMonth < 0 || curYear > 2017) {
+                curMonth = 4;
                 curYear--;
             }
             if(curYear < 2015) {
-                curMonth = 1;
+                curMonth = 0;
                 curYear++;
             }
-            if(curYear == earliestMatchDate.getYear() && curMonth < earliestMatchDate.getMonthValue()) {
-                curMonth = 3; //earliest match is March 2015
+            if(curYear == earliestMatchDate.getYear() && monthInts[curMonth] < earliestMatchDate.getMonthValue()) {
+                curMonth = 0; //earliest match is March 2015
             }
 
-            if(curYear == latestMatchDate.getYear() && curMonth > latestMatchDate.getMonthValue()) {
-                curMonth = 6; //latest match is June 2018
+            if(curYear == latestMatchDate.getYear() && monthInts[curMonth] > latestMatchDate.getMonthValue()) {
+                curMonth = 1; //latest match is June 2018
             }
 
-            month.setToMonth(curYear, curMonth);
+            month.setToMonth(curYear, monthInts[curMonth]);
             month.setMatchesOnDayPanels(matches); //backend.getMatchesForYearMonth(
             fillResults();
         }
