@@ -72,7 +72,6 @@ public class GUI extends JFrame implements ActionListener {
         GridBagConstraints layoutConstraints = new GridBagConstraints();
         JLabel fifaLogoLabel;
         JLabel subHeaderLabel;
-        JPanel qualifyingButtonPanel;
 
         startButton.setText("Start Simulation");
         qualifyingButton.setText("Qualifying Stage");
@@ -99,11 +98,6 @@ public class GUI extends JFrame implements ActionListener {
         buttonPanel.add(qualifyingButton);
         buttonPanel.add(groupButton);
         buttonPanel.add(knockoutButton);
-
-//        qualifyingButtonPanel = new JPanel();
-//        qualifyingButtonPanel.add(qualifyingButton);
-//        qualifyingButtonPanel.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND)));
-//        buttonPanel.add(qualifyingButtonPanel);
 
         layoutConstraints.insets = new Insets(10, 10, 10, 10);
         layoutConstraints.weightx = 1;
@@ -149,13 +143,19 @@ public class GUI extends JFrame implements ActionListener {
         setVisible(true);
     }
 
+    /**
+     * Configures GUI buttons to have a common look and feel
+     * @param button
+     * @param foreground
+     * @param background
+     */
     private void setButtonLook(JButton button, Color foreground, Color background) {
         button.setFocusPainted(false);
         button.setForeground(foreground);
         button.setBackground(background);
         button.setFont(new Font("Arial Black", Font.PLAIN, 14));
         button.setBorder(new BevelBorder(BevelBorder.RAISED));
-        button.setPreferredSize(new Dimension(150, 50));
+        button.setPreferredSize(new Dimension(150, 35));
     }
 
     /**
@@ -189,6 +189,12 @@ public class GUI extends JFrame implements ActionListener {
         moveToStage(panelString, stage);
     }
 
+    /**
+     * Handles changing cards in the cardPanel, and ensures that panels do not get initialized more than once, and that
+     * previous stage panels are complete.
+     * @param panelString
+     * @param stage
+     */
     private void moveToStage(String panelString, int stage) {
         if (stage == 1) {
             checkIfPanelNeedsInit(qualifyingPanel, stage);
@@ -210,10 +216,15 @@ public class GUI extends JFrame implements ActionListener {
         }
     }
 
+    /**
+     * Checks to see if panel is initialized, and initializes if not.
+     * @param panel
+     * @param stage
+     */
     private void checkIfPanelNeedsInit(StagePanel panel, int stage) {
-        if (!panel.checkIfInitialized()){
-            panel.initPanel(gameSim.stageMatches(stage), gameSim.getTeams());
-        }
+       if (!panel.checkIfInitialized()){
+           panel.initPanel(gameSim.stageMatches(stage), gameSim.getTeams());
+       }
     }
 
     /**
