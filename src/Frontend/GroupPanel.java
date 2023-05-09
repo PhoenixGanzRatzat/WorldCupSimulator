@@ -26,6 +26,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -69,10 +70,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     private boolean[] groupsThatAreComplete;
     private boolean initialized;
 
-    /* TODO:
-       Todo:
-     */
-
     /* __ CONSTRUCTORS __ */
     public GroupPanel() {
         this.setLayout(new BorderLayout());
@@ -110,13 +107,13 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         // panel that is returned is 'base'
         JPanel base = new JPanel();
         base.setBackground(buttonBackground);
-        base.setLayout(new GridLayout(6,1));
+        base.setLayout(new GridLayout(6,1, 0,1));
         //base.setPreferredSize(new Dimension(500, 125));
         base.setBorder(new LineBorder(buttonBorder));
 
         // top button used to select this group
         JPanel groupSelectBTNPanel = new JPanel(new BorderLayout());
-        String groupLetter = String.valueOf((char) (groupNumber + 65)); // '65' = 'A' // TODO: maybe a String
+        String groupLetter = String.valueOf((char) (groupNumber + 65)); // '65' = 'A'
         JButton groupSelectBTN = new JButton(groupLetter); // top of each group panel has a 'Select this group' button
         //groupSelectBTN.setPreferredSize(new Dimension(base.getWidth(), 35));
         groupSelectBTN.addActionListener(this);
@@ -230,13 +227,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
 
             }
         }
-
-        // for each group panel
-        for (Component groupPanel : this.groupDisplayPanel.getComponents()) {
-            if (groupPanel instanceof JPanel) {
-
-            }
-        }
     }
     /**
      * Retrieves and updates the groupPanel for groupNumber with the results of
@@ -302,7 +292,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
                 }
             }
         }
-        // TODO: possible error, unhandled
         return null;
     }
     /**
@@ -373,6 +362,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         for (int i = 0; i < 7; i++) {
             JLabel label = new JLabel();
             label.setForeground(buttonText);
+            label.setFont(new Font("Monospaced", Font.BOLD, 17));
             if(i == 3) {
                 label.setText("-");
                 base.add(label);
@@ -567,7 +557,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
      * and 6 matches. total of 8 groups.
      */
     private void createGroups() {
-        // TODO: verify dynamic size groups work (>4 teams)
         /* put teams into groups */
         for (Match match : matches) {
             // get teams
@@ -646,8 +635,9 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     public boolean checkIfCompleted() {
         boolean finalResult = true;
         for(boolean groupComplete : this.groupsThatAreComplete) {
-            if(!groupComplete) {
+            if (!groupComplete) {
                 finalResult = false;
+                break;
             }
         }
         return finalResult;
@@ -672,7 +662,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
      * Create an empty group stage panel that will be filled in as the user interacts with function buttons
      */
     public void initPanel() {
-        Font font = new Font("Arial", Font.BOLD, 30);
+        Font largeDisplayFont = new Font("Arial", Font.BOLD, 30);
         /* Top bar across window for displaying current round */
         JPanel infoPanel = new JPanel(new GridLayout(1,4));
         infoPanel.setBackground(fifaBlue);
@@ -683,25 +673,28 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         displayPanel.setBackground(fifaBlue);
         /* Bottom bar across window for housing functions */
         JPanel functionPanel = new JPanel();
+        functionPanel.setBackground(new Color(107, 140, 166));
+        functionPanel.setBorder(new LineBorder(buttonBorder));
+
 
         /* Information Panel */
         JLabel groupLabel = new JLabel("Group: ");
-        groupLabel.setFont(font);
+        groupLabel.setFont(largeDisplayFont);
         groupLabel.setForeground(buttonText);
         groupLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         infoPanel.add(groupLabel);
 
-        infoPanelGroupLabel.setFont(font);
+        infoPanelGroupLabel.setFont(largeDisplayFont);
         infoPanelGroupLabel.setForeground(buttonText);
         infoPanelGroupLabel.setHorizontalAlignment(SwingConstants.CENTER);
         infoPanel.add(infoPanelGroupLabel);
 
         JLabel roundLabel = new JLabel("Round: ");
-        roundLabel.setFont(font);
+        roundLabel.setFont(largeDisplayFont);
         roundLabel.setForeground(buttonText);
         infoPanel.add(roundLabel);
 
-        infoPanelRoundNumberLabel.setFont(font);
+        infoPanelRoundNumberLabel.setFont(largeDisplayFont);
         infoPanelRoundNumberLabel.setForeground(buttonText);
         infoPanel.add(infoPanelRoundNumberLabel);
 
@@ -717,15 +710,18 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
 
         // results side-pane - displays score and outcome between each match in the group
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
-        resultsPanel.setPreferredSize(new Dimension(200, 215));
+        resultsPanel.setPreferredSize(new Dimension(230, 245));
         resultsPanel.setBorder(new LineBorder(buttonBorder));
         resultsPanel.setBackground(buttonBackground);
+
         JPanel resultsTitlePane = new JPanel();
         resultsTitlePane.setBackground(buttonBackground);
-        JLabel resultsTitleLabel = new JLabel("Group A Results");
-        resultsTitleLabel.setForeground(buttonText);
         resultsTitlePane.setBackground(buttonBackground);
         resultsTitlePane.setBorder(new LineBorder(buttonBorder));
+
+        JLabel resultsTitleLabel = new JLabel("Group A Results");
+        resultsTitleLabel.setForeground(buttonText);
+
         resultsTitlePane.add(resultsTitleLabel);
         resultsPanel.add(resultsTitlePane);
         for (int c = 0; c < 6; c++) {
@@ -739,12 +735,15 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         displayPanel.add(resultsPanel, constraints);
 
         /* Function Panel */
-        JButton nextRoundSelectedGroupBTN = new JButton("Next round in group " + selectedGroup);
-        nextRoundSelectedGroupBTN.addActionListener(this);
+        JButton nextRoundSelectedGroupBTN = new JButton("Next round for group " + selectedGroup);
+        setButtonLook(nextRoundSelectedGroupBTN);
+
         JButton nextRoundAllGroupsBTN = new JButton("Next round for all groups");
-        nextRoundAllGroupsBTN.addActionListener(this);
+        setButtonLook(nextRoundAllGroupsBTN);
+
         JButton completeStageBTN = new JButton("Complete Stage");
-        completeStageBTN.addActionListener(this);
+        setButtonLook(completeStageBTN);
+
         // compose function panel
         functionPanel.add(nextRoundSelectedGroupBTN);
         functionPanel.add(nextRoundAllGroupsBTN);
@@ -758,6 +757,16 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         initGroupPanelsWithTeams();
 
         initialized = true;
+    }
+
+    private void setButtonLook(JButton button) {
+        button.addActionListener(this);
+        button.setBackground(buttonBackground);
+        button.setForeground(buttonText);
+        button.setFocusPainted(false);
+        button.setPreferredSize(new Dimension(250, 30));
+        button.setFont(new Font("Arial", Font.BOLD, 16));
+        button.setBorder(new BevelBorder(BevelBorder.RAISED));
     }
 
     @Override
@@ -776,7 +785,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         String text = pressed.getText();
 
         // This buttons text changes
-        if(text.contains("Next round in group")) {
+        if(text.contains("Next round for group")) {
             text = "Simulate group round";
         }
 

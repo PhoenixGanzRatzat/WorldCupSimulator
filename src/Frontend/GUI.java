@@ -4,6 +4,7 @@ import Backend.WorldCupSimulator;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,24 +40,16 @@ public class GUI extends JFrame implements ActionListener {
 
         cardPanel = new JPanel(new CardLayout());
         buttonPanel = new JPanel(new FlowLayout());
-
         startPanel = new JPanel(new GridBagLayout());
-        //qualifyingPanel = new QualifyingPanel(gameSim.stageMatches(1), gameSim.getTeams());
+
         qualifyingPanel = new QualifyingPanel();
-
-        // TODO: give group panel the matches/teams
-        //groupPanel = new GroupPanel(gameSim.stageMatches(2), gameSim.getTeams());
         groupPanel = new GroupPanel();
-
-        // TODO: give knockoutpanel the matches/teams
         knockoutPanel = new KnockoutPanel();
 
         startButton = new JButton();
         qualifyingButton = new JButton();
         groupButton = new JButton();
         knockoutButton = new JButton();
-
-        initGUI();
     }
 
     /**
@@ -66,6 +59,7 @@ public class GUI extends JFrame implements ActionListener {
      */
     public static void main(String[] args) {
         GUI mainGUI = new GUI();
+        mainGUI.initGUI();
     }
 
     /**
@@ -130,11 +124,8 @@ public class GUI extends JFrame implements ActionListener {
         subHeaderLabel.setForeground(buttonText);
         startPanel.add(subHeaderLabel, layoutConstraints);
 
-
         layoutConstraints.gridx = 0;
         layoutConstraints.gridy = 3;
-
-        setButtonLook(startButton, buttonText, fifaBlue);
 
         startPanel.add(startButton, layoutConstraints);
 
@@ -152,11 +143,19 @@ public class GUI extends JFrame implements ActionListener {
         setVisible(true);
     }
 
+    /**
+     * Configures GUI buttons to have a common look and feel
+     * @param button
+     * @param foreground
+     * @param background
+     */
     private void setButtonLook(JButton button, Color foreground, Color background) {
         button.setFocusPainted(false);
         button.setForeground(foreground);
         button.setBackground(background);
         button.setFont(new Font("Arial Black", Font.PLAIN, 14));
+        button.setBorder(new BevelBorder(BevelBorder.RAISED));
+        button.setPreferredSize(new Dimension(150, 35));
     }
 
     /**
@@ -165,13 +164,11 @@ public class GUI extends JFrame implements ActionListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        JPanel panel;
         String panelString;
         int stage;
 
         if (e.getSource() == startButton) {
             panelString = "qual";
-            //makeBGBrighter = false;
             qualifyingButton.setVisible(true);
             groupButton.setVisible(true);
             knockoutButton.setVisible(true);
@@ -192,8 +189,13 @@ public class GUI extends JFrame implements ActionListener {
         moveToStage(panelString, stage);
     }
 
+    /**
+     * Handles changing cards in the cardPanel, and ensures that panels do not get initialized more than once, and that
+     * previous stage panels are complete.
+     * @param panelString
+     * @param stage
+     */
     private void moveToStage(String panelString, int stage) {
-
         if (stage == 1) {
             checkIfPanelNeedsInit(qualifyingPanel, stage);
             changeCard(cardPanel, panelString);
@@ -214,6 +216,11 @@ public class GUI extends JFrame implements ActionListener {
         }
     }
 
+    /**
+     * Checks to see if panel is initialized, and initializes if not.
+     * @param panel
+     * @param stage
+     */
     private void checkIfPanelNeedsInit(StagePanel panel, int stage) {
        if (!panel.checkIfInitialized()){
            panel.initPanel(gameSim.stageMatches(stage), gameSim.getTeams());
