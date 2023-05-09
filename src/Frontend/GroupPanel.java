@@ -672,6 +672,9 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         displayPanel.setBackground(fifaBlue);
         /* Bottom bar across window for housing functions */
         JPanel functionPanel = new JPanel();
+        functionPanel.setBackground(new Color(107, 140, 166));
+        functionPanel.setBorder(new LineBorder(buttonBorder));
+
 
         /* Information Panel */
         JLabel groupLabel = new JLabel("Group: ");
@@ -730,10 +733,28 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         /* Function Panel */
         JButton nextRoundSelectedGroupBTN = new JButton("Next round in group " + selectedGroup);
         nextRoundSelectedGroupBTN.addActionListener(this);
+        nextRoundSelectedGroupBTN.setBackground(buttonBackground);
+        nextRoundSelectedGroupBTN.setForeground(buttonText);
+        nextRoundSelectedGroupBTN.setFocusPainted(false);
+        nextRoundSelectedGroupBTN.setPreferredSize(new Dimension(250, 30));
+        nextRoundSelectedGroupBTN.setFont(new Font("Arial", Font.BOLD, 16));
+
         JButton nextRoundAllGroupsBTN = new JButton("Next round for all groups");
         nextRoundAllGroupsBTN.addActionListener(this);
+        nextRoundAllGroupsBTN.setBackground(buttonBackground);
+        nextRoundAllGroupsBTN.setForeground(buttonText);
+        nextRoundAllGroupsBTN.setFocusPainted(false);
+        nextRoundAllGroupsBTN.setPreferredSize(new Dimension(250, 30));
+        nextRoundAllGroupsBTN.setFont(new Font("Arial", Font.BOLD, 16));
+
         JButton completeStageBTN = new JButton("Complete Stage");
         completeStageBTN.addActionListener(this);
+        completeStageBTN.setBackground(buttonBackground);
+        completeStageBTN.setForeground(buttonText);
+        completeStageBTN.setFocusPainted(false);
+        completeStageBTN.setPreferredSize(new Dimension(250, 30));
+        completeStageBTN.setFont(new Font("Arial", Font.BOLD, 16));
+
         // compose function panel
         functionPanel.add(nextRoundSelectedGroupBTN);
         functionPanel.add(nextRoundAllGroupsBTN);
