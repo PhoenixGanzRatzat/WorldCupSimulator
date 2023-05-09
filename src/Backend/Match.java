@@ -47,16 +47,16 @@ public class Match {
     private double calculateGoalProbability(int rank){
         double goalProb = 0;
         if(rank < 52){
-            goalProb = .75;
+            goalProb = .750;
         }
         else if(rank < 104){
-            goalProb = .80;
+            goalProb = .775;
         }
         else if(rank < 156){
-            goalProb = .85;
+            goalProb = .800;
         }
         else {
-            goalProb = .90;
+            goalProb = .825;
         }
         return goalProb;
     }
@@ -72,11 +72,11 @@ public class Match {
        this.team1GoalProb = calculateGoalProbability(team1.getRank());
        this.team2GoalProb = calculateGoalProbability(team2.getRank());
 
-       for (int mins = 0; mins < matchDurationInMinutes; mins += scoringIntervalInMinutes){
-           if(Math.random() < team1GoalProb){
+       for (int mins = 15; mins < matchDurationInMinutes; mins += scoringIntervalInMinutes){
+           if(Math.random() > team1GoalProb){
                this.team1Score++;
            }
-           if(Math.random() < team2GoalProb){
+           if(Math.random() > team2GoalProb){
                this.team2Score++;
            }
        }
