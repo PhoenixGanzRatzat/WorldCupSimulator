@@ -11,6 +11,7 @@ public class Match {
     private boolean isKnockout;
     private double team1GoalProb;
     private double team2GoalProb;
+    private int minutes;
 
     public Match(Team teamOne, Team teamTwo){
         this(teamOne, teamTwo, LocalDate.now());
@@ -24,18 +25,14 @@ public class Match {
         this.isKnockout = false;
     }
     public Match (Team teamOne, Team teamTwo, LocalDate date) {
-        this.team1 = teamOne;
-        this.team2 = teamTwo;
-        this.team1Score = 0;
-        this.team2Score = 0;
-        this.matchDate = date;
-        this.isKnockout = false;
+        this(teamOne, teamTwo, date, false);
     }
     public Match (Team teamOne, Team teamTwo, LocalDate date, boolean isKnockout) {
         this.team1 = teamOne;
         this.team2 = teamTwo;
         this.team1Score = 0;
         this.team2Score = 0;
+        this.minutes = 0;
         this.matchDate = date;
         this.isKnockout = isKnockout;
     }
@@ -66,13 +63,16 @@ public class Match {
         // Generate random scores for each team (0-4)
         // TODO: Adjust scoring calculation to more accurately simulate a game.
 
-       int matchDurationInMinutes = 90;
-       int scoringIntervalInMinutes = 15;
+       final int matchDurationInMinutes = 90;
+       final int extraTimeDurationInMinutes = 30;
+       final int scoringIntervalInMinutes = 15;
+
 
        this.team1GoalProb = calculateGoalProbability(team1.getRank());
        this.team2GoalProb = calculateGoalProbability(team2.getRank());
 
-       for (int mins = 15; mins < matchDurationInMinutes; mins += scoringIntervalInMinutes){
+       while(minutes < matchDurationInMinutes){
+           minutes += scoringIntervalInMinutes;
            if(Math.random() > team1GoalProb){
                this.team1Score++;
            }
@@ -85,7 +85,8 @@ public class Match {
         // If match is taking place during the knockout stage and ends in a draw, execute tiebreaker procedure
         if (isKnockout && team1Score == team2Score) {
             // Simulate extra time being played, generate new scores for each team
-            for (int mins = 15; mins < matchDurationInMinutes; mins += scoringIntervalInMinutes){
+            while(minutes < matchDurationInMinutes + extraTimeDurationInMinutes){
+                minutes += scoringIntervalInMinutes;
                 if(Math.random() > team1GoalProb){
                     this.team1Score++;
                 }
@@ -95,13 +96,15 @@ public class Match {
             }
             // If there's still a tie after the extra time added, simulate penalty shootout
             if (team1Score == team2Score) {
-                int pensTeam1Score = (int) (Math.random() * 5);
-                int pensTeam2Score = (int) (Math.random() * 5);
+                minutes += 15;
+                int pensTeam1Score = (int) (Math.random() * 2);
+                int pensTeam2Score = (int) (Math.random() * 2);
                 this.team1Score += pensTeam1Score;
                 this.team2Score += pensTeam2Score;
 
                 // If there's still a tie after the penalty shootout, simulate sudden death
                 while (team1Score == team2Score) {
+                    minutes += scoringIntervalInMinutes;
                     if(Math.random() > team1GoalProb){
                         this.team1Score++;
                     }
@@ -128,9 +131,8 @@ public class Match {
         }
     }
 
-    public void setResult(int team1Score, int team2Score) {
-        this.team1Score = team1Score;
-        this.team2Score = team2Score;
+    public int getMinutes() {
+        return minutes;
     }
 
     public Team getTeam1(){

@@ -2,8 +2,11 @@ package Backend;
 
 import Backend.stage.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class WorldCupSimulator {
 
@@ -31,7 +34,6 @@ public class WorldCupSimulator {
         switch (stage){
             case 1:
                 qualifiers.arrangeMatches();
-                qualifiers.calculateMatchResults();
                 return qualifiers.getMatches();
             case 2:
                 teams = qualifiers.qualifiedTeams();
