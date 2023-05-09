@@ -8,12 +8,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static Frontend.StagePanel.*;
 
@@ -235,12 +236,12 @@ public class MonthPanel extends JPanel {
 
         private JLabel loadFlagLabel(String teamAbbv) {
             JLabel flagIcon = new JLabel();
-            File imgFile = new File("Assets" + File.separator + "Images" + File.separator + "smallFlags" + File.separator + teamAbbv + ".png");
+            InputStream imgFile = getClass().getClassLoader().getResourceAsStream("Assets" + File.separator + "Images" + File.separator + "smallFlags" + File.separator + teamAbbv + ".png");
             BufferedImage bufferedImage = null;
             try {
                 bufferedImage = ImageIO.read(imgFile);
                 flagIcon.setIcon(getScaledIconFromImage(bufferedImage));
-            } catch (IOException e) {
+            } catch (Exception e) {
                 System.err.printf("can't find flag for %s\n", teamAbbv);
             }
 

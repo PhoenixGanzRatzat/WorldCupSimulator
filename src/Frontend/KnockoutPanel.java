@@ -15,9 +15,10 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Displays KnockoutStage results.
@@ -570,8 +571,10 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         private ImageIcon createScaledFlagIcon(int flagIndex) {
             BufferedImage source = new BufferedImage(this.imageWidth, this.imageHeight, BufferedImage.TYPE_INT_ARGB);
             try {
-                source = ImageIO.read(new File(flagPath[flagIndex]));
-            } catch(IOException e){
+                InputStream dataFileStream = getClass().getClassLoader().getResourceAsStream(flagPath[flagIndex]);
+                Objects.requireNonNull(dataFileStream);
+                source = ImageIO.read(dataFileStream);
+            } catch(Exception e){
                 System.out.printf("File not found at \"%s\"\n", flagPath[flagIndex]);
             }
             float scaleFactor = (float)(flagHeight) / (float)(source.getHeight());

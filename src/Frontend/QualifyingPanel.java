@@ -9,10 +9,12 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * The QualifyingPanel displays all information related to the qualifying round
@@ -430,8 +432,10 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             String abbv = team.getAbbreviation();
             BufferedImage flag = null;
             try {
-                flag = ImageIO.read(new File("Assets" + File.separator + "Images" + File.separator + "smallFlags" + File.separator +  abbv + ".png"));
-            } catch (IOException e) {
+                InputStream dataFileStream = getClass().getClassLoader().getResourceAsStream("Assets" + File.separator + "Images" + File.separator + "smallFlags" + File.separator + abbv + ".png");
+                Objects.requireNonNull(dataFileStream);
+                flag = ImageIO.read(dataFileStream);
+            } catch (Exception e) {
                 throw new IOException("Couldn't load flag for team " + abbv + " (" + team.getName() + ")", e);
             }
             flags.put(abbv, flag);
