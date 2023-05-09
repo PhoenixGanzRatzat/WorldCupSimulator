@@ -186,15 +186,15 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             //each component needs its own SpringLayout.Constraints
             SpringLayout.Constraints con1 = layout.getConstraints(header1);
             //setX without anything else just sets from 0,0 as normal
-            con1.setX(Spring.constant(10));
+            con1.setX(Spring.constant(20));
 
             SpringLayout.Constraints con2 = layout.getConstraints(header2);
             //SpringSum adds the constant buffer to the East/West/North/South edge of the specified component,
             //in this case header1, using the con1 object to access that
-            con2.setX(Spring.sum(Spring.constant(10), con1.getConstraint(SpringLayout.EAST)));
+            con2.setX(Spring.sum(Spring.constant(Toolkit.getDefaultToolkit().getScreenSize().width/4), con1.getConstraint(SpringLayout.EAST)));
 
             SpringLayout.Constraints con3 = layout.getConstraints(header3);
-            con3.setX(Spring.sum(Spring.constant(Toolkit.getDefaultToolkit().getScreenSize().width/2),
+            con3.setX(Spring.sum(Spring.constant(Toolkit.getDefaultToolkit().getScreenSize().width/3),
                     con2.getConstraint(SpringLayout.EAST)));
 
 
@@ -362,11 +362,11 @@ public class QualifyingPanel extends JPanel implements StagePanel {
             tabPane.addTab(regions[i], cards[i]);
         }
 
-
+        tabPane.setForeground(Color.BLACK);
         fillResults();
 
         this.add(tabPane);
-        tabPane.setBackground(BG_COLOR);
+        tabPane.setBackground(ROW1_COLOR);
         //tabPane.setPreferredSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize()));
         month.setBackground(BG_COLOR);
         //this.setSize(new Dimension(1600, 900));
