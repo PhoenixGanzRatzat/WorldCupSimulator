@@ -30,10 +30,6 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     private static final int FINAL = 3;
     private static final int WINNER = 4;
     // colors
-    private final static Color canvas = new Color(17, 132, 39);
-    private final static Color text = new Color(213, 226, 216);
-    private final static Color stroke = new Color(163, 207, 172);
-
     private boolean initialized;
     private MatchCell[][] cells;
     private List<Match> matches;
@@ -46,9 +42,8 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     public KnockoutPanel() {
         super(new GridBagLayout(), true);
         this.cells = new MatchCell[][]{new MatchCell[8], new MatchCell[4], new MatchCell[2], new MatchCell[2], new MatchCell[2]};
-        this.setBackground(canvas);
+        this.setBackground(fifaBlue);
         this.initialized = false;
-        themeColor = canvas;
         createWindow();
     }
     /*TODO:
@@ -292,16 +287,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         return initialized;
     }
 
-    @Override
-    public Color getThemeColor() {
-        return themeColor;
-    }
-
-    @Override
-    public void initPanel() {
-        initialized = true;
-    }
-    public void initPanel(List<Match> matchList){
+    public void initPanel(List<Match> matchList, List<Team> teamList){
         this.matches = new ArrayList<>();
         matches.addAll(matchList);
         matches.add(matches.get(matches.size()-2));
@@ -337,7 +323,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     public void paintComponent(Graphics g){
         Graphics2D striper = (Graphics2D) g;
         super.paintComponent(striper);
-        striper.setColor(stroke);
+        striper.setColor(buttonBorder);
         striper.setStroke(new BasicStroke(5, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
         if(initialized){
             for(Line2D.Double stripe : createStripes()){
@@ -365,7 +351,6 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         private BufferedImage[] source;
         private Point2D cellOrigin;
         private Font cellFont;
-        private Color cellText;
         private boolean cellRevealed, origin;
         private int row, round, imageWidth, imageHeight, flagWidth, flagHeight;
 
@@ -393,7 +378,6 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             this.origin = false;
             this.cellRevealed = true;
             this.cellFont = new Font ("Arial Black", Font.PLAIN, 14);
-            this.cellText = text;
             this.champ = new JLabel();
             this.flagPath = new String[isMatch()? 2:1];
             this.scoreValue = new int[isMatch()? 2:1];
@@ -403,11 +387,11 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             this.teamLabel =  new JButton[isMatch()? 2:1];
             this.source = new BufferedImage[isMatch()? 2:1];
             // set size, background, and border
-            this.cellSize = new Dimension(100+this.flagWidth, (this.flagHeight*2)+2);
+            this.cellSize = new Dimension(100+this.flagWidth, (this.flagHeight*2)+3);
             this.setMinimumSize(cellSize);
             this.setMaximumSize(cellSize);
-            this.setBackground(canvas.darker());
-            this.setBorder(BorderFactory.createLineBorder(stroke, 2, true));
+            this.setBackground(buttonBackground);
+            this.setBorder(BorderFactory.createLineBorder(buttonBorder, 2, true));
             this.cellConstraints = new GridBagConstraints();
             createCell();
         }
@@ -429,7 +413,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
                 teamLabel[i].setBorderPainted(false);
                 teamLabel[i].setFocusPainted(false);
                 teamLabel[i].setFont(cellFont);
-                teamLabel[i].setForeground(cellText);
+                teamLabel[i].setForeground(buttonBorder);
                 teamLabel[i].setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
                 cellConstraints.gridx = 1;
                 cellConstraints.weightx = 1;
@@ -439,7 +423,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
                 JSeparator verticalSeparator = new JSeparator(JSeparator.VERTICAL);
                 verticalSeparator.setPreferredSize(new Dimension(1, cellSize.height));
                 verticalSeparator.setMinimumSize(new Dimension(1, cellSize.height));
-                verticalSeparator.setBackground(stroke);
+                verticalSeparator.setBackground(buttonBorder);
                 cellConstraints.gridx = 2;
                 cellConstraints.weightx = 0;
                 if(isMatch()) this.add(verticalSeparator, cellConstraints);
@@ -448,7 +432,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
                 scoreLabel[i] = new JLabel(String.valueOf(scoreValue[i]));
                 scoreLabel[i].setOpaque(false);
                 scoreLabel[i].setFont(cellFont);
-                scoreLabel[i].setForeground(cellText);
+                scoreLabel[i].setForeground(buttonText);
                 scoreLabel[i].setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
                 cellConstraints.gridx = 3;
                 cellConstraints.weightx = 0.8;
@@ -457,7 +441,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             JSeparator horizontalSeparator = new JSeparator();
             horizontalSeparator.setPreferredSize(new Dimension(cellSize.width, 1));
             horizontalSeparator.setMinimumSize(new Dimension(cellSize.width, 1));
-            horizontalSeparator.setBackground(stroke);
+            horizontalSeparator.setBackground(buttonBorder);
             cellConstraints.gridx = 0;
             cellConstraints.gridy = 1;
             cellConstraints.gridwidth = isMatch()? 4:2;
@@ -468,7 +452,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             if(!isMatch()){
                 champ.setText(((row < 8)? "1ST" : "3RD") + " PLACE");
                 champ.setFont(cellFont);
-                champ.setForeground(cellText);
+                champ.setForeground(buttonText);
                 cellConstraints.anchor = GridBagConstraints.CENTER;
                 cellConstraints.gridx = 0;
                 cellConstraints.gridy = 0;
@@ -516,6 +500,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             this.setTeamName(isMatch()? new String[]{team[0].getAbbv(), team[1].getAbbv()} : new String[]{team[0].getAbbv()} );
             this.setScoreValue(isMatch()? new int[]{match.getTeam1Score(), match.getTeam2Score()} : new int[]{team[0].equals(match.getTeam1())? match.getTeam1Score() : match.getTeam2Score()});
             updateLabels();
+            setCellRevealed(false);
             //if(round == ROUND_OF_SIXTEEN && row == 1){
                 setCellRevealed(true);
             //}
@@ -527,31 +512,31 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             this.scoreValue = score;
         }
         private void updateLabels() {
-            cellText = isCellRevealed()? text : new Color(0, 0, 0, 0);
-            champ.setForeground(cellText);
-            for(int i = 0; i < (isMatch()? 2:1); i++) {
-                flagPath[i] = "Assets" + File.separator + "Images"  + File.separator + "smallFlags" + File.separator + ((teamName[i].equals("???") || !isCellRevealed())? ("BLANK.png") : (teamName[i] + ".png"));
+            Color hidden = new Color(0, 0, 0, 0);
+
+
+            for(int i = 0; i < (isMatch() ? 2:1); i++) {
+                flagPath[i] = "Assets" + File.separator + "Images"  + File.separator + "smallFlags" + File.separator + ((teamName[i].equals("???") || !isCellRevealed())? ("BLANK.png") : (team[i].getAbbv() + ".png"));
                 flag[i].setIcon(createScaledFlagIcon(i));
                 teamLabel[i].setText(teamName[i]);
                 scoreLabel[i].setText(String.valueOf(scoreValue[i]));
-                teamLabel[i].setForeground(cellText);
-                scoreLabel[i].setForeground(cellText);
+                teamLabel[i].setForeground(isCellRevealed()? buttonText : hidden);
+                scoreLabel[i].setForeground(isCellRevealed()? buttonText : hidden);
             }
             this.revalidate();
         }
 
         private ImageIcon createScaledFlagIcon(int flagIndex) {
-            int img = flagIndex;
-            this.source[img] = new BufferedImage(this.imageWidth, this.imageHeight, BufferedImage.TYPE_INT_ARGB);
+            BufferedImage source = new BufferedImage(this.imageWidth, this.imageHeight, BufferedImage.TYPE_INT_ARGB);
             try {
-                source[img] = ImageIO.read(new File(flagPath[img]));
+                source = ImageIO.read(new File(flagPath[flagIndex]));
             } catch(IOException e){
-                System.out.printf("File not found at \"%s\"\n", flagPath[img]);
+                System.out.printf("File not found at \"%s\"\n", flagPath[flagIndex]);
             }
-            float scaleFactor = (float)(flagHeight) / (float)(source[img].getHeight());
-            int iconX = (int) (source[img].getWidth() * scaleFactor);
-            int iconY = (int) (source[img].getHeight() * scaleFactor);
-            Image scaledPreviewImage = source[img].getScaledInstance(iconX, iconY, Image.SCALE_SMOOTH);
+            float scaleFactor = (float)(flagHeight) / (float)(source.getHeight());
+            int iconX = (int) (source.getWidth() * scaleFactor);
+            int iconY = (int) (source.getHeight() * scaleFactor);
+            Image scaledPreviewImage = source.getScaledInstance(iconX, iconY, Image.SCALE_SMOOTH);
             BufferedImage scaledSource = new BufferedImage(iconX, iconY, BufferedImage.TYPE_INT_ARGB);
             scaledSource.getGraphics().drawImage(scaledPreviewImage, 0, 0, null);
             return new ImageIcon(scaledSource);

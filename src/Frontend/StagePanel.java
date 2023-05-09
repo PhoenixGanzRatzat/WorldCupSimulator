@@ -1,6 +1,7 @@
 package Frontend;
 
 import Backend.Match;
+import Backend.Team;
 import com.sun.istack.internal.NotNull;
 
 import java.awt.*;
@@ -11,19 +12,22 @@ import java.util.List;
  * is ready to be displayed before switching to it visually
  */
 public interface StagePanel {
+
+    Color fifaBlue = new Color(50, 98, 149);
+    Color buttonBackground = new Color(59, 133, 190);
+    Color buttonBorder = new Color(203, 223, 239);
+    Color buttonText = new Color(232, 246, 255);
+
+    public boolean checkIfInitialized();
+
     /**
      * prepares the panel for display
      */
-    public void initPanel();
+    public void initPanel(List<Match> matches, List<Team> teams);
 
     /**
      * Checks StagePanel state to see if the next stage can be moved onto
      * @return
      */
-    public void initPanel(List<Match> matches);
     public boolean checkIfCompleted();
-
-    public boolean checkIfInitialized();
-    @NotNull
-    public Color getThemeColor();
 }

@@ -18,13 +18,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.*;
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -70,7 +68,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     /* Tracker for groups that have completed displaying all of their matches*/
     private boolean[] groupsThatAreComplete;
     private boolean initialized;
-    private Color themeColor;
 
     /* TODO:
        Todo:
@@ -92,20 +89,8 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         groupsThatAreComplete = new boolean[]{false, false, false, false, false, false, false, false};
         resultsPanel = new JPanel();
         flags = new HashMap<>();
-        initPanel();
-    }
-
-    public GroupPanel(List<Match> matches, List<Team> teams) {
-        this();
-        this.matches = matches;
-        this.teams = teams;
-        try {
-            initFlags();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        createGroups();
-        initGroupPanelsWithTeams();
+        matches = new ArrayList<>();
+        teams = new ArrayList<>();
     }
 
 
@@ -124,9 +109,10 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     private JPanel createGroupPanel(int groupNumber) {
         // panel that is returned is 'base'
         JPanel base = new JPanel();
+        base.setBackground(buttonBackground);
         base.setLayout(new GridLayout(6,1));
         //base.setPreferredSize(new Dimension(500, 125));
-        //base.setBorder(new LineBorder(Color.BLACK));
+        base.setBorder(new LineBorder(buttonBorder));
 
         // top button used to select this group
         JPanel groupSelectBTNPanel = new JPanel(new BorderLayout());
@@ -144,6 +130,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         titlePane.setLayout(new GridLayout(1, 7, 2, 2));
         //titlePane.setPreferredSize(new Dimension(base.getWidth(), 25));
         titlePane.setBorder(new LineBorder(Color.BLACK));
+        titlePane.setBackground(fifaBlue);
 
         /*
             __ Title pane __
@@ -158,6 +145,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         titles[5] = new JLabel("Losses");
         titles[6] = new JLabel("Points");
         for (JLabel l : titles) {
+            l.setForeground(buttonText);
             l.setHorizontalAlignment(SwingConstants.CENTER);
             titlePane.add(l);
         }
@@ -173,19 +161,20 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
             rowPanes[i].setBorder(new LineBorder(Color.BLACK));
             rowPanes[i].setLayout(new GridLayout(1,7));
             rowPanes[i].setFont(new Font("Arial", Font.BOLD, 10));
-
+            rowPanes[i].setBackground(buttonBackground);
+            rowPanes[i].setBorder(new LineBorder(buttonBorder));
             // compose
             for (int j = 0; j < 7; j++) {
-                JLabel label;
+                JLabel label = new JLabel();
+                label.setForeground(buttonText);
                 if(j == 0) { // { POSITION }
-                    label = new JLabel();
                     label.setText(String.valueOf(i + 1)); // display position (1-4)
                 }
                 if(j == 2) { // { FLAG }
-                    label = new JLabel(new ImageIcon());
+                    label.setIcon(new ImageIcon());
                     label.setText("");
                 } else {
-                    label = new JLabel("0");
+                    label.setText("0");
                 }
 
                 label.setHorizontalAlignment(SwingConstants.CENTER);
@@ -330,9 +319,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         ((JLabel) rowPanel.getComponent(index)).setText(String.valueOf(value));
     }
 
-    private void initGroupRowPanel(JPanel rowPanel, int index, String countryName) {
-        String indexStr = ((JLabel) rowPanel.getComponent(index)).getText();
-    }
     /**
      * Used to ensure that group panels always display row information based on
      * descending position 1 - 4 top to bottom
@@ -344,23 +330,28 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         // extract an array of only the panels that need sorting
         JPanel[] panelsToSort = new JPanel[numRowPanels - 2];
         for (int i = 2; i < numRowPanels; i++) {
-            panelsToSort[i-2] = (JPanel) rowPanels[i];
+            panelsToSort[i - 2] = (JPanel) rowPanels[i];
         }
 
         // sort those panels by "point" values in descending order
-        // TODO: BUG: groupPanel and groupStage can have different group stage winners if 2nd & 3rd place have the same point values
         Arrays.sort(panelsToSort, (p1, p2) -> {
             Integer points1 = Integer.parseInt(((JLabel) p1.getComponent(6)).getText());
             Integer points2 = Integer.parseInt(((JLabel) p2.getComponent(6)).getText());
-            return points2.compareTo(points1);
+            int pointComparison = points2.compareTo(points1);
+            if (pointComparison == 0) {
+                String country1 = ((JLabel) p1.getComponent(1)).getText();
+                String country2 = ((JLabel) p2.getComponent(1)).getText();
+                return country1.compareTo(country2);
+            }
+            return pointComparison;
         });
 
         // remove each panel and add them back in the sorted order
         for (int i = 2; i < numRowPanels; i++) {
-            ((JLabel) panelsToSort[i-2].getComponent(0)).setText(String.valueOf(i-1));
-            panelsToSort[i-2].setBorder(new CompoundBorder(new LineBorder(Color.BLACK), new EmptyBorder(2,2,2,2)));
-            groupPanel.remove(panelsToSort[i-2]);
-            groupPanel.add(panelsToSort[i-2], i);
+            ((JLabel) panelsToSort[i - 2].getComponent(0)).setText(String.valueOf(i - 1));
+            panelsToSort[i - 2].setBorder(new CompoundBorder(new LineBorder(buttonBorder), new EmptyBorder(2, 2, 2, 2)));
+            groupPanel.remove(panelsToSort[i - 2]);
+            groupPanel.add(panelsToSort[i - 2], i);
         }
 
         // refreshes the display with changes
@@ -377,11 +368,18 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
      */
     private JPanel createMatchResultRowPanel() {
         JPanel base = new JPanel(new FlowLayout());
+        base.setBackground(buttonBackground);
+        base.setBorder(new LineBorder(buttonBorder));
         for (int i = 0; i < 7; i++) {
+            JLabel label = new JLabel();
+            label.setForeground(buttonText);
+            label.setFont(new Font("Monospaced", Font.BOLD, 17));
             if(i == 3) {
-                base.add(new JLabel("-"));
+                label.setText("-");
+                base.add(label);
             } else {
-                base.add(new JLabel("x"));
+                label.setText("x");
+                base.add(label);
             }
         }
         return base;
@@ -409,11 +407,11 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         String result1;
         String result2;
         if (score1 > score2) {
-            result1 = "Win";
+            result1 = "Win ";
             result2 = "Loss";
         } else if (score1 < score2) {
             result1 = "Loss";
-            result2 = "Win";
+            result2 = "Win ";
         } else {
             result1 = "Draw";
             result2 = "Draw";
@@ -561,8 +559,8 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         JPanel rowPanel2 = (JPanel) groupPanel.getComponent(3);
         rowPanel1.setBorder(new LineBorder(Color.green, 1));
         rowPanel2.setBorder(new LineBorder(Color.green, 1));
-        groupPanel.getComponent(4).setBackground(Color.lightGray);
-        groupPanel.getComponent(5).setBackground(Color.lightGray);
+        groupPanel.getComponent(4).setBackground(new Color(107, 140, 166));
+        groupPanel.getComponent(5).setBackground(new Color(107, 140, 166));
 
     }
     /**
@@ -657,8 +655,16 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     }
 
     @Override
-    public void initPanel(List<Match> matchList) {
+    public void initPanel(List<Match> matchList, List<Team> teamList) {
         this.matches = matchList;
+        this.teams = teamList;
+
+        try {
+            initFlags();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         createGroups();
         initPanel();
     }
@@ -666,40 +672,38 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
     /**
      * Create an empty group stage panel that will be filled in as the user interacts with function buttons
      */
-    @Override
     public void initPanel() {
-        themeColor = new Color(21, 21, 240);
         Font font = new Font("Arial", Font.BOLD, 30);
         /* Top bar across window for displaying current round */
         JPanel infoPanel = new JPanel(new GridLayout(1,4));
-        infoPanel.setBackground(themeColor);
+        infoPanel.setBackground(fifaBlue);
         /* Center container for group results and group teams */
         JPanel displayPanel = new JPanel();
         displayPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
-        displayPanel.setBackground(themeColor);
+        displayPanel.setBackground(fifaBlue);
         /* Bottom bar across window for housing functions */
         JPanel functionPanel = new JPanel();
 
         /* Information Panel */
         JLabel groupLabel = new JLabel("Group: ");
         groupLabel.setFont(font);
-        groupLabel.setForeground(Color.white);
+        groupLabel.setForeground(buttonText);
         groupLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         infoPanel.add(groupLabel);
 
         infoPanelGroupLabel.setFont(font);
-        infoPanelGroupLabel.setForeground(Color.white);
+        infoPanelGroupLabel.setForeground(buttonText);
         infoPanelGroupLabel.setHorizontalAlignment(SwingConstants.CENTER);
         infoPanel.add(infoPanelGroupLabel);
 
         JLabel roundLabel = new JLabel("Round: ");
         roundLabel.setFont(font);
-        roundLabel.setForeground(Color.white);
+        roundLabel.setForeground(buttonText);
         infoPanel.add(roundLabel);
 
         infoPanelRoundNumberLabel.setFont(font);
-        infoPanelRoundNumberLabel.setForeground(Color.white);
+        infoPanelRoundNumberLabel.setForeground(buttonText);
         infoPanel.add(infoPanelRoundNumberLabel);
 
         /* __ Display Panel */
@@ -714,17 +718,20 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
 
         // results side-pane - displays score and outcome between each match in the group
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
-        resultsPanel.setPreferredSize(new Dimension(200, 215));
-        resultsPanel.setBorder(new LineBorder(Color.black));
+        resultsPanel.setPreferredSize(new Dimension(230, 245));
+        resultsPanel.setBorder(new LineBorder(buttonBorder));
+        resultsPanel.setBackground(buttonBackground);
         JPanel resultsTitlePane = new JPanel();
+        resultsTitlePane.setBackground(buttonBackground);
         JLabel resultsTitleLabel = new JLabel("Group A Results");
-        resultsTitlePane.setBackground(Color.lightGray);
-        resultsTitlePane.setBorder(new LineBorder(Color.BLACK));
+        resultsTitleLabel.setForeground(buttonText);
+        resultsTitlePane.setBackground(buttonBackground);
+        resultsTitlePane.setBorder(new LineBorder(buttonBorder));
         resultsTitlePane.add(resultsTitleLabel);
         resultsPanel.add(resultsTitlePane);
         for (int c = 0; c < 6; c++) {
             resultsPanel.add(createMatchResultRowPanel());
-            ((JPanel) resultsPanel.getComponent(c+1)).setBorder(new LineBorder(Color.BLACK));
+            ((JPanel) resultsPanel.getComponent(c+1)).setBorder(new LineBorder(buttonBorder));
         }
         // compose display panel
         displayPanel.add(groupDisplayPanel, constraints);
@@ -749,6 +756,8 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         this.add(displayPanel, BorderLayout.CENTER);
         this.add(functionPanel, BorderLayout.SOUTH);
 
+        initGroupPanelsWithTeams();
+
         initialized = true;
     }
 
@@ -757,10 +766,6 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         return initialized;
     }
 
-    @Override
-    public Color getThemeColor() {
-        return themeColor;
-    }
 
     /**
      * Event handler for button clicks

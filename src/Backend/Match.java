@@ -44,7 +44,9 @@ public class Match {
         this.team1Score = (int) (Math.random() * 5);
         this.team2Score = (int) (Math.random() * 5);
 
+
         // Check if match is in knockout stage
+        // TODO: this is not a safe way to determine knockout stage
         boolean isKnockoutActive = matchDate.getMonthValue() >= 6;
 
         // If match is taking place during the knockout stage and ends in a draw, execute tiebreaker procedure
@@ -76,12 +78,10 @@ public class Match {
 
         // Update team points based on match result
         if (this.team1Score > this.team2Score){
-            team1.setPoints(matchDate, team1MostRecentScore + 3);
-        }
-        if (this.team1Score < this.team2Score){
-            team1.setPoints(matchDate, team1MostRecentScore + 3);
-        }
-        else{
+            this.team1.setPoints(this.matchDate, team1MostRecentScore + 3);
+        } else if (this.team1Score < this.team2Score){
+            this.team2.setPoints(this.matchDate, team2MostRecentScore + 3);
+        } else {
             this.team1.setPoints(this.matchDate, team1MostRecentScore + 1);
             this.team2.setPoints(this.matchDate, team2MostRecentScore + 1);
         }

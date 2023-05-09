@@ -55,6 +55,9 @@ public class GroupStage extends Stage{
      */
     @Override
     public void arrangeMatches() {
+        // Match date algorithm - each match is played on separate consecutive days
+        LocalDate seed = LocalDate.of(2018, 5, 14);
+
         // index of next Team in this.teams to add to a group
         int teamIndex = 0;
         // for every team
@@ -66,18 +69,21 @@ public class GroupStage extends Stage{
                 teamIndex++;
             }
         }
-        // TODO: start/seed date for group stage
-        LocalDate seed = LocalDate.of(2018, 5, 14);
+
+        int index = 0;
+        for(Team t : teams) {
+            // set each teams most recent score to zero to begin the Stage
+            t.setPoints(seed, 0);
+            index++;
+        }
+
+        // create all matches in each group, each team vs each team once.
         // for each group
         for (Integer groupNumber : groups.keySet()) {
-
-            // create all matches in each group, each team vs each team once.
             // team (a) plays each team indexed after (a)
             for(int a = 0; a < groups.get(groupNumber).size() - 1; a++) { // [g.size()-1] > all matches are created before last team becomes team (a)
                 // team (b) starts at the index after team (a)
                 for(int b = (a + 1); b < groups.get(groupNumber).size(); b++) {
-                    // match
-                    // TODO: match date algorithm - assume every Match in the GroupStage is played on separate consecutive days
                     Match nextMatch = new Match(groups.get(groupNumber).get(a), // team a
                             groups.get(groupNumber).get(b), // team b
                             seed.plusDays(1));
@@ -92,24 +98,42 @@ public class GroupStage extends Stage{
     }
 
     /**
-     * Determine which teams from each group that are moving on to the knockout stage
+     * Determine which teams from each group are moving on to the knockout stage
      */
     public void determineGroupWinners() {
-        for(Integer groupNumber : groups.keySet()) {
-            HashMap<Team, Integer> teamPoints = new HashMap<Team, Integer>();
-
-            // calculate points for each team in each group
-            for (Team team : groups.get(groupNumber)) {
-                teamPoints.put(team, team.getMostRecentScore());
+        for (Integer groupNumber : groups.keySet()) {
+            HashMap<Team, Integer> teamPoints = new HashMap<>();
+            for (Team t : groups.get(groupNumber)) {
+                teamPoints.put(t, t.getMostRecentScore());
             }
-            // sort teams by points in descending order(highest to lowest)
-            // TODO: BUG: groupPanel and groupStage can have different group stage winners if 2nd & 3rd place have the same point values
-            List<Map.Entry<Team, Integer>> sortedTeams = new ArrayList<>(teamPoints.entrySet());
-            sortedTeams.sort((e1, e2) -> e2.getValue().compareTo(e1.getValue()));
 
-            // Collect the two highest point value teams
-            teamsMovingOntoKnockout.add(sortedTeams.get(0).getKey());
-            teamsMovingOntoKnockout.add(sortedTeams.get(1).getKey());
+            List<Map.Entry<Team, Integer>> sortedTeams = new ArrayList<>(teamPoints.entrySet());
+            sortedTeams.sort((e1, e2) -> {
+                int compare = e2.getValue().compareTo(e1.getValue());
+                if (compare == 0) {
+                    return e1.getKey().getName().compareTo(e2.getKey().getName());
+                }
+                return compare;
+            });
+
+            Team first = sortedTeams.get(0).getKey();
+            List<Team> teamsTiedForSecond = new ArrayList<>();
+
+            for (int i = 1; i < sortedTeams.size(); i++) {
+                if (sortedTeams.get(i).getValue().equals(sortedTeams.get(1).getValue())) {
+                    teamsTiedForSecond.add(sortedTeams.get(i).getKey());
+                }
+            }
+
+            if (teamsTiedForSecond.size() > 0) {
+                teamsTiedForSecond.sort(Comparator.comparing(Team::getName));
+                Team second = teamsTiedForSecond.get(0);
+                teamsMovingOntoKnockout.add(first);
+                teamsMovingOntoKnockout.add(second);
+            } else {
+                teamsMovingOntoKnockout.add(first);
+                teamsMovingOntoKnockout.add(sortedTeams.get(1).getKey());
+            }
         }
     }
 
