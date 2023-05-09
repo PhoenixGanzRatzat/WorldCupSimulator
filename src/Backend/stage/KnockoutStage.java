@@ -115,7 +115,7 @@ public class KnockoutStage extends Stage {
     private void createMatchesAndPopulateMatchList(List<Match> matches, List<Team> teams, List<LocalDate> matchDates) {
         for (int i = 0; i < teams.size(); i += 2) {
             LocalDate matchDate = teams.size() <= NUM_TEAMS_IN_SEMIFINALS ? matchDates.get(i / 2) : matchDates.get(i / 4);
-            Match match = new Match(teams.get(i), teams.get(i + 1), matchDate);
+            Match match = new Match(teams.get(i), teams.get(i + 1), matchDate, true);
             matches.add(match);
         }
     }
