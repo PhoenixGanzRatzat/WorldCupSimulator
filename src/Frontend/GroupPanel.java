@@ -732,7 +732,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         displayPanel.add(resultsPanel, constraints);
 
         /* Function Panel */
-        JButton nextRoundSelectedGroupBTN = new JButton("Next round in group " + selectedGroup);
+        JButton nextRoundSelectedGroupBTN = new JButton("Next round for group " + selectedGroup);
         setButtonLook(nextRoundSelectedGroupBTN);
 
         JButton nextRoundAllGroupsBTN = new JButton("Next round for all groups");
