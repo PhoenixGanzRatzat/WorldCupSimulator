@@ -85,21 +85,29 @@ public class Match {
         // If match is taking place during the knockout stage and ends in a draw, execute tiebreaker procedure
         if (isKnockout && team1Score == team2Score) {
             // Simulate extra time being played, generate new scores for each team
-            int extraTimeTeam1Score = (int) (Math.random() * 2);
-            int extraTimeTeam2Score = (int) (Math.random() * 2);
-            this.team1Score += extraTimeTeam1Score;
-            this.team2Score += extraTimeTeam2Score;
+            for (int mins = 15; mins < matchDurationInMinutes; mins += scoringIntervalInMinutes){
+                if(Math.random() > team1GoalProb){
+                    this.team1Score++;
+                }
+                if(Math.random() > team2GoalProb){
+                    this.team2Score++;
+                }
+            }
             // If there's still a tie after the extra time added, simulate penalty shootout
             if (team1Score == team2Score) {
-                int pensTeam1Score = (int) (Math.random() * 5) + 1;
-                int pensTeam2Score = (int) (Math.random() * 5) + 1;
+                int pensTeam1Score = (int) (Math.random() * 5);
+                int pensTeam2Score = (int) (Math.random() * 5);
                 this.team1Score += pensTeam1Score;
                 this.team2Score += pensTeam2Score;
 
                 // If there's still a tie after the penalty shootout, simulate sudden death
                 while (team1Score == team2Score) {
-                    this.team1Score += (int) (Math.random() * 2);
-                    this.team2Score += (int) (Math.random() * 2);
+                    if(Math.random() > team1GoalProb){
+                        this.team1Score++;
+                    }
+                    if(Math.random() > team2GoalProb){
+                        this.team2Score++;
+                    }
                 }
             }
         }
