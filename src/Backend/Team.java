@@ -57,7 +57,7 @@ public class Team {
         LocalDate closestBefore = null;
         int closestDaysBefore = Integer.MAX_VALUE;
 
-        for (LocalDate localDate : pointsToDateMap.keySet()) {
+        for (LocalDate localDate : dateToPointsMap.keySet()) {
             int daysBefore = localDate.until(date).getDays();
             if (daysBefore < closestDaysBefore) {
                 closestDaysBefore = daysBefore;
@@ -65,7 +65,7 @@ public class Team {
             }
         }
         if (closestBefore != null) {
-            return pointsToDateMap.get(closestBefore);
+            return dateToPointsMap.get(closestBefore);
         }
         return 0;
     }

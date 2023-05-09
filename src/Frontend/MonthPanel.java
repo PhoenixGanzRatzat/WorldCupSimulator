@@ -272,7 +272,7 @@ public class MonthPanel extends JPanel {
 
 
             //add a mouseover to display JPopupMenu
-            JLabel matchLabel = new JLabel(String.format("%s v. %s", match.getTeam1().getAbbv(), match.getTeam2().getAbbv()), JLabel.CENTER);
+            JLabel matchLabel = new JLabel(String.format("%s v. %s", match.getTeam1().getAbbreviation(), match.getTeam2().getAbbreviation()), JLabel.CENTER);
             matchLabel.setToolTipText(formatMatchToolTip(match));
 
 

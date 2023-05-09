@@ -217,10 +217,16 @@ public class KnockoutStage extends Stage {
         return match;
     }
 
+    /**
+     * Returns a list of winning teams from the provided list of matches.
+     */
     private List<Team> getWinningTeamsOfMatchResults(List<Match> match) {
         return match.stream().map(Match::getWinner).collect(Collectors.toList());
     }
 
+    /**
+     * Returns a list of losing teams from the provided list of matches.
+     */
     private List<Team> getLosingTeamsOfMatches(List<Match> matches) {
         return matches.stream().map(Match::getLoser).collect(Collectors.toList());
     }
@@ -241,6 +247,10 @@ public class KnockoutStage extends Stage {
         return finalsMatch;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public List<Match> getMatches() {
         List<Match> allMatches = new ArrayList<>();
