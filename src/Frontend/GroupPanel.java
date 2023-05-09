@@ -110,7 +110,7 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         // panel that is returned is 'base'
         JPanel base = new JPanel();
         base.setBackground(buttonBackground);
-        base.setLayout(new GridLayout(6,1));
+        base.setLayout(new GridLayout(6,1, 0,1));
         //base.setPreferredSize(new Dimension(500, 125));
         base.setBorder(new LineBorder(buttonBorder));
 
