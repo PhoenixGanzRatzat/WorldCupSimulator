@@ -18,13 +18,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.*;
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -408,11 +406,11 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         String result1;
         String result2;
         if (score1 > score2) {
-            result1 = "Win";
+            result1 = "Win ";
             result2 = "Loss";
         } else if (score1 < score2) {
             result1 = "Loss";
-            result2 = "Win";
+            result2 = "Win ";
         } else {
             result1 = "Draw";
             result2 = "Draw";
@@ -689,22 +687,22 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         /* Information Panel */
         JLabel groupLabel = new JLabel("Group: ");
         groupLabel.setFont(font);
-        groupLabel.setForeground(Color.white);
+        groupLabel.setForeground(buttonText);
         groupLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         infoPanel.add(groupLabel);
 
         infoPanelGroupLabel.setFont(font);
-        infoPanelGroupLabel.setForeground(Color.white);
+        infoPanelGroupLabel.setForeground(buttonText);
         infoPanelGroupLabel.setHorizontalAlignment(SwingConstants.CENTER);
         infoPanel.add(infoPanelGroupLabel);
 
         JLabel roundLabel = new JLabel("Round: ");
         roundLabel.setFont(font);
-        roundLabel.setForeground(Color.white);
+        roundLabel.setForeground(buttonText);
         infoPanel.add(roundLabel);
 
         infoPanelRoundNumberLabel.setFont(font);
-        infoPanelRoundNumberLabel.setForeground(Color.white);
+        infoPanelRoundNumberLabel.setForeground(buttonText);
         infoPanel.add(infoPanelRoundNumberLabel);
 
         /* __ Display Panel */
