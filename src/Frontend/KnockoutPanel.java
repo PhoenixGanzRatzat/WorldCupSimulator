@@ -6,6 +6,7 @@ import Backend.Team;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,11 +30,11 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     private static final int SEMIFINAL = 2;
     private static final int FINAL = 3;
     private static final int WINNER = 4;
-    // colors
+    // attributes
     private boolean initialized;
+    private int currentRound;
     private MatchCell[][] cells;
     private List<Match> matches;
-    private Color themeColor;
 
     /**
      * Default constructor; initializes JPanel with BorderLayout, sets size,
@@ -126,58 +127,99 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
                 this.add(this.cells[WINNER][i], bracket);
             }
         }
-        for(MatchCell[] column : cells){
-            for(MatchCell cell : column) for(JButton button : cell.getTeamLabel()){
-                button.addActionListener(this);
-                int col = cell.getRound() + 1;
-                button.setActionCommand(col+","+cell.getRow());
-                cell.setCellRevealed(false);
-            }
-        }
-        // remainder of method is spacers between cells
+        JPanel knockoutButtons = new JPanel(new GridBagLayout());
+        knockoutButtons.setMinimumSize(new Dimension(100,165));
+        knockoutButtons.setOpaque(false);
 
+        addSpacer(knockoutButtons, 0,0,7,1,1);
+        addSpacer(knockoutButtons, 1,0,1,0,1);
+        JButton nextMatch = new JButton("Next Match");
+        nextMatch.setActionCommand("match");
+        nextMatch.setFocusPainted(false);
+        nextMatch.setForeground(buttonText);
+        nextMatch.setBackground(buttonBackground);
+        nextMatch.setFont(new Font("Arial Black", Font.PLAIN, 14));
+        nextMatch.setBorder(new BevelBorder(BevelBorder.RAISED));
+        nextMatch.setPreferredSize(new Dimension(150, 35));
+        bracket.gridx = 1;
+        bracket.gridy = 1;
+        bracket.gridwidth = 1;
+        bracket.gridheight = 1;
+        bracket.weightx = 0.2;
+        bracket.weighty = 0.2;
+        knockoutButtons.add(nextMatch, bracket);
+        addSpacer(knockoutButtons, 1,2,1,0,1);
+        JButton nextRound = new JButton ("Next Round");
+        nextRound.setActionCommand("round");
+        nextRound.setFocusPainted(false);
+        nextRound.setForeground(buttonText);
+        nextRound.setBackground(buttonBackground);
+        nextRound.setFont(new Font("Arial Black", Font.PLAIN, 14));
+        nextRound.setBorder(new BevelBorder(BevelBorder.RAISED));
+        nextRound.setPreferredSize(new Dimension(150, 35));
+        bracket.gridx = 1;
+        bracket.gridy = 3;
+        knockoutButtons.add(nextRound, bracket);
+        addSpacer(knockoutButtons, 1,4,1,0,1);
+        JButton skipAll = new JButton ("Skip to Final");
+        skipAll.setActionCommand("skip");
+        skipAll.setFocusPainted(false);
+        skipAll.setForeground(buttonText);
+        skipAll.setBackground(buttonBackground);
+        skipAll.setFont(new Font("Arial Black", Font.PLAIN, 14));
+        skipAll.setBorder(new BevelBorder(BevelBorder.RAISED));
+        skipAll.setPreferredSize(new Dimension(150, 35));
+        bracket.gridx = 1;
+        bracket.gridy = 5;
+        knockoutButtons.add(skipAll, bracket);
+        addSpacer(knockoutButtons, 1,6,1,0,1);
+        addSpacer(knockoutButtons, 2,0,7,1,1);
+        bracket.gridx = 7;
+        bracket.gridy = 14;
+        bracket.gridwidth = 3;
+        bracket.gridheight = 3;
+        bracket.weightx = 0.1;
+        bracket.weighty = 0.1;
+        this.add(knockoutButtons, bracket);
+        // remainder of method is spacers between cells
+        //
         // 1x18 horizontal: four each padding the two groups of four outermost columns of cells (8x total)
-        addSpacer(0,0,18,1,0);
-        addSpacer(2,0,18,1,0);
-        addSpacer(4,0,18,1,0);
-        addSpacer(6,0,18,1,0);
-        addSpacer(8,0,18,1,0);
-        addSpacer(10,0,18,1,0);
+        addSpacer(this, 0,0,18,1,0);
+        addSpacer(this, 2,0,18,1,0);
+        addSpacer(this, 4,0,18,1,0);
+        addSpacer(this, 6,0,18,1,0);
+        addSpacer(this, 8,0,14,1,0);
+        addSpacer(this, 10,0,14,1,0);
         // 1x2 vertical: two each padding the top and bottom of QUARTERFINAL columns,
         // and one each in the center of the two ROUND_OF_SIXTEEN columns (4x total)
-        addSpacer(3,0,2,0,1);
-        addSpacer(3,16,2,0,1);
-        addSpacer(1,8,2,0,1);
-        addSpacer(9,6,4,0,1);
+        addSpacer(this, 3,0,2,0,1);
+        addSpacer(this, 3,16,2,0,1);
+        addSpacer(this, 1,8,2,0,1);
+        addSpacer(this, 9,6,4,0,1);
         // 1x1 vertical: padding the rows of both ROUND_OF_SIXTEEN columns except the two center rows (16x total)
-        addSpacer(1,0,1,0,1);
-        addSpacer(1,2,1,0,0.1);
-        addSpacer(1,4,1,0,0.1);
-        addSpacer(1,6,1,0,0);
-        //addSpacer(1,11,1,1,0,0.1); // Removing specifically these two fixed an issue I was having.
-        //addSpacer(15,11,1,1,0,0.1); // I have learned nothing from this. I want to scream.
-        addSpacer(1,13,1,0,0.1);
-        addSpacer(1,15,1,0,0.1);
-        addSpacer(1,17,1,0,1);
+        addSpacer(this, 1,0,1,0,1);
+        addSpacer(this, 1,2,1,0,0.1);
+        addSpacer(this, 1,4,1,0,0.1);
+        addSpacer(this, 1,6,1,0,0);
+        addSpacer(this, 1,13,1,0,0.1);
+        addSpacer(this, 1,15,1,0,0.1);
+        addSpacer(this, 1,17,1,0,1);
         // 1x3 vertical: three each between the four rows of QUARTERFINAL columns (6x total)
-        addSpacer(3,3,3,0,1);
-        addSpacer(3,12,3,0,1);
-
+        addSpacer(this, 3,3,3,0,1);
+        addSpacer(this, 3,12,3,0,1);
         // 1x4 vertical: one each between finals and quarterfinals rows (2x total)
-        addSpacer(3,7,4,0,1);
-        addSpacer(7,7,4,0,1);
-
+        addSpacer(this, 3,7,4,0,1);
+        addSpacer(this, 7,7,4,0,1);
         // 1x5 vertical: two each padding the top and bottom of SEMIFINAL columns (4x total)
-        addSpacer(5,0,5,0,1);
-        addSpacer(5,13,5,0,1);
-
+        addSpacer(this, 5,0,5,0,1);
+        addSpacer(this, 5,13,5,0,1);
         // 1x6 vertical: two each padding the top and bottom of the finals' columns,
-        addSpacer(7,0,7,0,1);
-        addSpacer(9,0,5,0,1);
-        addSpacer(7,11,7,0,1);
-        addSpacer(9,11,7,0,1);
+        addSpacer(this, 7,0,7,0,1);
+        addSpacer(this, 9,0,5,0,1);
+        addSpacer(this, 7,12,2,0,1);
+        addSpacer(this, 9,11,3,0,1);
         // 1x6 vertical: at center of finals column (2x total)
-        addSpacer(5,6,6,0,1);
+        addSpacer(this, 5,6,6,0,1);
 
         revalidate();
         repaint();
@@ -187,37 +229,33 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
      * Intended to simplify repetitive use of GridBagConstraints by accepting only 6 parameters instead of 11
      *
      */
-    private void addSpacer(int gX, int gY, int gH, double wX, double wY){
-        //JPanel spacer = new JPanel(true);
-        JComponent spacer = (JComponent) Box.createVerticalStrut(1);
+    private void addSpacer(JPanel target, int gX, int gY, int gH, double wX, double wY){
+        JComponent spacer = wX == 0 ? (JComponent) Box.createVerticalStrut(1) : (JComponent) Box.createHorizontalStrut(1);
 
-        if(wX!=0) {
-            spacer = (JComponent) Box.createHorizontalStrut(1);
-        }
-        /*
-        // Makes things really ugly, but good for visual troubleshooting
+        /*// Makes things really ugly, but good for visual troubleshooting
 
         spacer.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1,0,0,1),BorderFactory.createLineBorder(Color.RED, 1, false)));
-        spacer.setToolTipText("<html>" + "(" + gX + "," + gY + ")" + "<br>" + "1x" + gH + "</html>");
-        */
-        this.add(spacer, new GridBagConstraints(gX,gY,1,gH,wX,wY,10,1,(new Insets(0,0,0,0)),0,0));
+        spacer.setToolTipText("<html>" + "(" + gX + "," + gY + ")" + "<br>" + "1x" + gH + "</html>");*/
+
+        target.add(spacer, new GridBagConstraints(gX,gY,1,gH,wX,wY,10,1,(new Insets(0,0,0,0)),0,0));
     }
-    private void batchSpacers(int[] gX, int[] gY, int gW, int gH, boolean isVert){
-        if(gY.length<gX.length){
-            for(int i = 0; i < gY.length; i++){
-                //for(){
-                    //addSpacer(gX[])
-                //}
+    public void nextMatch() {
+        for(MatchCell[] column : cells) for(MatchCell cell : column){
+            if(!cell.isCellRevealed()){
+                cell.setCellRevealed(true);
+                break;
             }
         }
     }
-    private void addMatch(int round, int i){
-
-    }
-    public void nextMatch() {
-    }
     public void nextRound() {
+        for(MatchCell[] column : cells) for(MatchCell cell : column){
+            if(!cell.isCellRevealed()){
+                cell.setCellRevealed(true);
+                break;
+            }
+        }
     }
+    public void skipAll(){for(MatchCell[] column : cells) for(MatchCell cell : column) if(!cell.isCellRevealed()) cell.setCellRevealed(true);}
     private List<Line2D.Double> createStripes(){
         List<Line2D.Double> stripes = new ArrayList<>();
         double[] columns = new double[5];
@@ -287,16 +325,15 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         return initialized;
     }
 
+    @Override
     public void initPanel(List<Match> matchList, List<Team> teamList){
         this.matches = new ArrayList<>();
         matches.addAll(matchList);
         matches.add(matches.get(matches.size()-2));
         matches.add(matches.get(matches.size()-2));
-        System.out.print("Matches x" + matches.size() + ". ");
         int round = 0;
         int row = 0;
         for(Match m : matches){
-            System.out.println(round+","+row);
             MatchCell cell = cells[round][row];
             cell.setMatch(m);
             row++;
@@ -304,19 +341,19 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
                 round++;
                 row = 0;
             }
-            System.out.println(round);
-            if(round==5){
-                System.out.print("Too many matches!!");
-                break;
-            }
         }
-        System.out.println();
         initialized = true;
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println(e.getActionCommand());
-        MatchCell eventCell = (MatchCell)((JButton)(e.getSource())).getParent();
+        switch(e.getActionCommand()){
+            case "match" :
+                nextMatch();
+            case "round" :
+                nextRound();
+            case "skip" :
+                skipAll();
+        }
 
     }
     @Override
@@ -325,10 +362,8 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         super.paintComponent(striper);
         striper.setColor(buttonBorder);
         striper.setStroke(new BasicStroke(5, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
-        if(initialized){
-            for(Line2D.Double stripe : createStripes()){
-                striper.draw(stripe);
-            }
+        for(Line2D.Double stripe : createStripes()){
+            striper.draw(stripe);
         }
     }
 
@@ -351,7 +386,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         private BufferedImage[] source;
         private Point2D cellOrigin;
         private Font cellFont;
-        private boolean cellRevealed, origin;
+        private boolean cellRevealed;
         private int row, round, imageWidth, imageHeight, flagWidth, flagHeight;
 
         /**
@@ -375,7 +410,6 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             this.imageHeight = imageHeight;
             this.flagWidth = flagWidth;
             this.flagHeight = flagHeight;
-            this.origin = false;
             this.cellRevealed = true;
             this.cellFont = new Font ("Arial Black", Font.PLAIN, 14);
             this.champ = new JLabel();
@@ -470,15 +504,11 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         private int getRound() {
             return round;
         }
-        private boolean hasOrigin() {
-            return origin;
-        }
         private Point2D getCellOrigin(){
             return cellOrigin;
         }
         private void setCellOrigin(Point2D point){
             this.cellOrigin = point;
-            this.origin = true;
         }
         private JButton[] getTeamLabel() {
             return teamLabel;
@@ -486,7 +516,6 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         private void setCellRevealed(boolean isRevealed) {
             cellRevealed = isRevealed;
             updateLabels();
-
         }
         private boolean isCellRevealed(){
             return cellRevealed;
@@ -501,9 +530,9 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             this.setScoreValue(isMatch()? new int[]{match.getTeam1Score(), match.getTeam2Score()} : new int[]{team[0].equals(match.getTeam1())? match.getTeam1Score() : match.getTeam2Score()});
             updateLabels();
             setCellRevealed(false);
-            //if(round == ROUND_OF_SIXTEEN && row == 1){
+            if(round == ROUND_OF_SIXTEEN && row == 1){
                 setCellRevealed(true);
-            //}
+            }
         }
         private void setTeamName(String[] teamAbbv) {
             this.teamName = teamAbbv;
@@ -513,8 +542,6 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         }
         private void updateLabels() {
             Color hidden = new Color(0, 0, 0, 0);
-
-
             for(int i = 0; i < (isMatch() ? 2:1); i++) {
                 flagPath[i] = "Assets" + File.separator + "Images"  + File.separator + "smallFlags" + File.separator + ((teamName[i].equals("???") || !isCellRevealed())? ("BLANK.png") : (team[i].getAbbv() + ".png"));
                 flag[i].setIcon(createScaledFlagIcon(i));
@@ -525,7 +552,6 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             }
             this.revalidate();
         }
-
         private ImageIcon createScaledFlagIcon(int flagIndex) {
             BufferedImage source = new BufferedImage(this.imageWidth, this.imageHeight, BufferedImage.TYPE_INT_ARGB);
             try {
