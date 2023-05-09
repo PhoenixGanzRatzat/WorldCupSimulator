@@ -54,6 +54,10 @@ public class Team implements Comparable<Team> {
         return rank;
     }
 
+    public Map<LocalDate, Integer> getPointsMap() {
+        return pointsMap;
+    }
+
     public int getPoints(LocalDate date) {
         LocalDate closestBefore = null;
         int closestDaysBefore = Integer.MAX_VALUE;
