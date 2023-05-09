@@ -40,21 +40,6 @@ public class QualifyingStage extends Stage {
         firstRoundResultUEFA = firstRoundUEFA();
         secondRoundResultUEFA = secondRoundUEFA();
         playoffResult = playInterConfederationPlayoffs();
-
-        // Create a list of RoundResult objects
-        List<RoundResult> allRoundResults = Arrays.asList(
-                firstRoundResultAFC, secondRoundResultAFC, thirdRoundResultAFC, fourthRoundResultAFC,
-                firstRoundResultCAF, secondRoundResultCAF, thirdRoundResultCAF,
-                firstRoundResultCONCACAF, secondRoundResultCONCACAF, thirdRoundResultCONCACAF, fourthRoundResultCONCACAF, fifthRoundResultCONCACAF,
-                firstRoundResultCONMEBOL,
-                firstRoundResultOFC, secondRoundResultOFC, thirdRoundResultOFC,
-                firstRoundResultUEFA, secondRoundResultUEFA,
-                playoffResult
-        );
-
-        // Add all matches to the QualifierMatches list
-        addAllMatches(allRoundResults);
-
     }
 
     // Add all matches from the roundResults list to the QualifierMatches list
@@ -63,11 +48,6 @@ public class QualifyingStage extends Stage {
             QualifierMatches.addAll(roundResult.getRoundMatches());
         }
         rearrangeMatchDates(QualifierMatches,  6);
-    }
-
-    // Get the list of all qualifier matches
-    public List<Match> getMatches() {
-        return QualifierMatches;
     }
 
     // Get the list of all qualified teams
@@ -122,20 +102,22 @@ public class QualifyingStage extends Stage {
                     matchDate = startDate.plusDays(2);
                 }
 
-                int matchesOnDate = matchesPerDay.getOrDefault(matchDate, 0);
+                int instanceMatchesOnDate = matchesPerDay.getOrDefault(matchDate, 0);
+                LocalDate finalMatchDate = matchDate;
+                int allMatchesOnDate = (int) getMatches().stream().filter(Match -> Match.getMatchDate().isEqual(finalMatchDate)).count();
 
                 Set<LocalDate> team1MatchDates = teamMatchDates.getOrDefault(match.getTeam1(), new HashSet<>());
                 Set<LocalDate> team2MatchDates = teamMatchDates.getOrDefault(match.getTeam2(), new HashSet<>());
 
-                LocalDate finalMatchDate = matchDate;
                 boolean team1HasMatchOnDate = team1MatchDates.stream().anyMatch(date -> date.isEqual(finalMatchDate));
                 boolean team2HasMatchOnDate = team2MatchDates.stream().anyMatch(date -> date.isEqual(finalMatchDate));
 
                 /// Check if both teams don't have matches on the current date
-                if (matchesOnDate < maxMatchesPerDay && !team1HasMatchOnDate && !team2HasMatchOnDate) {
+                if (instanceMatchesOnDate < maxMatchesPerDay && allMatchesOnDate < 6 && !team1HasMatchOnDate && !team2HasMatchOnDate) {
                     // Set the match date and update the maps
                     match.setMatchDate(matchDate);
-                    matchesPerDay.put(matchDate, matchesOnDate + 1);
+                    matchesPerDay.put(matchDate, instanceMatchesOnDate + 1);
+                    getMatches().add(match);
 
                     team1MatchDates.add(matchDate);
                     team2MatchDates.add(matchDate);
@@ -218,7 +200,6 @@ public class QualifyingStage extends Stage {
             winningTeams.add(winner);
         }
 
-
         // Return a RoundResult object containing the winners and the matches
         return new RoundResult(winningTeams, firstRoundMatches);
     }
@@ -281,9 +262,6 @@ public class QualifyingStage extends Stage {
 
         return new RoundResult(qualifiedTeams, allGroupMatches);
     }
-
-
-
 
     private RoundResult thirdRoundAFC() {
         List<List<Team>> thirdRoundGroups = createGroups(secondRoundResultAFC.getRoundTeams(), 2, 6);
@@ -617,15 +595,14 @@ public class QualifyingStage extends Stage {
         // Pair the teams into groups of two
         List<List<Team>> groups = createGroups(concacafTeams, 3, 4);
 
-        List<Match> fourthRoundMatches = new ArrayList<>();
         List<Team> qualifiedTeams = new ArrayList<>();
         List<Match> allGroupMatches = new ArrayList<>();
 
         // Iterate through each group
         for (List<Team> group : groups) {
             // Arrange home and away matches for the group
-            List<Match> secondRoundMatches = arrangeHomeAndAwayMatches(group, true);
-            allGroupMatches.addAll(secondRoundMatches);
+            List<Match> pairedMatches = arrangeHomeAndAwayMatches(group, true);
+            allGroupMatches.addAll(pairedMatches);
         }
 
         // Assign dates to the second round matches
@@ -998,6 +975,7 @@ public class QualifyingStage extends Stage {
 
         return new RoundResult(worldCupQualifiers, playOffMatches);
     }
+
 
     public List<Match> playPlayoffMatch(Team team1, Team team2) {
         Match homeMatch = new Match(team1, team2);
