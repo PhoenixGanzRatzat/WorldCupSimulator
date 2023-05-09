@@ -27,6 +27,8 @@ import java.util.HashMap;
 
 public class QualifyingPanel extends JPanel implements StagePanel {
 
+    private int[] monthInts = new int[5];
+
     /**
      * Various colors that this class uses
      */
@@ -92,6 +94,12 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
         month = new MonthPanel();
 
+        monthInts[0] = 3;
+        monthInts[1] = 6;
+        monthInts[2] = 9;
+        monthInts[3] = 10;
+        monthInts[4] = 11;
+
         regions[0] = "AFC";
         regions[1] = "CAF";
         regions[2] = "CONCACAF";
@@ -120,7 +128,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
      */
     public void initMonthPanel(List<Match> matches) {
 
-        month.setToMonth(curYear, curMonth);
+        month.setToMonth(curYear, monthInts[curMonth]);
         month.setMatchesOnDayPanels(matches);
         month.setPreferredSize(new Dimension(800, 600));
 
@@ -199,7 +207,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
 
             ArrayList<Team> sortedArr = new ArrayList<Team>();
-            LocalDate getPointsFrom = java.time.LocalDate.of(curYear, curMonth, 1);
+            LocalDate getPointsFrom = java.time.LocalDate.of(curYear, monthInts[curMonth], 1);
             getPointsFrom = getPointsFrom.withDayOfMonth(getPointsFrom.lengthOfMonth());
 
             for(Team team : teams) {
@@ -338,7 +346,7 @@ public class QualifyingPanel extends JPanel implements StagePanel {
 
         this.matches = matches;
         this.teams = teamList;
-        curMonth = earliestMatchDate.getMonthValue();
+        monthInts[curMonth] = earliestMatchDate.getMonthValue();
         curYear = earliestMatchDate.getYear();
         tabPane =  new JTabbedPane();
         tabPane.setOpaque(true);
@@ -391,27 +399,27 @@ public class QualifyingPanel extends JPanel implements StagePanel {
                 default: System.out.println("error message");
             }
 
-            if(curMonth > 12) {
-                curMonth = 1;
+            if(curMonth > 4) {
+                curMonth = 0;
                 curYear++;
             }
-            if(curMonth < 1 || curYear > 2018) {
-                curMonth = 12;
+            if(curMonth < 0 || curYear > 2017) {
+                curMonth = 4;
                 curYear--;
             }
             if(curYear < 2015) {
-                curMonth = 1;
+                curMonth = 0;
                 curYear++;
             }
-            if(curYear == earliestMatchDate.getYear() && curMonth < earliestMatchDate.getMonthValue()) {
-                curMonth = 3; //earliest match is March 2015
+            if(curYear == earliestMatchDate.getYear() && monthInts[curMonth] < earliestMatchDate.getMonthValue()) {
+                curMonth = 0; //earliest match is March 2015
             }
 
-            if(curYear == latestMatchDate.getYear() && curMonth > latestMatchDate.getMonthValue()) {
-                curMonth = 6; //latest match is June 2018
+            if(curYear == latestMatchDate.getYear() && monthInts[curMonth] > latestMatchDate.getMonthValue()) {
+                curMonth = 1; //latest match is June 2018
             }
 
-            month.setToMonth(curYear, curMonth);
+            month.setToMonth(curYear, monthInts[curMonth]);
             month.setMatchesOnDayPanels(matches); //backend.getMatchesForYearMonth(
             fillResults();
         }
