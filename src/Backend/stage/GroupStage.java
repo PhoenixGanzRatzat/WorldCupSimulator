@@ -101,20 +101,6 @@ public class GroupStage extends Stage{
             // calculate points for each team in each group
             for (Team team : groups.get(groupNumber)) {
                 teamPoints.put(team, team.getMostRecentScore());
-                /*Team team1 = match.getTeam1();
-                Team team2 = match.getTeam2();
-                int score1 = match.getTeam1Score();
-                int score2 = match.getTeam2Score();
-
-                // give points to teams based on wins and draws
-                if (score1 > score2) {
-                    teamPoints.put(team1, (teamPoints.get(team1) + 3));
-                } else if (score1 < score2) {
-                    teamPoints.put(team2, (teamPoints.get(team2) + 3));
-                } else {
-                    teamPoints.put(team1, (teamPoints.get(team1) + 1));
-                    teamPoints.put(team2, (teamPoints.get(team2) + 1));
-                }*/
             }
             // sort teams by points in descending order(highest to lowest)
             // TODO: BUG: groupPanel and groupStage can have different group stage winners if 2nd & 3rd place have the same point values
