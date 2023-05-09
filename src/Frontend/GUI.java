@@ -201,14 +201,17 @@ public class GUI extends JFrame implements ActionListener {
             if(qualifyingPanel.checkIfCompleted()) {
                 checkIfPanelNeedsInit(groupPanel, stage);
                 changeCard(cardPanel, panelString);
+            } else {
+                JOptionPane.showMessageDialog(this, "Qualifying Stage must be completed before moving to Group Stage!");
             }
         } else if (stage == 3) {
             if(groupPanel.checkIfCompleted()) {
                 checkIfPanelNeedsInit(knockoutPanel, stage);
                 changeCard(cardPanel, panelString);
+            } else {
+                JOptionPane.showMessageDialog(this, "Group Stage must be completed before moving to Knockout Stage!");
             }
         }
-
     }
 
     private void checkIfPanelNeedsInit(StagePanel panel, int stage) {
