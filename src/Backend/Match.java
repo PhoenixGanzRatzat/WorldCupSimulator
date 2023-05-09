@@ -83,9 +83,9 @@ public class Match {
 
         // Check if match is in knockout stage
         // If match is taking place during the knockout stage and ends in a draw, execute tiebreaker procedure
-        if (isKnockout && team1Score == team2Score) {
+        while (isKnockout && team1Score == team2Score) {
             // Simulate extra time being played, generate new scores for each team
-            while(minutes < matchDurationInMinutes + extraTimeDurationInMinutes){
+            while(minutes < matchDurationInMinutes + extraTimeDurationInMinutes) {
                 minutes += scoringIntervalInMinutes;
                 if(Math.random() > team1GoalProb){
                     this.team1Score++;
@@ -94,23 +94,27 @@ public class Match {
                     this.team2Score++;
                 }
             }
-            // If there's still a tie after the extra time added, simulate penalty shootout
-            if (team1Score == team2Score) {
-                minutes += 15;
-                int pensTeam1Score = (int) (Math.random() * 2);
-                int pensTeam2Score = (int) (Math.random() * 2);
-                this.team1Score += pensTeam1Score;
-                this.team2Score += pensTeam2Score;
+            if (minutes < matchDurationInMinutes + extraTimeDurationInMinutes + 15) {
+                // If there's still a tie after the extra time added, simulate penalty shootout
 
-                // If there's still a tie after the penalty shootout, simulate sudden death
-                while (team1Score == team2Score) {
-                    minutes += scoringIntervalInMinutes;
-                    if(Math.random() > team1GoalProb){
+                for (int shots = 0; shots < 5; shots++) {
+                    minutes += 3;
+                    if(Math.random() > team1GoalProb + .1){
                         this.team1Score++;
                     }
-                    if(Math.random() > team2GoalProb){
+                    if(Math.random() > team2GoalProb + .1){
                         this.team2Score++;
                     }
+                }
+                // If there's still a tie after the penalty shootout, simulate sudden death
+            }
+            else {
+                minutes += scoringIntervalInMinutes;
+                if(Math.random() > team1GoalProb){
+                    this.team1Score++;
+                }
+                if(Math.random() > team2GoalProb){
+                    this.team2Score++;
                 }
             }
         }
