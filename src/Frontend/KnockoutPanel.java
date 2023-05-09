@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Displays KnockoutStage results either one match at a time or
- * one round at a time, should the user choose to skip forward.
+ * Displays KnockoutStage results.
+ * @author Naomi Coakley
  */
 public class KnockoutPanel extends JPanel implements StagePanel, ActionListener {
     // round constants
@@ -32,7 +32,6 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     private static final int WINNER = 4;
     // attributes
     private boolean initialized;
-    private int currentRound;
     private MatchCell[][] cells;
     private List<Match> matches;
 
@@ -47,12 +46,6 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         this.initialized = false;
         createWindow();
     }
-    /*TODO:
-     * Implement initPanel(), nextMatch(), & nextRound()
-     * Make those 90 lines of addSpacer() calls into 10 lines of batchSpacers() calls
-     * Write a loop in batchSpacers() iterated to the length of the shorter array passed in
-     * Bracket layout changes: either turn Matches into two BracketCells stacked or make BracketCell "double up" by default
-     */
     /**
      * Assembles a GridBagLayout-based bracket of BracketCell objects and buttons for the teams competing in each match
      */
@@ -134,6 +127,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         addSpacer(knockoutButtons, 0,0,7,1,1);
         addSpacer(knockoutButtons, 1,0,1,0,1);
         JButton nextMatch = new JButton("Next Match");
+        nextMatch.addActionListener(this);
         nextMatch.setActionCommand("match");
         nextMatch.setFocusPainted(false);
         nextMatch.setForeground(buttonText);
@@ -150,6 +144,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         knockoutButtons.add(nextMatch, bracket);
         addSpacer(knockoutButtons, 1,2,1,0,1);
         JButton nextRound = new JButton ("Next Round");
+        nextRound.addActionListener(this);
         nextRound.setActionCommand("round");
         nextRound.setFocusPainted(false);
         nextRound.setForeground(buttonText);
@@ -162,6 +157,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         knockoutButtons.add(nextRound, bracket);
         addSpacer(knockoutButtons, 1,4,1,0,1);
         JButton skipAll = new JButton ("Skip to Final");
+        skipAll.addActionListener(this);
         skipAll.setActionCommand("skip");
         skipAll.setFocusPainted(false);
         skipAll.setForeground(buttonText);
@@ -181,6 +177,9 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         bracket.weightx = 0.1;
         bracket.weighty = 0.1;
         this.add(knockoutButtons, bracket);
+        nextMatch.setVisible(false);
+        nextRound.setVisible(false);
+        skipAll.setVisible(false);
         // remainder of method is spacers between cells
         //
         // 1x18 horizontal: four each padding the two groups of four outermost columns of cells (8x total)
@@ -225,9 +224,8 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         repaint();
     }
     /**
-     * Creates an empty, transparent JPanel for use as a spacer.
+     * Creates an empty, transparent JPanel for use as a spacer and adds it to the target JPanel.
      * Intended to simplify repetitive use of GridBagConstraints by accepting only 6 parameters instead of 11
-     *
      */
     private void addSpacer(JPanel target, int gX, int gY, int gH, double wX, double wY){
         JComponent spacer = wX == 0 ? (JComponent) Box.createVerticalStrut(1) : (JComponent) Box.createHorizontalStrut(1);
@@ -239,11 +237,14 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
 
         target.add(spacer, new GridBagConstraints(gX,gY,1,gH,wX,wY,10,1,(new Insets(0,0,0,0)),0,0));
     }
-    public void nextMatch() {
-        for(MatchCell[] column : cells) for(MatchCell cell : column){
-            if(!cell.isCellRevealed()){
+    /*public void nextMatch() {
+        boolean notDone = true;
+        for (int i = 0; i < cells[currentRound].length; i++) {
+            MatchCell cell = cells[currentRound][i];
+            System.out.println("hi");
+            if (!cell.isCellRevealed() && notDone) {
                 cell.setCellRevealed(true);
-                break;
+                return;
             }
         }
     }
@@ -255,7 +256,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             }
         }
     }
-    public void skipAll(){for(MatchCell[] column : cells) for(MatchCell cell : column) if(!cell.isCellRevealed()) cell.setCellRevealed(true);}
+    public void skipAll(){for(MatchCell[] column : cells) for(MatchCell cell : column) if(!cell.isCellRevealed()) cell.setCellRevealed(true);}*/
     private List<Line2D.Double> createStripes(){
         List<Line2D.Double> stripes = new ArrayList<>();
         double[] columns = new double[5];
@@ -348,11 +349,11 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
     public void actionPerformed(ActionEvent e) {
         switch(e.getActionCommand()){
             case "match" :
-                nextMatch();
+                //nextMatch();
             case "round" :
-                nextRound();
+                //nextRound();
             case "skip" :
-                skipAll();
+                //skipAll();
         }
 
     }
@@ -366,7 +367,6 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             striper.draw(stripe);
         }
     }
-
     /**
      * Creates small JPanels with two JLabels next to each other,
      * the first of which having an ImageIcon created by scaling
@@ -388,7 +388,6 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
         private Font cellFont;
         private boolean cellRevealed;
         private int row, round, imageWidth, imageHeight, flagWidth, flagHeight;
-
         /**
          * Default constructor, calls secondary constructor with all-zero args.
          */
@@ -514,6 +513,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             return teamLabel;
         }
         private void setCellRevealed(boolean isRevealed) {
+            System.out.println("hello");
             cellRevealed = isRevealed;
             updateLabels();
         }
@@ -529,10 +529,7 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
             this.setTeamName(isMatch()? new String[]{team[0].getAbbv(), team[1].getAbbv()} : new String[]{team[0].getAbbv()} );
             this.setScoreValue(isMatch()? new int[]{match.getTeam1Score(), match.getTeam2Score()} : new int[]{team[0].equals(match.getTeam1())? match.getTeam1Score() : match.getTeam2Score()});
             updateLabels();
-            setCellRevealed(false);
-            if(round == ROUND_OF_SIXTEEN && row == 1){
-                setCellRevealed(true);
-            }
+            setCellRevealed(true);
         }
         private void setTeamName(String[] teamAbbv) {
             this.teamName = teamAbbv;
@@ -550,7 +547,6 @@ public class KnockoutPanel extends JPanel implements StagePanel, ActionListener 
                 teamLabel[i].setForeground(isCellRevealed()? buttonText : hidden);
                 scoreLabel[i].setForeground(isCellRevealed()? buttonText : hidden);
             }
-            this.revalidate();
         }
         private ImageIcon createScaledFlagIcon(int flagIndex) {
             BufferedImage source = new BufferedImage(this.imageWidth, this.imageHeight, BufferedImage.TYPE_INT_ARGB);
