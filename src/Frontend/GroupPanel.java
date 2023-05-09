@@ -26,6 +26,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -672,6 +673,9 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         displayPanel.setBackground(fifaBlue);
         /* Bottom bar across window for housing functions */
         JPanel functionPanel = new JPanel();
+        functionPanel.setBackground(new Color(107, 140, 166));
+        functionPanel.setBorder(new LineBorder(buttonBorder));
+
 
         /* Information Panel */
         JLabel groupLabel = new JLabel("Group: ");
@@ -728,12 +732,15 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         displayPanel.add(resultsPanel, constraints);
 
         /* Function Panel */
-        JButton nextRoundSelectedGroupBTN = new JButton("Next round in group " + selectedGroup);
-        nextRoundSelectedGroupBTN.addActionListener(this);
+        JButton nextRoundSelectedGroupBTN = new JButton("Next round for group " + selectedGroup);
+        setButtonLook(nextRoundSelectedGroupBTN);
+
         JButton nextRoundAllGroupsBTN = new JButton("Next round for all groups");
-        nextRoundAllGroupsBTN.addActionListener(this);
+        setButtonLook(nextRoundAllGroupsBTN);
+
         JButton completeStageBTN = new JButton("Complete Stage");
-        completeStageBTN.addActionListener(this);
+        setButtonLook(completeStageBTN);
+
         // compose function panel
         functionPanel.add(nextRoundSelectedGroupBTN);
         functionPanel.add(nextRoundAllGroupsBTN);
@@ -747,6 +754,16 @@ public class GroupPanel extends JPanel implements StagePanel, ActionListener {
         initGroupPanelsWithTeams();
 
         initialized = true;
+    }
+
+    private void setButtonLook(JButton button) {
+        button.addActionListener(this);
+        button.setBackground(buttonBackground);
+        button.setForeground(buttonText);
+        button.setFocusPainted(false);
+        button.setPreferredSize(new Dimension(250, 30));
+        button.setFont(new Font("Arial", Font.BOLD, 16));
+        button.setBorder(new BevelBorder(BevelBorder.RAISED));
     }
 
     @Override
