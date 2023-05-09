@@ -8,24 +8,20 @@ public class Match {
     private int team1Score;
     private int team2Score;
     private LocalDate matchDate;
+    private boolean isKnockout;
+    private double team1GoalProb;
+    private double team2GoalProb;
 
-    /**
-     * TEMPORARY - used for groupPanel testing, delete later.
-     * @param teamOne
-     * @param teamTwo
-     * @param score1
-     * @param score2
-     * @param date
-     */
-    public Match (Team teamOne, Team teamTwo, int score1, int score2, LocalDate date){
-        this.team1 = teamOne;
-        this.team2 = teamTwo;
-        team1Score = score1;
-        team2Score = score2;
-        this.matchDate = date;
-    }
     public Match(Team teamOne, Team teamTwo){
         this(teamOne, teamTwo, LocalDate.now());
+    }
+    public Match (Team teamOne, Team teamTwo, int team1Score, int team2Score, LocalDate date) {
+        this.team1 = teamOne;
+        this.team2 = teamTwo;
+        this.team1Score = 0;
+        this.team2Score = 0;
+        this.matchDate = date;
+        this.isKnockout = false;
     }
     public Match (Team teamOne, Team teamTwo, LocalDate date) {
         this.team1 = teamOne;
@@ -33,22 +29,61 @@ public class Match {
         this.team1Score = 0;
         this.team2Score = 0;
         this.matchDate = date;
+        this.isKnockout = false;
+    }
+    public Match (Team teamOne, Team teamTwo, LocalDate date, boolean isKnockout) {
+        this.team1 = teamOne;
+        this.team2 = teamTwo;
+        this.team1Score = 0;
+        this.team2Score = 0;
+        this.matchDate = date;
+        this.isKnockout = false;
     }
 
     /**
      * Randomly generates score values for 2 teams and then processes the match for any
      * overtime or tie dispute.
      */
+    private double calculateGoalProbability(int rank){
+        double goalProb = 0;
+        if(rank < 52){
+            goalProb = .75;
+        }
+        else if(rank < 104){
+            goalProb = .80;
+        }
+        else if(rank < 156){
+            goalProb = .85;
+        }
+        else {
+            goalProb = .90;
+        }
+        return goalProb;
+    }
+
+
     public void simulateMatchResult() {
         // Generate random scores for each team (0-4)
-        this.team1Score = (int) (Math.random() * 5);
-        this.team2Score = (int) (Math.random() * 5);
+        // TODO: Adjust scoring calculation to more accurately simulate a game.
+
+       int matchDurationInMinutes = 90;
+       int scoringIntervalInMinutes = 15;
+
+       this.team1GoalProb = calculateGoalProbability(team1.getRank());
+       this.team2GoalProb = calculateGoalProbability(team2.getRank());
+
+       for (int mins = 0; mins < matchDurationInMinutes; mins += scoringIntervalInMinutes){
+           if(Math.random() < team1GoalProb){
+               this.team1Score++;
+           }
+           if(Math.random() < team2GoalProb){
+               this.team2Score++;
+           }
+       }
 
         // Check if match is in knockout stage
-        boolean isKnockoutActive = matchDate.getMonthValue() >= 6;
-
         // If match is taking place during the knockout stage and ends in a draw, execute tiebreaker procedure
-        if (isKnockoutActive && team1Score == team2Score) {
+        if (isKnockout && team1Score == team2Score) {
             // Simulate extra time being played, generate new scores for each team
             int extraTimeTeam1Score = (int) (Math.random() * 2);
             int extraTimeTeam2Score = (int) (Math.random() * 2);
@@ -76,12 +111,10 @@ public class Match {
 
         // Update team points based on match result
         if (this.team1Score > this.team2Score){
-            team1.setPoints(matchDate, team1MostRecentScore + 3);
-        }
-        if (this.team1Score < this.team2Score){
-            team1.setPoints(matchDate, team1MostRecentScore + 3);
-        }
-        else{
+            this.team1.setPoints(this.matchDate, team1MostRecentScore + 3);
+        } else if (this.team1Score < this.team2Score){
+            this.team2.setPoints(this.matchDate, team2MostRecentScore + 3);
+        } else {
             this.team1.setPoints(this.matchDate, team1MostRecentScore + 1);
             this.team2.setPoints(this.matchDate, team2MostRecentScore + 1);
         }

@@ -55,6 +55,23 @@ public class Team implements Comparable<Team> {
     }
 
     public int getPoints(LocalDate date) {
+        LocalDate closestBefore = null;
+        int closestDaysBefore = Integer.MAX_VALUE;
+
+        for (LocalDate localDate : pointsMap.keySet()) {
+            int daysBefore = localDate.until(date).getDays();
+            if (daysBefore < closestDaysBefore) {
+                closestDaysBefore = daysBefore;
+                closestBefore = localDate;
+            }
+        }
+        if (closestBefore != null) {
+            return pointsMap.get(closestBefore);
+        }
+        return 0;
+    }
+
+    public int getMostRecentScore(LocalDate date) {
         return pointsMap.get(date);
     }
 
